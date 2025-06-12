@@ -11,6 +11,11 @@ It contains roughly **30 kLOC** of gameplay code plus an additional **3 kLOC** o
 
 ---
 
+## :question: Where are the assets?
+As this is a repository meant to highlight coding skills and my approach to development, the repository contains no blueprints nor assets.
+ 
+---
+
 ## 🚀  Highlights
 
 | Domain | Feature |
@@ -35,27 +40,24 @@ It contains roughly **30 kLOC** of gameplay code plus an additional **3 kLOC** o
 ---
 
 ## 📂  Repository layout
+```text
 SaltLakeCity/
 │
 ├─ Source/                     # All gameplay and engine-side C++
 │   ├─ Abilities/              # Modular ability components & data
 │   ├─ Actors/                 # Custom pawns, AI, interaction props
-│   ├─ GUI/                    # MVC-style UI (Models / Views / Presenters)
+│   ├─ GUI/                    # MVC-style UI (Models / Views / Controllers)
 │   ├─ Jobs/                   # Worker-task system and job definitions
-│   ├─ GameStates/             # State machines, save / load services
+│   ├─ GameStates/             # Game state logic, save / load services
 │   └─ …                       # Other feature folders (AI, Services, etc.)
 │
-├─ SourcePlugins/              # Optional plugins kept separate from the core
+├─ SourcePlugins/              # Optional plugins
 │   └─ SaltLakeCityTests/      # Automation & functional test suite
 │
-├─ Content/                    # Minimal placeholder assets (maps, configs)
-│                              # Heavy art assets live in a private depot
+├─ Content/                    # Game assets (maps, configs)
+│                              # Art assets and blueprints kept separately
 │
 ├─ Config/                     # DefaultEngine.ini, input, render settings
 │
-├─ .github/workflows/          # CI pipeline: build + run tests
-│
 └─ README.md                   # You are here
-
-> **Where are the assets?**  
-> As this is a repository meant to highlight coding skills, no asset is not made available.
+```
