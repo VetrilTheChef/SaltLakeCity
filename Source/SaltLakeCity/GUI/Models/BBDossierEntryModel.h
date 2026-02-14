@@ -31,11 +31,17 @@ class SALTLAKECITY_API UBBDossierEntryModel : public UIBBDossierEntryModel
 
 		virtual TSoftObjectPtr<UTexture2D> GetIcon() const override;
 
-		virtual float GetValue() const override;
+		virtual float GetValue() const;
 
-		virtual float GetMaxValue() const override;
+		virtual float GetMaxValue() const;
 
 	protected:
+		UPROPERTY(Category = "Attributes", EditAnywhere, BlueprintReadWrite)
+		float MinAttribute;
+
+		UPROPERTY(Category = "Attributes", EditAnywhere, BlueprintReadWrite)
+		float MaxAttribute;
+
 		UPROPERTY()
 		UIBBDossierEntryWidget * View;
 
@@ -50,7 +56,5 @@ class SALTLAKECITY_API UBBDossierEntryModel : public UIBBDossierEntryModel
 
 		void FinalizeEntry();
 
-		void UpdateValue(float NewValue);
-
-		void UpdateMaxValue(float NewMaxValue);
+		void UpdateValues(float NewValue, float NewMaxValue);
 };

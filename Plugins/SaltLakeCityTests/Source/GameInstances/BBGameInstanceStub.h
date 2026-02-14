@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,59 +19,58 @@ class UBBGameInstanceStub : public UIBBGameInstance
 	public:
 		UBBGameInstanceStub();
 
-		void Clone(UGameInstance * Other);
+		void Clone(UGameInstance* Other);
 
 		void Unclone();
 
-		virtual AIBBGameMode * GetGameMode() const override;
+		virtual AIBBGameMode* GetGameMode() const override;
 
-		void SetGameMode(AIBBGameMode * NewGameMode);
+		void SetGameMode(AIBBGameMode* NewGameMode);
 
-		virtual AIBBGameState * GetGameState() const override;
+		virtual AIBBGameState* GetGameState() const override;
 
-		void SetGameState(AIBBGameState * NewGameState);
+		void SetGameState(AIBBGameState* NewGameState);
 
-		virtual AIBBHUD * GetHUD() const override;
+		virtual AIBBHUD* GetHUD() const override;
 
-		void SetHUD(AIBBHUD * NewHUD);
+		void SetHUD(AIBBHUD* NewHUD);
 
-		virtual AIBBPlayerController * GetPlayerController() const override;
+		virtual AIBBPlayerController* GetPlayerController() const override;
 
-		void SetPlayerController(AIBBPlayerController * NewPlayerController);
+		void SetPlayerController(AIBBPlayerController* NewPlayerController);
 
-		virtual const UIBBCommandFactory * GetCommandFactory() const override;
+		virtual UIBBWidgetManager* GetWidgetManager() const override;
 
-		void SetCommandFactory(UIBBCommandFactory * NewCommandFactory);
+		void SetWidgetManager(UIBBWidgetManager* NewWidgetManager);
 
-		virtual const UIBBComponentFactory * GetComponentFactory() const override;
+		virtual const UIBBCommandFactory* GetCommandFactory() const override;
 
-		void SetComponentFactory(UIBBComponentFactory * NewComponentFactory);
+		void SetCommandFactory(UIBBCommandFactory* NewCommandFactory);
 
-		const UIBBSpecificationFactory * GetSpecificationFactory() const;
+		virtual const UIBBComponentFactory* GetComponentFactory() const override;
 
-		void SetSpecificationFactory(UIBBSpecificationFactory * NewSpecificationFactory);
+		void SetComponentFactory(UIBBComponentFactory* NewComponentFactory);
 
-		void SetWorldContext(FWorldContext * NewWorldContext);
+		const UIBBSpecificationFactory* GetSpecificationFactory() const;
+
+		void SetSpecificationFactory(UIBBSpecificationFactory* NewSpecificationFactory);
+
+		void SetWorldContext(FWorldContext* NewWorldContext);
 
 	protected:
-		UPROPERTY()
-		AIBBGameMode * GameMode;
+		TWeakObjectPtr<AIBBGameMode> GameMode;
 
-		UPROPERTY()
-		AIBBGameState * GameState;
+		TWeakObjectPtr<AIBBGameState> GameState;
 
-		UPROPERTY()
-		AIBBHUD * HUD;
+		TWeakObjectPtr<AIBBHUD> HUD;
 
-		UPROPERTY()
-		AIBBPlayerController * PlayerController;
+		TWeakObjectPtr<AIBBPlayerController> PlayerController;
 
-		UPROPERTY()
-		UIBBCommandFactory * CommandFactory;
+		TWeakObjectPtr<UIBBWidgetManager> WidgetManager;
 
-		UPROPERTY()
-		UIBBComponentFactory * ComponentFactory;
+		TWeakObjectPtr<UIBBCommandFactory> CommandFactory;
 
-		UPROPERTY()
-		UIBBSpecificationFactory * SpecificationFactory;
+		TWeakObjectPtr<UIBBComponentFactory> ComponentFactory;
+
+		TWeakObjectPtr<UIBBSpecificationFactory> SpecificationFactory;
 };

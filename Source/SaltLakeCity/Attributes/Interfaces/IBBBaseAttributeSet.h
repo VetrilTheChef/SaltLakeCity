@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "IBBBaseAttributeSet.generated.h"
 
+class UIBBAIAbilityComponent;
 
 UCLASS(Abstract, BlueprintType)
 
@@ -21,13 +22,26 @@ class SALTLAKECITY_API UIBBBaseAttributeSet : public UAttributeSet
 
 		virtual void BeginDestroy() override { Super::BeginDestroy(); }
 
-		DECLARE_EVENT_OneParam(UIBBBaseAttributeSet, FBBUpdate, float);
+		virtual void Initialize(UIBBAIAbilityComponent* AbilityComponent)
+			PURE_VIRTUAL(UIBBBaseAttributeSet::Initialize, );
+
+		virtual void Finalize(UIBBAIAbilityComponent* AbilityComponent)
+			PURE_VIRTUAL(UIBBBaseAttributeSet::Finalize, );
+
+		DECLARE_DELEGATE_RetVal(float, FBBGetAttributeDelegate);
+
+		DECLARE_DELEGATE_OneParam(FBBSetAttributeDelegate, float);
+
+		DECLARE_EVENT_TwoParams(UIBBBaseAttributeSet, FBBAttributeUpdate, float, float);
 };
 
 #define BB_GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
 	static FGameplayAttribute Get##PropertyName##Attribute() \
 	{ \
-		static FProperty * Prop = FindFieldChecked<FProperty>(ClassName::StaticClass(), GET_MEMBER_NAME_CHECKED(ClassName, PropertyName)); \
+		static FProperty* Prop = FindFieldChecked<FProperty>( \
+			ClassName::StaticClass(), \
+			GET_MEMBER_NAME_CHECKED(ClassName, PropertyName) \
+		); \
 		return Prop; \
 	}
 
@@ -53,18 +67,18 @@ class SALTLAKECITY_API UIBBBaseAttributeSet : public UAttributeSet
 	}
 
 #define BB_GAMEPLAYATTRIBUTE_VALUE_CHANGE_DELEGATE(PropertyName) \
-	FORCEINLINE FOnGameplayAttributeValueChange & Get##PropertyName##ValueChangeDelegate() \
+	FORCEINLINE FOnGameplayAttributeValueChange& Get##PropertyName##ValueChangeDelegate() \
 	{ \
-		UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent(); \
+		UAbilitySystemComponent* AbilityComponent = GetOwningAbilitySystemComponent(); \
 		verifyf(IsValid(AbilityComponent), TEXT("Ability Component is invalid.")) \
 		return AbilityComponent->GetGameplayAttributeValueChangeDelegate(Get##PropertyName##Attribute()); \
 	}
 
 #define BB_GAMEPLAYATTRIBUTE_ON_ATTRIBUTE_UPDATE_EVENT(ClassName, PropertyName) \
-	virtual FBBUpdate & On##PropertyName##Update() { return PropertyName##Update; } \
+	virtual FBBAttributeUpdate& On##PropertyName##Update() { return PropertyName##Update; } \
 
-#define BB_GAMEPLAYATTRIBUTE_VALUE_UPDATE(PropertyName) \
-	FBBUpdate PropertyName##Update; \
+#define BB_GAMEPLAYATTRIBUTE_UPDATE_EVENT(PropertyName) \
+	FBBAttributeUpdate PropertyName##Update; \
 
 #define BB_ON_ATTRIBUTE_UPDATE_EVENT(ClassName, PropertyName) \
 	BB_GAMEPLAYATTRIBUTE_ON_ATTRIBUTE_UPDATE_EVENT(ClassName, PropertyName) \
@@ -76,63 +90,44 @@ class SALTLAKECITY_API UIBBBaseAttributeSet : public UAttributeSet
 	BB_GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName) \
 	BB_GAMEPLAYATTRIBUTE_VALUE_CHANGE_DELEGATE(PropertyName) \
 	BB_GAMEPLAYATTRIBUTE_ON_ATTRIBUTE_UPDATE_EVENT(ClassName, PropertyName) \
-	BB_GAMEPLAYATTRIBUTE_VALUE_UPDATE(PropertyName) \
+	BB_GAMEPLAYATTRIBUTE_UPDATE_EVENT(PropertyName) \
 
-#define BB_ATTRIBUTE_STRUCT(ClassName, PropertyName, MaxPropertyName) \
-	FBBAttribute<ClassName> \
-		(& ClassName##::Get##PropertyName##Attribute, \
-		 & ClassName##::Get##MaxPropertyName##Attribute, \
-		 & ClassName##::Get##PropertyName, \
-		 & ClassName##::Set##PropertyName, \
-		 & ClassName##::Get##MaxPropertyName, \
-		 & ClassName##::Set##MaxPropertyName, \
-		 & ClassName##::On##PropertyName##Update, \
-		 & ClassName##::On##MaxPropertyName##Update) \
+#define BB_ATTRIBUTE_STRUCT(ClassName, PropertyName) \
+    FBBAttribute(FBBGetAttributeDelegate::CreateUObject(this, &ClassName::Get##PropertyName), \
+        FBBSetAttributeDelegate::CreateUObject(this, &ClassName::Set##PropertyName), \
+        FBBGetAttributeDelegate::CreateUObject(this, &ClassName::GetMax##PropertyName), \
+        FBBSetAttributeDelegate::CreateUObject(this, &ClassName::SetMax##PropertyName), \
+        &PropertyName##Update) \
 
-template <class T>
 struct FBBAttribute
 {
-	typedef FGameplayAttribute(*AttributePropertyGetter) ();
-
-	typedef float (T::* AttributeGetter) () const;
-
-	typedef void (T::* AttributeSetter) (float NewValue);
-
-	typedef UIBBBaseAttributeSet::FBBUpdate & (T::* OnAttributeUpdate) ();
-
 	public:
-		AttributePropertyGetter Attribute;
+		using FBBGetAttributeDelegate = UIBBBaseAttributeSet::FBBGetAttributeDelegate;
 
-		AttributePropertyGetter MaxAttribute;
+		using FBBSetAttributeDelegate = UIBBBaseAttributeSet::FBBSetAttributeDelegate;
+		
+		using FBBAttributeUpdate = UIBBBaseAttributeSet::FBBAttributeUpdate;
 
-		AttributeGetter Getter;
+		FBBGetAttributeDelegate GetValue;
 
-		AttributeSetter Setter;
+		FBBSetAttributeDelegate SetValue;
 
-		AttributeGetter MaxGetter;
+		FBBGetAttributeDelegate GetMaxValue;
 
-		AttributeSetter MaxSetter;
+		FBBSetAttributeDelegate SetMaxValue;
 
-		OnAttributeUpdate Update;
+		FBBAttributeUpdate* OnUpdate;
 
-		OnAttributeUpdate MaxUpdate;
-
-		FBBAttribute(AttributePropertyGetter NewAttribute,
-			AttributePropertyGetter NewMaxAttribute,
-			AttributeGetter NewGetter,
-			AttributeSetter NewSetter,
-			AttributeGetter NewMaxGetter,
-			AttributeSetter NewMaxSetter,
-			OnAttributeUpdate NewUpdate,
-			OnAttributeUpdate NewMaxUpdate) :
-			Attribute(NewAttribute),
-			MaxAttribute(NewMaxAttribute),
-			Getter(NewGetter),
-			Setter(NewSetter),
-			MaxGetter(NewMaxGetter),
-			MaxSetter(NewMaxSetter),
-			Update(NewUpdate),
-			MaxUpdate(NewMaxUpdate)
+		FBBAttribute(FBBGetAttributeDelegate NewGetValueDelegate,
+			FBBSetAttributeDelegate NewSetValueDelegate,
+			FBBGetAttributeDelegate NewGetMaxValueDelegate,
+			FBBSetAttributeDelegate NewSetMaxValueDelegate,
+			FBBAttributeUpdate* NewOnUpdate) :
+			GetValue(NewGetValueDelegate),
+			SetValue(NewSetValueDelegate),
+			GetMaxValue(NewGetMaxValueDelegate),
+			SetMaxValue(NewSetMaxValueDelegate),
+			OnUpdate(NewOnUpdate)
 		{ }
 
 		~FBBAttribute()

@@ -1,10 +1,10 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBContextWidget.h"
 #include "Components/VerticalBox.h"
 #include "GUI/Widgets/Interfaces/IBBContextRowWidget.h"
 
-UBBContextWidget::UBBContextWidget(const FObjectInitializer & ObjectInitializer) :
+UBBContextWidget::UBBContextWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 }
@@ -16,7 +16,7 @@ void UBBContextWidget::NativeOnInitialized()
 	InitializeContextBox();
 }
 
-void UBBContextWidget::NativeOnMouseLeave(const FPointerEvent & MouseEvent)
+void UBBContextWidget::NativeOnMouseLeave(const FPointerEvent& MouseEvent)
 {
 	Super::NativeOnMouseLeave(MouseEvent);
 
@@ -28,7 +28,12 @@ EBBWidget UBBContextWidget::GetType() const
 	return EBBWidget::Context;
 }
 
-void UBBContextWidget::AddRow(UIBBContextRowWidget * & NewRowWidget)
+void UBBContextWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
+void UBBContextWidget::AddRow(UIBBContextRowWidget*& NewRowWidget)
 {
 	verifyf(IsValid(NewRowWidget), TEXT("Row Widget is invalid."));
 
@@ -42,7 +47,7 @@ void UBBContextWidget::ClearRows()
 	ContextBox->ClearChildren();
 }
 
-void UBBContextWidget::UpdateVisibility(UObject * NewTarget)
+void UBBContextWidget::UpdateVisibility(UObject* NewTarget)
 {
 }
 

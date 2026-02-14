@@ -45,17 +45,17 @@ class UBBDossierModelStub : public UIBBDossierModel
 
 		void SetDisplayName(FText NewDisplayName);
 
-		UIBBDossierEntry * GetEntry(EBBAttribute Attribute) const;
+		virtual UIBBDossierEntry * GetDossierEntry(EBBAttribute Attribute) const;
 		
-		void SetEntry(EBBAttribute Attribute, UIBBDossierEntry * NewDossierEntry);
+		void SetDossierEntry(EBBAttribute Attribute, UIBBDossierEntry * NewDossierEntry);
 		
-		UIBBDossierEntry * GetEntry(EBBNeed Need) const;
+		virtual UIBBDossierEntry * GetDossierEntry(EBBNeed Need) const;
 
-		void SetEntry(EBBNeed Need, UIBBDossierEntry * NewNeedEntry);
+		void SetDossierEntry(EBBNeed Need, UIBBDossierEntry * NewNeedEntry);
 
-		UIBBDossierEntry * GetEntry(EBBSkill Skill) const;
+		virtual UIBBDossierEntry * GetDossierEntry(EBBSkill Skill) const;
 
-		void SetEntry(EBBSkill Skill, UIBBDossierEntry * NewSkillEntry);
+		void SetDossierEntry(EBBSkill Skill, UIBBDossierEntry * NewSkillEntry);
 
 	protected:
 		UPROPERTY()

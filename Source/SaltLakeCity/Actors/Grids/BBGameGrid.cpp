@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBGameGrid.h"
 #include "Actors/Grids/Layers/Interfaces/IBBGameLayer.h"
@@ -26,7 +26,7 @@ void ABBGameGrid::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		GameLayer->SetVisibility(true);
 		GameLayer->Finalize();
-		GameLayer->MarkPendingKill();
+		GameLayer->MarkAsGarbage();
 	}
 
 	GameLayers.Empty();
@@ -74,12 +74,12 @@ void ABBGameGrid::Initialize()
 
 void ABBGameGrid::Finalize()
 {
-	for (auto& GameLayer : GameLayers)
+	for (AIBBGameLayer * & GameLayer : GameLayers)
 	{
 		if (IsValid(GameLayer))
 		{
 			GameLayer->Finalize();
-			GameLayer->MarkPendingKill();
+			GameLayer->MarkAsGarbage();
 		}
 	}
 

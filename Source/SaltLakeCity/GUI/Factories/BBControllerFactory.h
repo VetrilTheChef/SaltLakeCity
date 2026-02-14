@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,6 @@
  * 
  */
 
-class AIBBHUD;
 class UIBBBuildController;
 class UIBBBuildModel;
 class UIBBBuildWidget;
@@ -44,15 +43,12 @@ class UIBBProgressWidget;
 class UIBBSelectionController;
 class UIBBSelectionModel;
 class UIBBSelectionWidget;
-class UIBBSkillEntry;
-class UIBBSkillEntryController;
-class UIBBSkillEntryModel;
-class UIBBSkillEntryWidget;
 class UIBBSpecificationFactory;
 class UIBBTitleController;
 class UIBBTitleModel;
 class UIBBTitleWidget;
 class UIBBWidgetFactory;
+class UIBBWidgetManager;
 class UIBBWidgetSpecificationFactory;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, DefaultToInstanced)
@@ -64,7 +60,7 @@ class SALTLAKECITY_API UBBControllerFactory : public UObject
 	public:
 		UBBControllerFactory();
 
-		void Initialize(const UIBBGameInstance * GameInstance, const AIBBHUD * NewHUD);
+		void Initialize(const UIBBGameInstance * GameInstance, const UIBBWidgetManager * NewWidgetManager);
 
 		void Finalize();
 
@@ -87,8 +83,6 @@ class SALTLAKECITY_API UBBControllerFactory : public UObject
 		bool NewProgressController(UIBBProgressController * & Controller, UIBBProgressWidget * View, UIBBProgressModel * Model) const;
 
 		bool NewSelectionController(UIBBSelectionController * & Controller, UIBBSelectionWidget * View, UIBBSelectionModel * Model) const;
-
-		bool NewSkillEntryController(UIBBSkillEntryController * & Controller, UIBBSkillEntryWidget * View, UIBBSkillEntryModel * Model) const;
 
 		bool NewTitleController(UIBBTitleController * & Controller, UIBBTitleWidget * View, UIBBTitleModel * Model) const;
 	
@@ -124,14 +118,11 @@ class SALTLAKECITY_API UBBControllerFactory : public UObject
 		TSoftClassPtr<UIBBSelectionController> SelectionControllerClass;
 
 		UPROPERTY(EditDefaultsOnly, Category = "Classes")
-		TSoftClassPtr<UIBBSkillEntryController> SkillEntryControllerClass;
-
-		UPROPERTY(EditDefaultsOnly, Category = "Classes")
 		TSoftClassPtr<UIBBTitleController> TitleControllerClass;
 
 		UPROPERTY()
 		const UIBBGameInstance * GameInstance;
 
 		UPROPERTY()
-		const AIBBHUD * HUD;
+		const UIBBWidgetManager * WidgetManager;
 };

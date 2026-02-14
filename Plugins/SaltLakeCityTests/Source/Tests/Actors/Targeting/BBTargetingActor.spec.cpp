@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -8,7 +8,11 @@
 #include "GameInstances/BBGameInstanceStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBTargetingActorSpec, "SaltLakeCity.Actors.Targeting.TargetingActor", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBTargetingActorSpec,
+	"SaltLakeCity.Actors.Targeting.TargetingActor",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

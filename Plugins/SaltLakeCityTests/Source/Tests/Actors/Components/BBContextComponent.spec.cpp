@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,12 +10,16 @@
 #include "Commands/GUI/BBCloseWidgetCommandStub.h"
 #include "Commands/GUI/BBOpenWidgetCommandStub.h"
 #include "GameInstances/BBGameInstanceStub.h"
-#include "GUI/BBHUDStub.h"
+#include "GUI/BBWidgetManagerStub.h"
 #include "Specifications/GUI/Factories/BBWidgetSpecificationFactoryStub.h"
 #include "Specifications/GUI/BBWidgetSpecificationStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBContextComponentSpec, "SaltLakeCity.Actors.Components.ContextComponent", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBContextComponentSpec,
+	"SaltLakeCity.Actors.Components.ContextComponent",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -24,7 +28,7 @@ BEGIN_DEFINE_SPEC(UBBContextComponentSpec, "SaltLakeCity.Actors.Components.Conte
 	UBBGameInstanceStub * GameInstance = nullptr;
 
 	UPROPERTY()
-	ABBHUDStub * HUD = nullptr;
+	UBBWidgetManagerStub * WidgetManager = nullptr;
 
 	UPROPERTY()
 	ABBCharacterStub * Character = nullptr;
@@ -111,15 +115,15 @@ void UBBContextComponentSpec::Define()
 		Character = TestWorld->SpawnActor<ABBCharacterStub>(ABBCharacterStub::StaticClass(), SpawnParameters);
 
 		UTEST_TRUE("Character is valid", IsValid(Character))
-			
-		HUD = TestWorld->SpawnActor<ABBHUDStub>(ABBHUDStub::StaticClass(), SpawnParameters);
+		
+		WidgetManager = NewObject<UBBWidgetManagerStub>(TestWorld, UBBWidgetManagerStub::StaticClass());
 
-		UTEST_TRUE("HUD is valid", IsValid(HUD))
+		UTEST_TRUE("Widget Manager is valid", IsValid(WidgetManager))
 
-		HUD->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
+		WidgetManager->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
 
 		GameInstance->SetCommandFactory(CommandFactory);
-		GameInstance->SetHUD(HUD);
+		GameInstance->SetWidgetManager(WidgetManager);
 
 		return true;
 	});
@@ -130,7 +134,7 @@ void UBBContextComponentSpec::Define()
 
 		TestWorld->DestroyActor(Character);
 
-		TestWorld->DestroyActor(HUD);
+		WidgetManager = nullptr;
 
 		WidgetSpecification = nullptr;
 		WidgetSpecificationFactory = nullptr;

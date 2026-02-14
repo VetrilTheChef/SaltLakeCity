@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -24,33 +24,46 @@ class SALTLAKECITY_API UIBBJobWidget : public UIBBWidget
 	GENERATED_BODY()
 
 	public:
-		UIBBJobWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBJobWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
-		virtual void NativeOnInitialized() override { Super::NativeOnInitialized(); };
+		virtual void NativeOnInitialized() override
+			{ Super::NativeOnInitialized(); };
 
-		virtual EBBWidget GetType() const override PURE_VIRTUAL(UIBBJobWidget::GetType, return EBBWidget::None; );
+		virtual EBBWidget GetType() const override
+			PURE_VIRTUAL(UIBBJobWidget::GetType, return EBBWidget::None; );
 
-		virtual void SetDisplayName(FText NewCharacterName) PURE_VIRTUAL(UIBBJobWidget::SetCharacterName, );
+		virtual void AddToScreen(int32 ZOrder = 0)
+			PURE_VIRTUAL(UIBBJobWidget::AddToScreen, );
 
-		virtual void AddJob(EBBJob NewJob, FText NewJobName, FText NewJobTooltip) PURE_VIRTUAL(UIBBJobWidget::AddJob, );
+		virtual void SetDisplayName(FText NewCharacterName)
+			PURE_VIRTUAL(UIBBJobWidget::SetCharacterName, );
 
-		virtual void SetJob(EBBJob Job) PURE_VIRTUAL(UIBBJobWidget::SetJob, );
+		virtual void AddJob(EBBJob NewJob, FText NewJobName, FText NewJobTooltip)
+			PURE_VIRTUAL(UIBBJobWidget::AddJob, );
 
-		virtual void ClearJobs() PURE_VIRTUAL(UIBBJobWidget::ClearJobs, );
+		virtual void SetJob(EBBJob Job)
+			PURE_VIRTUAL(UIBBJobWidget::SetJob, );
 
-		virtual UIBBTitleWidget * & GetTitle() PURE_VIRTUAL(UIBBJobWidget::GetTitle, return Title; );
+		virtual void ClearJobs()
+			PURE_VIRTUAL(UIBBJobWidget::ClearJobs, );
 
-		virtual void SetAcceptCommand(UIBBCommand * NewAcceptCommand) PURE_VIRTUAL(UIBBJobWidget::SetAcceptCommand, );
+		virtual UIBBTitleWidget*& GetTitle()
+			PURE_VIRTUAL(UIBBJobWidget::GetTitle, return Title; );
 
-		virtual void SetCancelCommand(UIBBCommand * NewCancelCommand) PURE_VIRTUAL(UIBBJobWidget::SetCancelCommand, );
+		virtual void SetAcceptCommand(UIBBCommand* NewAcceptCommand)
+			PURE_VIRTUAL(UIBBJobWidget::SetAcceptCommand, );
+
+		virtual void SetCancelCommand(UIBBCommand* NewCancelCommand)
+			PURE_VIRTUAL(UIBBJobWidget::SetCancelCommand, );
 
 		DECLARE_EVENT_OneParam(UIBBJobWidget, FBBJobUpdate, const EBBJob);
 
-		FBBJobUpdate & OnJobUpdate() { return UpdateJob; };
+		FBBJobUpdate& OnJobUpdate()
+			{ return UpdateJob; };
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UIBBTitleWidget * Title;
+		UIBBTitleWidget* Title;
 
 		FBBJobUpdate UpdateJob;
 };

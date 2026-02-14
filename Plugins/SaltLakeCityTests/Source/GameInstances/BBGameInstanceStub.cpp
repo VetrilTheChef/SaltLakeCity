@@ -1,6 +1,14 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBGameInstanceStub.h"
+#include "Actors/Components/Factories/Interfaces/IBBComponentFactory.h"
+#include "Commands/Factories/Interfaces/IBBCommandFactory.h"
+#include "Controllers/Interfaces/IBBPlayerController.h"
+#include "GameModes/Interfaces/IBBGameMode.h"
+#include "GameStates/Interfaces/IBBGameState.h"
+#include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
+#include "Specifications/Factories/BBSpecificationFactory.h"
 
 UBBGameInstanceStub::UBBGameInstanceStub() :
 	Super()
@@ -14,7 +22,7 @@ UBBGameInstanceStub::UBBGameInstanceStub() :
 	ComponentFactory = nullptr;
 }
 
-void UBBGameInstanceStub::Clone(UGameInstance * Other)
+void UBBGameInstanceStub::Clone(UGameInstance* Other)
 {
 	WorldContext = Other->GetWorldContext();
 	LocalPlayers = Other->GetLocalPlayers();
@@ -36,77 +44,87 @@ void UBBGameInstanceStub::Unclone()
 	LatentActionManager = nullptr;
 }
 
-AIBBGameMode * UBBGameInstanceStub::GetGameMode() const
+AIBBGameMode* UBBGameInstanceStub::GetGameMode() const
 {
-	return GameMode;
+	return GameMode.Get();
 }
 
-void UBBGameInstanceStub::SetGameMode(AIBBGameMode * NewGameMode)
+void UBBGameInstanceStub::SetGameMode(AIBBGameMode* NewGameMode)
 {
 	GameMode = NewGameMode;
 }
 
-AIBBGameState * UBBGameInstanceStub::GetGameState() const
+AIBBGameState* UBBGameInstanceStub::GetGameState() const
 {
-	return GameState;
+	return GameState.Get();
 }
 
-void UBBGameInstanceStub::SetGameState(AIBBGameState * NewGameState)
+void UBBGameInstanceStub::SetGameState(AIBBGameState* NewGameState)
 {
 	GameState = NewGameState;
 }
 
-AIBBHUD * UBBGameInstanceStub::GetHUD() const
+AIBBHUD* UBBGameInstanceStub::GetHUD() const
 {
-	return HUD;
+	return HUD.Get();
 }
 
-void UBBGameInstanceStub::SetHUD(AIBBHUD * NewHUD)
+void UBBGameInstanceStub::SetHUD(AIBBHUD* NewHUD)
 {
 	HUD = NewHUD;
 }
 
-AIBBPlayerController * UBBGameInstanceStub::GetPlayerController() const
+AIBBPlayerController* UBBGameInstanceStub::GetPlayerController() const
 {
-	return PlayerController;
+	return PlayerController.Get();
 }
 
-void UBBGameInstanceStub::SetPlayerController(AIBBPlayerController * NewPlayerController)
+void UBBGameInstanceStub::SetPlayerController(AIBBPlayerController* NewPlayerController)
 {
 	PlayerController = NewPlayerController;
 }
 
-const UIBBCommandFactory * UBBGameInstanceStub::GetCommandFactory() const
+UIBBWidgetManager* UBBGameInstanceStub::GetWidgetManager() const
 {
-	return CommandFactory;
+	return WidgetManager.Get();
 }
 
-void UBBGameInstanceStub::SetCommandFactory(UIBBCommandFactory * NewCommandFactory)
+void UBBGameInstanceStub::SetWidgetManager(UIBBWidgetManager* NewWidgetManager)
+{
+	WidgetManager = NewWidgetManager;
+}
+
+const UIBBCommandFactory* UBBGameInstanceStub::GetCommandFactory() const
+{
+	return CommandFactory.Get();
+}
+
+void UBBGameInstanceStub::SetCommandFactory(UIBBCommandFactory* NewCommandFactory)
 {
 	CommandFactory = NewCommandFactory;
 }
 
-const UIBBComponentFactory * UBBGameInstanceStub::GetComponentFactory() const
+const UIBBComponentFactory* UBBGameInstanceStub::GetComponentFactory() const
 {
-	return ComponentFactory;
+	return ComponentFactory.Get();
 }
 
-void UBBGameInstanceStub::SetComponentFactory(UIBBComponentFactory * NewComponentFactory)
+void UBBGameInstanceStub::SetComponentFactory(UIBBComponentFactory* NewComponentFactory)
 {
 	ComponentFactory = NewComponentFactory;
 }
 
-const UIBBSpecificationFactory * UBBGameInstanceStub::GetSpecificationFactory() const
+const UIBBSpecificationFactory* UBBGameInstanceStub::GetSpecificationFactory() const
 {
-	return SpecificationFactory;
+	return SpecificationFactory.Get();
 }
 
-void UBBGameInstanceStub::SetSpecificationFactory(UIBBSpecificationFactory * NewSpecificationFactory)
+void UBBGameInstanceStub::SetSpecificationFactory(UIBBSpecificationFactory* NewSpecificationFactory)
 {
 	SpecificationFactory = NewSpecificationFactory;
 }
 
-void UBBGameInstanceStub::SetWorldContext(FWorldContext * NewWorldContext)
+void UBBGameInstanceStub::SetWorldContext(FWorldContext* NewWorldContext)
 {
 	WorldContext = NewWorldContext;
 }

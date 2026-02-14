@@ -1,8 +1,9 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBModesWidgetStub.h"
+#include "Commands/Interfaces/IBBCommand.h"
 
-UBBModesWidgetStub::UBBModesWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBModesWidgetStub::UBBModesWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	PlayModeCommand = nullptr;
@@ -16,22 +17,26 @@ EBBWidget UBBModesWidgetStub::GetType() const
 	return EBBWidget::Modes;
 }
 
-UIBBCommand * UBBModesWidgetStub::GetPlayModeCommand() const
+void UBBModesWidgetStub::AddToScreen(int32 ZOrder)
 {
-	return PlayModeCommand;
 }
 
-void UBBModesWidgetStub::SetPlayModeCommand(UIBBCommand * Command)
+UIBBCommand* UBBModesWidgetStub::GetPlayModeCommand() const
+{
+	return PlayModeCommand.Get();
+}
+
+void UBBModesWidgetStub::SetPlayModeCommand(UIBBCommand* Command)
 {
 	PlayModeCommand = Command;
 }
 
-UIBBCommand * UBBModesWidgetStub::GetBuildModeCommand() const
+UIBBCommand* UBBModesWidgetStub::GetBuildModeCommand() const
 {
-	return BuildModeCommand;
+	return BuildModeCommand.Get();
 }
 
-void UBBModesWidgetStub::SetBuildModeCommand(UIBBCommand * Command)
+void UBBModesWidgetStub::SetBuildModeCommand(UIBBCommand* Command)
 {
 	BuildModeCommand = Command;
 }

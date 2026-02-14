@@ -20,6 +20,12 @@ class SALTLAKECITY_API UIBBSkillSet : public UIBBBaseAttributeSet
 
 		virtual void BeginDestroy() override { Super::BeginDestroy(); }
 
+		virtual void Initialize(UIBBAIAbilityComponent * AbilityComponent) PURE_VIRTUAL(UIBBSkillSet::Initialize, );
+
+		virtual void Finalize(UIBBAIAbilityComponent * AbilityComponent) PURE_VIRTUAL(UIBBSkillSet::Finalize, );
+
+		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override { Super::GetLifetimeReplicatedProps(OutLifetimeProps); };
+
 		virtual void PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue) override { Super::PreAttributeChange(Attribute, NewValue); }
 
 		virtual FGameplayAttribute GetAttribute(EBBSkill Skill) const PURE_VIRTUAL(UIBBSkillSet::GetAttribute, return FGameplayAttribute(); );
@@ -34,9 +40,13 @@ class SALTLAKECITY_API UIBBSkillSet : public UIBBBaseAttributeSet
 
 		virtual void SetMaxValue(EBBSkill Skill, float NewValue) PURE_VIRTUAL(UIBBSkillSet::SetMaxValue, );
 
-		using FBBUpdate = UIBBBaseAttributeSet::FBBUpdate;
+		using FBBGetAttributeDelegate = UIBBBaseAttributeSet::FBBGetAttributeDelegate;
 
-		virtual FBBUpdate & OnValueUpdate(EBBSkill Skill) PURE_VIRTUAL(UIBBSkillSet::OnValueUpdate, checkNoEntry(); static FBBUpdate RetRef; return RetRef; );
+		virtual FBBGetAttributeDelegate GetValueDelegate(EBBSkill Skill) const PURE_VIRTUAL(UIBBSkillSet::GetValueDelegate, return FBBGetAttributeDelegate(); );
 
-		virtual FBBUpdate & OnMaxValueUpdate(EBBSkill Skill) PURE_VIRTUAL(UIBBSkillSet::OnMaxValueUpdate, checkNoEntry(); static FBBUpdate RetRef; return RetRef; );
+		virtual FBBGetAttributeDelegate GetMaxValueDelegate(EBBSkill Skill) const PURE_VIRTUAL(UIBBSkillSet::GetMaxValueDelegate, return FBBGetAttributeDelegate(); );
+
+		using FBBAttributeUpdate = UIBBBaseAttributeSet::FBBAttributeUpdate;
+
+		virtual FBBAttributeUpdate * OnUpdate(EBBSkill Skill) const PURE_VIRTUAL(UIBBSkillSet::OnUpdate, return nullptr; );
 };

@@ -1,9 +1,11 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
+#include "Actors/Characters/Interfaces/IBBCharacter.h"
+#include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
 #include "GUI/Models/Interfaces/IBBDossierModel.h"
 // Keep the includes in this order
 #include "GUI/Data/Interfaces/IBBDossierEntry.h"
@@ -45,6 +47,18 @@ class SALTLAKECITY_API UBBDossierModel : public UIBBDossierModel
 		virtual const AIBBCharacter * GetCharacter() const override;
 
 		virtual FText GetDisplayName() const override;
+
+		virtual float GetValue(EBBAttribute Attribute) const override;
+
+		virtual float GetValue(EBBNeed Need) const override;
+
+		virtual float GetValue(EBBSkill Skill) const override;
+
+		virtual float GetMaxValue(EBBAttribute Attribute) const override;
+
+		virtual float GetMaxValue(EBBNeed Need) const override;
+
+		virtual float GetMaxValue(EBBSkill Skill) const override;
 
 		UIBBDossierEntry * GetDossierEntry(EBBAttribute Attribute) const override;
 
@@ -130,7 +144,11 @@ class SALTLAKECITY_API UBBDossierModel : public UIBBDossierModel
 
 					verifyf(IsValid(Entry), TEXT("New Entry is invalid."));
 
-					Entry->Initialize(TableRow->Name, TableRow->Icon, & Set->OnValueUpdate(TableRow->Enumerator), & Set->OnMaxValueUpdate(TableRow->Enumerator));
+					Entry->Initialize(TableRow->Name,
+						TableRow->Icon,
+						Set->GetValueDelegate(TableRow->Enumerator),
+						Set->GetMaxValueDelegate(TableRow->Enumerator),
+						Set->OnUpdate(TableRow->Enumerator));
 
 					EntryMap.FindOrAdd(TableRow->Enumerator, Entry);
 				}

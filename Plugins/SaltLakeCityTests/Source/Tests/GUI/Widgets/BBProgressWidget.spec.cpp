@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,11 @@
 #include "GUI/Widgets/BBProgressWidget.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBProgressWidgetSpec, "SaltLakeCity.GUI.Widgets.Progress", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBProgressWidgetSpec,
+	"SaltLakeCity.GUI.Widgets.Progress",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -71,7 +75,7 @@ void UBBProgressWidgetSpec::Define()
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (auto& ViewClass : ViewClasses)
+	for (UClass * & ViewClass : ViewClasses)
 	{
 		Describe("[" + ViewClass->GetName() + "]", [this, ViewClass]()
 		{
@@ -91,7 +95,7 @@ void UBBProgressWidgetSpec::Define()
 				{
 					View->SetProgress(Progress);
 
-					TEST_TRUE(ProgressBar->Percent == Progress)
+					TEST_TRUE(ProgressBar->GetPercent() == Progress)
 				}
 
 				Controller->Finalize();

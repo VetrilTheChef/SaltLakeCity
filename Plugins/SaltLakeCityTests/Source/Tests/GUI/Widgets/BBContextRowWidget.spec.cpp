@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -14,7 +14,11 @@
 #include "GUI/Widgets/BBContextWidgetStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBContextRowWidgetSpec, "SaltLakeCity.GUI.Widgets.ContextRow", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBContextRowWidgetSpec,
+	"SaltLakeCity.GUI.Widgets.ContextRow",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -88,7 +92,7 @@ void UBBContextRowWidgetSpec::Define()
 			if (IsValid(Icon))
 			{
 				Icon->RemoveFromRoot();
-				Icon->MarkPendingKill();
+				Icon->MarkAsGarbage();
 			}
 
 			Icon = nullptr;

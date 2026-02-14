@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBRadioBox.h"
 #include "Commands/Interfaces/IBBCommand.h"
@@ -32,7 +32,7 @@ void UBBRadioBox::Finalize()
 
 	if (IsValid(Command))
 	{
-		Command->MarkPendingKill();
+		Command->MarkAsGarbage();
 	}
 
 	Command = nullptr;

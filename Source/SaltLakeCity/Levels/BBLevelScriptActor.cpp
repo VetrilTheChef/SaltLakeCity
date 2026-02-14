@@ -1,11 +1,13 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBLevelScriptActor.h"
 #include "Landscape.h"
 #include "Engine/DirectionalLight.h"
+#include "Engine/GameInstance.h"
 #include "Engine/Level.h"
 #include "Engine/LevelBounds.h"
 #include "Engine/SkyLight.h"
+#include "GameFramework/PlayerController.h"
 #include "Lighting/Interfaces/IBBLightingCycle.h"
 
 ABBLevelScriptActor::ABBLevelScriptActor() :
@@ -163,7 +165,7 @@ void ABBLevelScriptActor::DestroyLightingCycle()
 {
 	if (IsValid(LightingCycle))
 	{
-		LightingCycle->MarkPendingKill();
+		LightingCycle->MarkAsGarbage();
 	}
 
 	LightingCycle = nullptr;

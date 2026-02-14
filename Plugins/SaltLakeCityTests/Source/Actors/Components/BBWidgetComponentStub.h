@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,5 +21,5 @@ class UBBWidgetComponentStub : public UIBBWidgetComponent
 
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-		virtual void SetWidget(UUserWidget * NewWidget) override;
+		virtual void SetWidget(UUserWidget* NewWidget) override;
 };

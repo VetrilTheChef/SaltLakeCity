@@ -118,6 +118,6 @@ struct FBBBuildablePtr
 		}
 
 	protected:
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", MustImplement = "Buildable"))
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", MustImplement = "/Script/SaltLakeCity.BBBuildable"))
 		TSoftClassPtr<UObject> Class;
 };

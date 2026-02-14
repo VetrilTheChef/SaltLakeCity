@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -25,7 +25,7 @@ class SALTLAKECITY_API UBBDossierWidget : public UIBBDossierWidget
 	GENERATED_BODY()
 
 	public:
-		UBBDossierWidget(const FObjectInitializer & ObjectInitializer);
+		UBBDossierWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
@@ -33,83 +33,85 @@ class SALTLAKECITY_API UBBDossierWidget : public UIBBDossierWidget
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void CreateCharacterPreview(const AIBBCharacter * TemplateCharacter) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
+		virtual void CreateCharacterPreview(const AIBBCharacter* TemplateCharacter) override;
 		
 		virtual void DestroyCharacterPreview() override;
 
 		virtual void SetDisplayName(FText NewDisplayName) override;
 
-		virtual void AddAttributeEntry(UIBBDossierEntry * NewEntry) override;
+		virtual void AddAttributeEntry(UIBBDossierEntry* NewEntry) override;
 
-		virtual void AddNeedEntry(UIBBDossierEntry * NewEntry) override;
+		virtual void AddNeedEntry(UIBBDossierEntry* NewEntry) override;
 
-		virtual void AddSkillEntry(UIBBDossierEntry * NewEntry) override;
+		virtual void AddSkillEntry(UIBBDossierEntry* NewEntry) override;
 
-		virtual UIBBTitleWidget * & GetTitle() override;
+		virtual UIBBTitleWidget* & GetTitle() override;
 
 	protected:
 		UPROPERTY(EditAnywhere, Category = "Character Preview")
 		TSoftClassPtr<AIBBCharacterPreview> CharacterPreviewClass;
 
-		UPROPERTY(EditAnywhere, Category = "Character Preview", meta = (AllowedClasses = "World"))
+		UPROPERTY(EditAnywhere, Category = "Character Preview", meta = (AllowedClasses = "/Script/Engine.World"))
 		FSoftObjectPath CharacterPreviewMap;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * DisplayNameText;
+		UTextBlock* DisplayNameText;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab0;
+		UIBBRadioBox* Tab0;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab1;
+		UIBBRadioBox* Tab1;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab2;
+		UIBBRadioBox* Tab2;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab3;
+		UIBBRadioBox* Tab3;
 
 		UPROPERTY(meta = (BindWidget))
-		UWidgetSwitcher * BodySwitcher;
+		UWidgetSwitcher* BodySwitcher;
 
 		UPROPERTY(meta = (BindWidget))
-		UVerticalBox * Body0;
+		UVerticalBox* Body0;
 
 		UPROPERTY(meta = (BindWidget))
-		UVerticalBox * Body1;
+		UVerticalBox* Body1;
 
 		UPROPERTY(meta = (BindWidget))
-		UVerticalBox * Body2;
+		UVerticalBox* Body2;
 
 		UPROPERTY(meta = (BindWidget))
-		UVerticalBox * Body3;
+		UVerticalBox* Body3;
 
 		UPROPERTY(meta = (BindWidget))
-		UListView * AttributeEntries;
+		UListView* AttributeEntries;
 
 		UPROPERTY(meta = (BindWidget))
-		UListView * NeedEntries;
+		UListView* NeedEntries;
 
 		UPROPERTY(meta = (BindWidget))
-		UListView * SkillEntries;
+		UListView* SkillEntries;
 
 		UPROPERTY(meta = (BindWidget))
-		UListView * TraitsList;
+		UListView* TraitsList;
 
 		UPROPERTY(meta = (BindWidget))
-		UListView * EquipmentList;
+		UListView* EquipmentList;
 
 		UPROPERTY(meta = (BindWidget))
-		UImage * CharacterPreview;
+		UImage* CharacterPreview;
 
 		UPROPERTY()
-		AIBBCharacterPreview * Character;
+		AIBBCharacterPreview* Character;
 
-		TArray<UIBBRadioBox *> Tabs;
+		TArray<UIBBRadioBox*> Tabs;
 
-		TArray<UVerticalBox *> Bodies;
+		TArray<UVerticalBox*> Bodies;
 
-		TMap<UEnum *, UListView *> EntryLists;
+		TMap<UEnum*, UListView*> EntryLists;
 
 		FNumberFormattingOptions NumberFormat;
 
@@ -121,7 +123,7 @@ class SALTLAKECITY_API UBBDossierWidget : public UIBBDossierWidget
 
 		void FinalizeBodies();
 
-		void SetAttributeText(UTextBlock * AttributeTextBlock, float AttributeValue);
+		void SetAttributeText(UTextBlock* AttributeTextBlock, float AttributeValue);
 
 		UFUNCTION(BlueprintCallable)
 		void ToggleCharacterPreview(bool bVisible);

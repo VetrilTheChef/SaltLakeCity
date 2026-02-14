@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBDossierController.h"
 #include "Commands/Factories/Interfaces/IBBCommandFactory.h"
@@ -77,7 +77,7 @@ void UBBDossierController::FinalizeView()
 {
 	if (IsValid(View))
 	{
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;

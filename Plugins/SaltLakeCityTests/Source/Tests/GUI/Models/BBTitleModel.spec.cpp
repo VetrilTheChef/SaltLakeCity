@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -13,35 +13,39 @@
 #include "GUI/Widgets/BBWidgetStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBTitleModelSpec, "SaltLakeCity.GUI.Models.Title", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBTitleModelSpec,
+	"SaltLakeCity.GUI.Models.Title",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
-	UWorld * TestWorld = nullptr;
+	UWorld* TestWorld = nullptr;
 
 	UPROPERTY()
-	UBBGameInstanceStub * GameInstance = nullptr;
+	UBBGameInstanceStub* GameInstance = nullptr;
 
 	UPROPERTY()
-	UBBGUIModelStub * ParentModel = nullptr;
+	UBBGUIModelStub* ParentModel = nullptr;
 
 	UPROPERTY()
-	UBBWidgetStub * ParentWidget = nullptr;
+	UBBWidgetStub* ParentWidget = nullptr;
 
 	UPROPERTY()
-	ABBHUDStub * HUD = nullptr;
+	ABBHUDStub* HUD = nullptr;
 
 	UPROPERTY()
-	UBBTitleControllerStub * Controller = nullptr;
+	UBBTitleControllerStub* Controller = nullptr;
 
 	UPROPERTY()
-	UBBTitleWidgetStub * View = nullptr;
+	UBBTitleWidgetStub* View = nullptr;
 
 	UPROPERTY()
-	TArray<UClass *> ModelClasses;
+	TArray<UClass*> ModelClasses;
 
 	// SUT
 	UPROPERTY()
-	UBBTitleModel * Model = nullptr;
+	UBBTitleModel* Model = nullptr;
 
 	FActorSpawnParameters SpawnParameters;
 
@@ -114,7 +118,7 @@ void UBBTitleModelSpec::Define()
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (UClass * & ModelClass : ModelClasses)
+	for (UClass* & ModelClass : ModelClasses)
 	{
 		Describe("[" + ModelClass->GetName() + "]", [this, ModelClass]()
 		{
@@ -132,14 +136,20 @@ void UBBTitleModelSpec::Define()
 				Positions.Emplace(FVector2D(4906.0, 0.0));
 				Positions.Emplace(FVector2D(524.0, 1131.0));
 
-				Model->Initialize(View, ParentModel, HUD);
+				ParentWidget->AddToScreen();
 
-				for (FVector2D & Position : Positions)
+				Model->Initialize(View, ParentModel);
+
+				for (FVector2D& Position : Positions)
 				{
 					Model->SetPosition(Position);
 
-					TEST_TRUE(ParentWidget->GetPositionInViewport() == Position)
+					FVector2D ParentPosition = ParentWidget->GetPositionInViewport(true);
+
+					TEST_TRUE((ParentPosition - Position).IsNearlyZero())
 				}
+
+				ParentWidget->RemoveFromParent();
 
 				Model->Finalize();
 

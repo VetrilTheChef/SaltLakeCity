@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -20,7 +20,7 @@ class UBBDateTimeWidgetStub : public UIBBDateTimeWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBDateTimeWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBDateTimeWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeDestruct() override;
 
@@ -28,13 +28,13 @@ class UBBDateTimeWidgetStub : public UIBBDateTimeWidget
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void SetPauseCommand(UIBBCommand * Command) override;
+		virtual void SetPauseCommand(UIBBCommand* Command) override;
 
-		virtual void SetSlowMotionCommand(UIBBCommand * Command) override;
+		virtual void SetSlowMotionCommand(UIBBCommand* Command) override;
 
-		virtual void SetPlayCommand(UIBBCommand * Command) override;
+		virtual void SetPlayCommand(UIBBCommand* Command) override;
 
-		virtual void SetFastForwardCommand(UIBBCommand * Command) override;
+		virtual void SetFastForwardCommand(UIBBCommand* Command) override;
 
 		FText GetDate();
 
@@ -53,21 +53,15 @@ class UBBDateTimeWidgetStub : public UIBBDateTimeWidget
 		void ClickFastForwardButton();
 
 	protected:
-		UPROPERTY()
-		UIBBCommand * PauseCommand;
+		TSoftObjectPtr<UIBBCommand> PauseCommand;
 
-		UPROPERTY()
-		UIBBCommand * SlowMotionCommand;
+		TSoftObjectPtr<UIBBCommand> SlowMotionCommand;
 
-		UPROPERTY()
-		UIBBCommand * PlayCommand;
+		TSoftObjectPtr<UIBBCommand> PlayCommand;
 
-		UPROPERTY()
-		UIBBCommand * FastForwardCommand;
+		TSoftObjectPtr<UIBBCommand> FastForwardCommand;
 
-		UPROPERTY()
 		FText DateText;
 
-		UPROPERTY()
 		FText TimeText;
 };

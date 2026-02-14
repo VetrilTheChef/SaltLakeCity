@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -23,6 +23,8 @@ class UBBContextRowWidgetStub : public UIBBContextRowWidget
 		UBBContextRowWidgetStub(const FObjectInitializer & ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
+
+		void AddToScreen(int32 ZOrder = 0) override;
 
 		FText GetRowName() const;
 

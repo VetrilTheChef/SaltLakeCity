@@ -3,6 +3,7 @@
 #include "BBCharacterPreview.h"
 #include "Actors/Characters/Interfaces/IBBCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Engine/GameInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ABBCharacterPreview::ABBCharacterPreview() :
@@ -84,7 +85,7 @@ void ABBCharacterPreview::CreatePreview(const AIBBCharacter * TemplateCharacter)
 
 	verifyf(IsValid(Mesh), TEXT("Mesh is invalid."));
 
-	Mesh->SetSkeletalMesh(TemplateMesh->SkeletalMesh, true);
+	Mesh->SetSkeletalMeshAsset(TemplateMesh->GetSkeletalMeshAsset());
 
 	SetActorScale3D(TemplateCharacter->GetActorScale3D());
 }

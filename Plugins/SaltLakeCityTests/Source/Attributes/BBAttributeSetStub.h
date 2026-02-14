@@ -19,13 +19,13 @@ class UBBAttributeSetStub : public UIBBAttributeSet
 
 		virtual void BeginDestroy() override;
 
+		virtual void Initialize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void Finalize(UIBBAIAbilityComponent * AbilityComponent) override;
+
 		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override;
 
 		virtual void PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue) override;
-
-		virtual FGameplayAttribute GetAttribute(EBBAttribute Attribute) const override;
-
-		virtual FGameplayAttribute GetMaxAttribute(EBBAttribute Attribute) const override;
 
 		virtual float GetValue(EBBAttribute Attribute) const override;
 
@@ -33,11 +33,13 @@ class UBBAttributeSetStub : public UIBBAttributeSet
 
 		virtual float GetMaxValue(EBBAttribute Attribute) const override;
 
-		virtual void SetMaxValue(EBBAttribute Attribute, float NewValue) override;
+		virtual void SetMaxValue(EBBAttribute Attribute, float NewMaxValue) override;
 
-		virtual FBBUpdate & OnValueUpdate(EBBAttribute Attribute) override { return (this->* (Attributes.FindChecked(Attribute).Update))(); }
+		virtual FBBGetAttributeDelegate GetValueDelegate(EBBAttribute Attribute) const override;
 
-		virtual FBBUpdate & OnMaxValueUpdate(EBBAttribute Attribute) override { return (this->* (Attributes.FindChecked(Attribute).MaxUpdate))(); }
+		virtual FBBGetAttributeDelegate GetMaxValueDelegate(EBBAttribute Attribute) const override;
+
+		virtual FBBAttributeUpdate * OnUpdate(EBBAttribute Attribute) const override;
 
 	protected:
 		UPROPERTY()
@@ -56,21 +58,15 @@ class UBBAttributeSetStub : public UIBBAttributeSet
 		FGameplayAttributeData MaxStamina;
 		BB_ATTRIBUTE_ACCESSORS(UBBAttributeSetStub, MaxStamina)
 
-		TMap<EBBAttribute, FBBAttribute<UBBAttributeSetStub>> Attributes;
+		TMap<EBBAttribute, FBBAttribute> Attributes;
 
-		using OnAttributeUpdate = FBBAttribute<UBBAttributeSetStub>::OnAttributeUpdate;
-
-		TMap<FGameplayAttribute, OnAttributeUpdate> AttributeUpdates;
-
-		using AttributeSetter = FBBAttribute<UBBAttributeSetStub>::AttributeSetter;
-
-		TMap<FGameplayAttribute, AttributeSetter> AttributeSetters;
+		TMap<FGameplayAttribute, EBBAttribute> AttributeToEnum;
 
 		void MapAttributes();
 
-		void Subscribe();
+		void Subscribe(UIBBAIAbilityComponent * AbilityComponent);
 
-		void Unsubscribe();
+		void Unsubscribe(UIBBAIAbilityComponent * AbilityComponent);
 
 		void UpdateAttribute(const FOnAttributeChangeData & Data);
 

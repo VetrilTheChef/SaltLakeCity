@@ -1,17 +1,27 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBHUDStub.h"
+#include "Actors/Components/Interfaces/IBBContextComponent.h"
+#include "Actors/Components/Interfaces/IBBProgressComponent.h"
+#include "Actors/Components/Interfaces/IBBSelectionComponent.h"
 #include "Actors/Components/Interfaces/IBBWidgetComponent.h"
+#include "Actors/Components/Interfaces/IBBWorkComponent.h"
+#include "GameInstances/Subsystems/Interfaces/IBBUINotificationSubsystem.h"
+#include "GameStates/Interfaces/IBBGameState.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
+#include "Specifications/GUI/Interfaces/IBBWidgetSpecification.h"
 
 ABBHUDStub::ABBHUDStub() :
 	Super()
 {
-	WidgetFactory = nullptr;
-	WidgetSpecificationFactory = nullptr;
-	WidgetSpecification = nullptr;
 	AttachmentWidget = nullptr;
 
+	PresentationSubsystem = nullptr;
+	WidgetManager = nullptr;
+
 	ActiveGameMode = EBBGameMode::None;
+
+	WidgetPopUp = false;
 }
 
 void ABBHUDStub::BeginPlay()
@@ -24,60 +34,39 @@ void ABBHUDStub::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void ABBHUDStub::Initialize(UIBBGameInstance * GameInstance, AIBBGameMode * GameMode, AIBBGameState * GameState, APlayerController * PlayerController)
+void ABBHUDStub::Initialize(UIBBPresentationSubsystem* NewPresentationSubsystem, UIBBWidgetManager* NewWidgetManager)
 {
+	PresentationSubsystem = NewPresentationSubsystem;
+	WidgetManager = NewWidgetManager;
 }
 
 void ABBHUDStub::Finalize()
 {
+	PresentationSubsystem = nullptr;
+	WidgetManager = nullptr;
 }
 
-const UIBBWidgetFactory * ABBHUDStub::GetWidgetFactory() const
-{
-	return WidgetFactory;
-}
-
-void ABBHUDStub::SetWidgetFactory(UIBBWidgetFactory * NewWidgetFactory)
-{
-	WidgetFactory = NewWidgetFactory;
-}
-
-const UIBBWidgetSpecificationFactory * ABBHUDStub::GetWidgetSpecificationFactory() const
-{
-	return WidgetSpecificationFactory;
-}
-
-void ABBHUDStub::SetWidgetSpecificationFactory(UIBBWidgetSpecificationFactory * NewWidgetSpecificationFactory)
-{
-	WidgetSpecificationFactory = NewWidgetSpecificationFactory;
-}
-
-void ABBHUDStub::CloseWidget(UIBBWidgetSpecification * Specification)
+/*void ABBHUDStub::CloseWidget(UIBBWidgetSpecification* Specification)
 {
 	WidgetSpecification = Specification;
 }
 
-void ABBHUDStub::OpenWidget(UIBBWidgetSpecification * Specification, bool PopUp)
+void ABBHUDStub::OpenWidget(UIBBWidgetSpecification* Specification, bool PopUp)
 {
 	WidgetSpecification = Specification;
 	WidgetPopUp = PopUp;
-}
+}*/
 
-void ABBHUDStub::AttachWidget(UIBBWidgetSpecification * Specification, UIBBWidgetComponent * WidgetComponent)
+void ABBHUDStub::AttachWidget(UIBBWidgetSpecification* Specification, UIBBWidgetComponent* WidgetComponent)
 {
 	if (IsValid(WidgetComponent))
 	{
-		WidgetComponent->SetWidget(AttachmentWidget);
+		WidgetComponent->SetWidget(AttachmentWidget.Get());
 	}
 }
 
-void ABBHUDStub::DetachWidget(UIBBWidgetComponent * WidgetComponent)
+void ABBHUDStub::DetachWidget(UIBBWidgetComponent* WidgetComponent)
 {
-}
-
-bool ABBHUDStub::ConvertToPIEViewportSpace(FVector2D & Position)
-{
-	return false;
 }
 
 void ABBHUDStub::UpdateActiveMode(EBBGameMode NewActiveMode)
@@ -90,9 +79,9 @@ EBBGameMode ABBHUDStub::GetActiveMode()
 	return ActiveGameMode;
 }
 
-UIBBWidgetSpecification * ABBHUDStub::GetWidgetSpecification()
+UIBBWidgetSpecification* ABBHUDStub::GetWidgetSpecification()
 {
-	return WidgetSpecification;
+	return WidgetSpecification.Get();
 }
 
 bool ABBHUDStub::GetPopUp()
@@ -100,27 +89,38 @@ bool ABBHUDStub::GetPopUp()
 	return WidgetPopUp;
 }
 
-void ABBHUDStub::SetAttachmentWidget(UUserWidget * NewAttachmentWidget)
+void ABBHUDStub::SetAttachmentWidget(UUserWidget* NewAttachmentWidget)
 {
 	AttachmentWidget = NewAttachmentWidget;
 }
 
-void ABBHUDStub::BroadcastContextUpdate(UIBBContextComponent * ContextComponent)
+void ABBHUDStub::BroadcastContextUpdate(UIBBContextComponent* ContextComponent)
 {
 	OnContextUpdate().Broadcast(ContextComponent);
 }
 
-void ABBHUDStub::BroadcastProgressUpdate(UIBBProgressComponent * ProgressComponent)
+void ABBHUDStub::BroadcastProgressUpdate(UIBBProgressComponent* ProgressComponent)
 {
 	OnProgressUpdate().Broadcast(ProgressComponent);
 }
 
-void ABBHUDStub::BroadcastSelectionUpdate(UIBBSelectionComponent * SelectionComponent)
+void ABBHUDStub::BroadcastSelectionUpdate(UIBBSelectionComponent* SelectionComponent)
 {
 	OnSelectionUpdate().Broadcast(SelectionComponent);
 }
 
-void ABBHUDStub::BroadcastConsumerUpdate(UIBBWorkComponent * WorkComponent)
+void ABBHUDStub::BroadcastConsumerUpdate(UIBBWorkComponent* WorkComponent)
 {
 	OnConsumerUpdate().Broadcast(WorkComponent);
+}
+
+
+
+void ABBHUDStub::OnOpenRequest_Implementation(const FUIRequestPayload& Payload)
+{
+}
+
+
+void ABBHUDStub::OnCloseRequest_Implementation(const FUIRequestPayload& Payload)
+{
 }

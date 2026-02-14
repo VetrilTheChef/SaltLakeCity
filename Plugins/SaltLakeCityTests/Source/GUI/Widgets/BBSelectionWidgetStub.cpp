@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBSelectionWidgetStub.h"
 
@@ -11,6 +11,10 @@ UBBSelectionWidgetStub::UBBSelectionWidgetStub(const FObjectInitializer & Object
 EBBWidget UBBSelectionWidgetStub::GetType() const
 {
 	return EBBWidget::Selection;
+}
+
+void UBBSelectionWidgetStub::AddToScreen(int32 ZOrder)
+{
 }
 
 FText UBBSelectionWidgetStub::GetDisplayName()

@@ -1,8 +1,8 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBControllerFactory.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
-#include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
 #include "GUI/Widgets/Interfaces/IBBBuildWidget.h"
 #include "GUI/Controllers/Interfaces/IBBBuildController.h"
 #include "GUI/Widgets/Interfaces/IBBBuildEntryWidget.h"
@@ -23,8 +23,6 @@
 #include "GUI/Controllers/Interfaces/IBBProgressController.h"
 #include "GUI/Widgets/Interfaces/IBBSelectionWidget.h"
 #include "GUI/Controllers/Interfaces/IBBSelectionController.h"
-#include "GUI/Widgets/Interfaces/IBBSkillEntryWidget.h"
-#include "GUI/Controllers/Interfaces/IBBSkillEntryController.h"
 #include "GUI/Widgets/Interfaces/IBBTitleWidget.h"
 #include "GUI/Controllers/Interfaces/IBBTitleController.h"
 
@@ -32,24 +30,24 @@ UBBControllerFactory::UBBControllerFactory() :
 	Super()
 {
 	GameInstance = nullptr;
-	HUD = nullptr;
+	WidgetManager = nullptr;
 }
 
-void UBBControllerFactory::Initialize(const UIBBGameInstance * NewGameInstance, const AIBBHUD * NewHUD)
+void UBBControllerFactory::Initialize(const UIBBGameInstance * NewGameInstance, const UIBBWidgetManager * NewWidgetManager)
 {
 	verifyf(IsValid(NewGameInstance), TEXT("New Game Instance is invalid."));
 
 	GameInstance = NewGameInstance;
 
-	verifyf(IsValid(NewHUD), TEXT("New HUD is invalid."));
+	verifyf(IsValid(NewWidgetManager), TEXT("New Widget Manager is invalid."));
 
-	HUD = NewHUD;
+	WidgetManager = NewWidgetManager;
 }
 
 void UBBControllerFactory::Finalize()
 {
 	GameInstance = nullptr;
-	HUD = nullptr;
+	WidgetManager = nullptr;
 }
 
 bool UBBControllerFactory::NewBuildController(UIBBBuildController * & Controller, UIBBBuildWidget * View, UIBBBuildModel * Model) const
@@ -88,13 +86,13 @@ bool UBBControllerFactory::NewBuildEntryController(UIBBBuildEntryController * & 
 bool UBBControllerFactory::NewContextController(UIBBContextController * & Controller, UIBBContextWidget * View, UIBBContextModel * Model) const
 {
 	verifyf(!ContextControllerClass.IsNull(), TEXT("Context Controller Class is null."));
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
 	Controller = NewObject<UIBBContextController>(View, ContextControllerClass.LoadSynchronous());
 
 	if (IsValid(Controller))
 	{
-		Controller->Initialize(View, Model, HUD->GetWidgetSpecificationFactory(), GameInstance->GetCommandFactory());
+		Controller->Initialize(View, Model, WidgetManager->GetWidgetSpecificationFactory(), GameInstance->GetCommandFactory());
 
 		return true;
 	}
@@ -123,13 +121,13 @@ bool UBBControllerFactory::NewDossierController(UIBBDossierController * & Contro
 {
 	verifyf(!DossierControllerClass.IsNull(), TEXT("Dossier Controller Class is null."));
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
 	Controller = NewObject<UIBBDossierController>(View, DossierControllerClass.LoadSynchronous());
 
 	if (IsValid(Controller))
 	{
-		Controller->Initialize(View, Model, HUD->GetWidgetFactory(), GameInstance->GetSpecificationFactory(), GameInstance->GetCommandFactory());
+		Controller->Initialize(View, Model, WidgetManager->GetWidgetFactory(), GameInstance->GetSpecificationFactory(), GameInstance->GetCommandFactory());
 		
 		return true;
 	}
@@ -157,13 +155,13 @@ bool UBBControllerFactory::NewJobController(UIBBJobController * & Controller, UI
 {
 	verifyf(!JobControllerClass.IsNull(), TEXT("Job Controller Class is null."));
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 	
 	Controller = NewObject<UIBBJobController>(View, JobControllerClass.LoadSynchronous());
 
 	if (IsValid(Controller))
 	{
-		Controller->Initialize(View, Model, HUD->GetWidgetFactory(), HUD->GetWidgetSpecificationFactory(), GameInstance->GetCommandFactory());
+		Controller->Initialize(View, Model, WidgetManager->GetWidgetFactory(), WidgetManager->GetWidgetSpecificationFactory(), GameInstance->GetCommandFactory());
 
 		return true;
 	}
@@ -220,33 +218,17 @@ bool UBBControllerFactory::NewSelectionController(UIBBSelectionController * & Co
 	return false;
 }
 
-bool UBBControllerFactory::NewSkillEntryController(UIBBSkillEntryController * & Controller, UIBBSkillEntryWidget * View, UIBBSkillEntryModel * Model) const
-{
-	verifyf(!SkillEntryControllerClass.IsNull(), TEXT("Skill Entry Controller Class is null."));
-
-	Controller = NewObject<UIBBSkillEntryController>(View, SkillEntryControllerClass.LoadSynchronous());
-
-	if (IsValid(Controller))
-	{
-		Controller->Initialize(View, Model);
-
-		return true;
-	}
-
-	return false;
-}
-
 bool UBBControllerFactory::NewTitleController(UIBBTitleController * & Controller, UIBBTitleWidget * View, UIBBTitleModel * Model) const
 {
 	verifyf(!TitleControllerClass.IsNull(), TEXT("Title Controller Class is null."));
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
 	Controller = NewObject<UIBBTitleController>(View, TitleControllerClass.LoadSynchronous());
 
 	if (IsValid(Controller))
 	{
-		Controller->Initialize(View, Model, HUD->GetWidgetSpecificationFactory(), GameInstance->GetCommandFactory());
+		Controller->Initialize(View, Model, WidgetManager->GetWidgetSpecificationFactory(), GameInstance->GetCommandFactory());
 
 		return true;
 	}

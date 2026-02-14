@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBJobWidget.h"
 #include "Components/ComboBoxString.h"
@@ -8,7 +8,7 @@
 #include "GUI/Widgets/Interfaces/IBBTitleWidget.h"
 #include "Engine/World.h"
 
-UBBJobWidget::UBBJobWidget(const FObjectInitializer & ObjectInitializer) :
+UBBJobWidget::UBBJobWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Jobs.Empty();
@@ -33,6 +33,11 @@ EBBWidget UBBJobWidget::GetType() const
 	return EBBWidget::Job;
 }
 
+void UBBJobWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
 void UBBJobWidget::SetDisplayName(FText NewDisplayName)
 {
 	verifyf(IsValid(NameText), TEXT("Name Text is invalid."));
@@ -55,26 +60,22 @@ void UBBJobWidget::ClearJobs()
 
 void UBBJobWidget::SetJob(EBBJob Job)
 {
-	FString * JobString = Jobs.Find(Job);
-
-	verifyf(JobString, TEXT("Selected Job has no string."));
-
-	JobComboBox->SetSelectedOption(* JobString);
+	JobComboBox->SetSelectedOption(Jobs.FindChecked(Job));
 }
 
-UIBBTitleWidget * & UBBJobWidget::GetTitle()
+UIBBTitleWidget*& UBBJobWidget::GetTitle()
 {
 	return Title;
 }
 
-void UBBJobWidget::SetAcceptCommand(UIBBCommand * NewAcceptCommand)
+void UBBJobWidget::SetAcceptCommand(UIBBCommand* NewAcceptCommand)
 {
 	verifyf(IsValid(AcceptButton), TEXT("Accept Button is invalid."));
 
 	AcceptButton->SetCommand(NewAcceptCommand);
 }
 
-void UBBJobWidget::SetCancelCommand(UIBBCommand * NewCancelCommand)
+void UBBJobWidget::SetCancelCommand(UIBBCommand* NewCancelCommand)
 {
 	verifyf(IsValid(CancelButton), TEXT("Cancel Button is invalid."));
 
@@ -95,7 +96,7 @@ void UBBJobWidget::DestroyTitle()
 {
 	if (IsValid(Title))
 	{
-		Title->MarkPendingKill();
+		Title->MarkAsGarbage();
 	}
 
 	Title = nullptr;

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBModelPool.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
@@ -13,7 +13,6 @@
 #include "GUI/Models/Interfaces/IBBModesModel.h"
 #include "GUI/Models/Interfaces/IBBProgressModel.h"
 #include "GUI/Models/Interfaces/IBBSelectionModel.h"
-#include "GUI/Models/Interfaces/IBBSkillEntryModel.h"
 #include "GUI/Models/Interfaces/IBBTitleModel.h"
 #include "Specifications/GUI/Interfaces/IBBWidgetSpecification.h"
 
@@ -49,7 +48,7 @@ void UBBModelPool::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UBBModelPool::Initialize(UIBBGameInstance * NewGameInstance)
+void UBBModelPool::Initialize(const UIBBGameInstance * NewGameInstance)
 {
 	verifyf(IsValid(NewGameInstance), TEXT("New Game Instance is invalid."));
 
@@ -366,36 +365,6 @@ bool UBBModelPool::GetSelectionModel(UIBBSelectionModel * & Model) const
 	for (int Index = 0; Index < Container->GetNumModels(); Index++)
 	{
 		Model = Cast<UIBBSelectionModel>(Container->Get(Index));
-
-		if (IsValid(Model))
-		{
-			return true;
-		}
-	}
-
-	Model = nullptr;
-
-	return false;
-}
-
-void UBBModelPool::AddSkillEntryModel(UIBBSkillEntryModel * NewModel)
-{
-	UIBBGUIModelContainer * Container = ModelsMap.FindRef(EBBWidget::SkillEntry);
-
-	verifyf(Container, TEXT("Model Container is null."));
-
-	Container->Add(NewModel);
-}
-
-bool UBBModelPool::GetSkillEntryModel(UIBBSkillEntryModel * & Model)
-{
-	const UIBBGUIModelContainer * Container = ModelsMap.FindRef(EBBWidget::SkillEntry);
-
-	verifyf(Container, TEXT("Model Container is null."));
-
-	for (int Index = 0; Index < Container->GetNumModels(); Index++)
-	{
-		Model = Cast<UIBBSkillEntryModel>(Container->Get(Index));
 
 		if (IsValid(Model))
 		{

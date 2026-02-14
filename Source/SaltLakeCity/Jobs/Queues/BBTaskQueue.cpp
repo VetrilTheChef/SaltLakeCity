@@ -44,7 +44,7 @@ bool UBBTaskQueue::Get(FBBManagedTask & ManagedTask)
 	{
 		Sort();
 
-		ManagedTasks.HeapPop(Forward<FBBManagedTask &>(ManagedTask), UBBTaskQueue::SortTasks, true);
+		ManagedTasks.HeapPop(Forward<FBBManagedTask &>(ManagedTask), UBBTaskQueue::SortTasks, EAllowShrinking::Yes);
 	}
 
 	return IsValid(ManagedTask.AbilityTask);

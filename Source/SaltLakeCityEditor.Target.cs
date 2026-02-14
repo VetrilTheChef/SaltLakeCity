@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 using UnrealBuildTool;
 using System.Collections.Generic;
@@ -6,9 +6,12 @@ using System.Collections.Generic;
 public class SaltLakeCityEditorTarget : TargetRules
 {
 	public SaltLakeCityEditorTarget(TargetInfo Target) : base(Target)
-	{
-		Type = TargetType.Editor;
-        DefaultBuildSettings = BuildSettingsVersion.V2;
+    {
+        bOverrideBuildEnvironment = true;
+        Type = TargetType.Editor;
+        DefaultBuildSettings = BuildSettingsVersion.V6;
+        IncludeOrderVersion  = EngineIncludeOrderVersion.Latest;
+        CppStandard = CppStandardVersion.Cpp20;
 
         ExtraModuleNames.AddRange( new string[] { "SaltLakeCity" } );
 	}

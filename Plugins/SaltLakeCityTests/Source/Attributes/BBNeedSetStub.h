@@ -19,11 +19,13 @@ class UBBNeedSetStub : public UIBBNeedSet
 
 		virtual void BeginDestroy() override;
 
+		virtual void Initialize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void Finalize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override;
+
 		virtual void PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue) override;
-
-		virtual FGameplayAttribute GetAttribute(EBBNeed Attribute) const override;
-
-		virtual FGameplayAttribute GetMaxAttribute(EBBNeed Attribute) const override;
 
 		virtual float GetValue(EBBNeed Need) const override;
 
@@ -31,13 +33,13 @@ class UBBNeedSetStub : public UIBBNeedSet
 
 		virtual float GetMaxValue(EBBNeed Need) const override;
 
-		virtual void SetMaxValue(EBBNeed Need, float NewValue) override;
+		virtual void SetMaxValue(EBBNeed Need, float NewMaxValue) override;
 
-		using FBBUpdate = UIBBBaseAttributeSet::FBBUpdate;
+		virtual FBBGetAttributeDelegate GetValueDelegate(EBBNeed Need) const override;
 
-		virtual FBBUpdate & OnValueUpdate(EBBNeed Need) override { return (this->* (Attributes.FindChecked(Need).Update))(); }
+		virtual FBBGetAttributeDelegate GetMaxValueDelegate(EBBNeed Need) const override;
 
-		virtual FBBUpdate & OnMaxValueUpdate(EBBNeed Need) override { return (this->* (Attributes.FindChecked(Need).MaxUpdate))(); }
+		virtual FBBAttributeUpdate * OnUpdate(EBBNeed Need) const override;
 
 	protected:
 		UPROPERTY()
@@ -64,21 +66,15 @@ class UBBNeedSetStub : public UIBBNeedSet
 		FGameplayAttributeData MaxThirst;
 		BB_ATTRIBUTE_ACCESSORS(UBBNeedSetStub, MaxThirst)
 
-		TMap<EBBNeed, FBBAttribute<UBBNeedSetStub>> Attributes;
+		TMap<EBBNeed, FBBAttribute> Attributes;
 
-		using OnAttributeUpdate = FBBAttribute<UBBNeedSetStub>::OnAttributeUpdate;
-
-		TMap<FGameplayAttribute, OnAttributeUpdate> AttributeUpdates;
-
-		using AttributeSetter = FBBAttribute<UBBNeedSetStub>::AttributeSetter;
-
-		TMap<FGameplayAttribute, AttributeSetter> AttributeSetters;
+		TMap<FGameplayAttribute, EBBNeed> AttributeToEnum;
 
 		virtual void MapAttributes();
 
-		void Subscribe();
+		void Subscribe(UIBBAIAbilityComponent * AbilityComponent);
 
-		void Unsubscribe();
+		void Unsubscribe(UIBBAIAbilityComponent * AbilityComponent);
 
 		void UpdateAttribute(const FOnAttributeChangeData & Data);
 

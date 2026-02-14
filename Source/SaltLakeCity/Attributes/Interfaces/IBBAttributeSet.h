@@ -20,13 +20,13 @@ class SALTLAKECITY_API UIBBAttributeSet : public UIBBBaseAttributeSet
 
 		virtual void BeginDestroy() override { Super::BeginDestroy(); }
 
+		virtual void Initialize(UIBBAIAbilityComponent * AbilityComponent) PURE_VIRTUAL(UIBBAttributeSet::Initialize, );
+
+		virtual void Finalize(UIBBAIAbilityComponent * AbilityComponent) PURE_VIRTUAL(UIBBAttributeSet::Finalize, );
+
 		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override { Super::GetLifetimeReplicatedProps(OutLifetimeProps); };
 
 		virtual void PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue) override { Super::PreAttributeChange(Attribute, NewValue); }
-
-		virtual FGameplayAttribute GetAttribute(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::GetAttribute, return FGameplayAttribute(); );
-
-		virtual FGameplayAttribute GetMaxAttribute(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::GetMaxAttribute, return FGameplayAttribute(); );
 
 		virtual float GetValue(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::GetValue, return -1.0f; );
 
@@ -34,11 +34,15 @@ class SALTLAKECITY_API UIBBAttributeSet : public UIBBBaseAttributeSet
 
 		virtual float GetMaxValue(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::GetMaxValue, return -1.0f; );
 
-		virtual void SetMaxValue(EBBAttribute Attribute, float NewValue) PURE_VIRTUAL(UIBBAttributeSet::SetMaxValue, );
+		virtual void SetMaxValue(EBBAttribute Attribute, float NewMaxValue) PURE_VIRTUAL(UIBBAttributeSet::SetMaxValue, );
 
-		using FBBUpdate = UIBBBaseAttributeSet::FBBUpdate;
+		using FBBGetAttributeDelegate = UIBBBaseAttributeSet::FBBGetAttributeDelegate;
 
-		virtual FBBUpdate & OnValueUpdate(EBBAttribute Attribute) PURE_VIRTUAL(UIBBAttributeSet::OnValueUpdate, checkNoEntry(); static FBBUpdate RetRef; return RetRef; );
+		virtual FBBGetAttributeDelegate GetValueDelegate(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::GetValueDelegate, return FBBGetAttributeDelegate(); );
 
-		virtual FBBUpdate & OnMaxValueUpdate(EBBAttribute Attribute) PURE_VIRTUAL(UIBBAttributeSet::OnMaxValueUpdate, checkNoEntry(); static FBBUpdate RetRef; return RetRef; );
+		virtual FBBGetAttributeDelegate GetMaxValueDelegate(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::GetMaxValueDelegate, return FBBGetAttributeDelegate(); );
+
+		using FBBAttributeUpdate = UIBBBaseAttributeSet::FBBAttributeUpdate;
+
+		virtual FBBAttributeUpdate * OnUpdate(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBAttributeSet::OnUpdate, return nullptr; );
 };

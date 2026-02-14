@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -17,9 +17,11 @@ class UBBSelectionWidgetStub : public UIBBSelectionWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBSelectionWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBSelectionWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		FText GetDisplayName();
 

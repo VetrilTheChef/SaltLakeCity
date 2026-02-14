@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -20,7 +20,11 @@
 #include "Specifications/GUI/BBBuildEntryWidgetSpecification.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBBuildEntryWidgetSpecificationSpec, "SaltLakeCity.Specifications.GUI.BuildEntryWidgetSpecification", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBBuildEntryWidgetSpecificationSpec,
+	"SaltLakeCity.Specifications.GUI.BuildEntryWidgetSpecification",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

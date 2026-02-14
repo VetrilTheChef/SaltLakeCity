@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,17 +21,19 @@ class SALTLAKECITY_API UBBDateTimeWidget : public UIBBDateTimeWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBDateTimeWidget(const FObjectInitializer & ObjectInitializer);
+		UBBDateTimeWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void SetPauseCommand(UIBBCommand * Command) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
-		virtual void SetSlowMotionCommand(UIBBCommand * Command) override;
+		virtual void SetPauseCommand(UIBBCommand* Command) override;
 
-		virtual void SetPlayCommand(UIBBCommand * Command) override;
+		virtual void SetSlowMotionCommand(UIBBCommand* Command) override;
 
-		virtual void SetFastForwardCommand(UIBBCommand * Command) override;
+		virtual void SetPlayCommand(UIBBCommand* Command) override;
+
+		virtual void SetFastForwardCommand(UIBBCommand* Command) override;
 
 		virtual void SetDate(FText Date) override;
 
@@ -39,20 +41,20 @@ class SALTLAKECITY_API UBBDateTimeWidget : public UIBBDateTimeWidget
 	
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * DateText;
+		UTextBlock* DateText;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * TimeText;
+		UTextBlock* TimeText;
 
 		UPROPERTY(meta = (BindWidget))
-		UBBButton * PauseButton;
+		UBBButton* PauseButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UBBButton * SlowMotionButton;
+		UBBButton* SlowMotionButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UBBButton * PlayButton;
+		UBBButton* PlayButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UBBButton * FastForwardButton;
+		UBBButton* FastForwardButton;
 };

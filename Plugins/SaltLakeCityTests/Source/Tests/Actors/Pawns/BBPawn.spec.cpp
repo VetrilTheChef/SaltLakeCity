@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,11 @@
 #include "Tests/BBTestUtil.h"
 #include "Tests/Actors/Pawns/BBPawnLatentCommands.h"
 
-BEGIN_DEFINE_SPEC(UBBPawnSpec, "SaltLakeCity.Actors.Pawns.Pawn", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBPawnSpec,
+	"SaltLakeCity.Actors.Pawns.Pawn",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

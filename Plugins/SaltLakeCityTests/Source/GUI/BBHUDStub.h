@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -11,7 +11,7 @@
  * 
  */
 
-UCLASS()
+UCLASS(NotBlueprintable)
 
 class ABBHUDStub : public AIBBHUD
 {
@@ -24,58 +24,50 @@ class ABBHUDStub : public AIBBHUD
 		
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-		virtual void Initialize(UIBBGameInstance * GameInstance, AIBBGameMode * GameMode, AIBBGameState * GameState, APlayerController * PlayerController) override;
+		virtual void Initialize(
+			UIBBPresentationSubsystem* NewPresentationSubsystem,
+			UIBBWidgetManager* NewWidgetManager
+		) override;
 
 		virtual void Finalize() override;
 
-		virtual const UIBBWidgetFactory * GetWidgetFactory() const override;
+		virtual void CloseWidget(UIBBWidgetSpecification* Specification) override;
 
-		virtual void SetWidgetFactory(UIBBWidgetFactory * NewWidgetFactory) override;
+		virtual void OpenWidget(UIBBWidgetSpecification* Specification, bool PopUp) override;
 
-		virtual const UIBBWidgetSpecificationFactory * GetWidgetSpecificationFactory() const override;
+		virtual void AttachWidget(
+			UIBBWidgetSpecification* Specification,
+			UIBBWidgetComponent* WidgetComponent
+		) override;
 
-		void SetWidgetSpecificationFactory(UIBBWidgetSpecificationFactory * NewWidgetSpecificationFactory);
-
-		virtual void CloseWidget(UIBBWidgetSpecification * Specification) override;
-
-		virtual void OpenWidget(UIBBWidgetSpecification * Specification, bool PopUp) override;
-
-		virtual void AttachWidget(UIBBWidgetSpecification * Specification, UIBBWidgetComponent * WidgetComponent) override;
-
-		virtual void DetachWidget(UIBBWidgetComponent * WidgetComponent) override;
-
-		virtual bool ConvertToPIEViewportSpace(FVector2D & Position) override;
+		virtual void DetachWidget(UIBBWidgetComponent* WidgetComponent) override;
 
 		virtual void UpdateActiveMode(EBBGameMode NewActiveMode) override;
 
 		EBBGameMode GetActiveMode();
 
-		UIBBWidgetSpecification * GetWidgetSpecification();
+		UIBBWidgetSpecification* GetWidgetSpecification();
 
 		bool GetPopUp();
 
-		void SetAttachmentWidget(UUserWidget * NewAttachmentWidget);
+		void SetAttachmentWidget(UUserWidget* NewAttachmentWidget);
 
-		void BroadcastContextUpdate(UIBBContextComponent * ContextComponent);
+		void BroadcastContextUpdate(UIBBContextComponent* ContextComponent);
 
-		void BroadcastProgressUpdate(UIBBProgressComponent * ProgressComponent);
+		void BroadcastProgressUpdate(UIBBProgressComponent* ProgressComponent);
 
-		void BroadcastSelectionUpdate(UIBBSelectionComponent * SelectionComponent);
+		void BroadcastSelectionUpdate(UIBBSelectionComponent* SelectionComponent);
 
-		void BroadcastConsumerUpdate(UIBBWorkComponent * WorkComponent);
+		void BroadcastConsumerUpdate(UIBBWorkComponent* WorkComponent);
 
 	private:
-		UPROPERTY()
-		UIBBWidgetFactory * WidgetFactory;
+		TSoftObjectPtr<UUserWidget> AttachmentWidget;
 
-		UPROPERTY()
-		UIBBWidgetSpecificationFactory * WidgetSpecificationFactory;
+		TSoftObjectPtr<UIBBPresentationSubsystem> PresentationSubsystem;
 
-		UPROPERTY()
-		UIBBWidgetSpecification * WidgetSpecification;
+		TSoftObjectPtr<UIBBWidgetManager> WidgetManager;
 
-		UPROPERTY()
-		UUserWidget * AttachmentWidget;
+		TSoftObjectPtr<UIBBWidgetSpecification> WidgetSpecification;
 
 		EBBGameMode ActiveGameMode;
 

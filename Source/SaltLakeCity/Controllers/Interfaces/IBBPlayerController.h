@@ -40,6 +40,15 @@ class SALTLAKECITY_API AIBBPlayerController : public APlayerController, public I
 		virtual void CancelTarget() PURE_VIRTUAL(AIBBPlayerController::CancelTarget, );
 
 		UFUNCTION()
+		virtual void StartMarqueeSelection() PURE_VIRTUAL(AIBBPlayerController::StartMarqueeSelection, );
+
+		UFUNCTION()
+		virtual void EndMarqueeSelection() PURE_VIRTUAL(AIBBPlayerController::EndMarqueeSelection, );
+
+		UFUNCTION()
+		virtual void UpdateMarqueeSelection() PURE_VIRTUAL(AIBBPlayerController::UpdateMarqueeSelection, );
+
+		UFUNCTION()
 		virtual void UpdateActiveMode(EBBGameMode NewActiveMode) PURE_VIRTUAL(AIBBPlayerController::UpdateActiveMode, );
 
 		DECLARE_EVENT_TwoParams(AIBBPlayerController, FChangeFloorRequest, const int, float &);

@@ -1,6 +1,8 @@
 // SaltLakeCity 4.27
 
 #include "BBNeedSet.h"
+#include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UBBNeedSet::UBBNeedSet() :
 	Super()
@@ -9,7 +11,7 @@ UBBNeedSet::UBBNeedSet() :
 	InitMaxValues();
 
 	Attributes.Empty();
-	AttributeUpdates.Empty();
+	AttributeToEnum.Empty();
 }
 
 void UBBNeedSet::PostInitProperties()
@@ -17,16 +19,35 @@ void UBBNeedSet::PostInitProperties()
 	Super::PostInitProperties();
 
 	MapAttributes();
-	Subscribe();
 }
 
 void UBBNeedSet::BeginDestroy()
 {
-	Unsubscribe();
 	Attributes.Empty();
-	AttributeUpdates.Empty();
+	AttributeToEnum.Empty();
 
 	Super::BeginDestroy();
+}
+
+void UBBNeedSet::Initialize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Finalize(AbilityComponent);
+
+	Subscribe(AbilityComponent);
+}
+
+void UBBNeedSet::Finalize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Unsubscribe(AbilityComponent);
+}
+
+void UBBNeedSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBNeedSet, Hunger, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBNeedSet, Sleep, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBNeedSet, Thirst, COND_None, REPNOTIFY_Always);
 }
 
 void UBBNeedSet::PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue)
@@ -34,34 +55,43 @@ void UBBNeedSet::PreAttributeChange(const FGameplayAttribute & Attribute, float 
 	//NewValue = FMath::Clamp(NewValue, 0.0f, 10.0f);
 }
 
-FGameplayAttribute UBBNeedSet::GetAttribute(EBBNeed Need) const
-{
-	return (* (Attributes.FindChecked(Need).Attribute))();
-}
-
-FGameplayAttribute UBBNeedSet::GetMaxAttribute(EBBNeed Need) const
-{
-	return (* (Attributes.FindChecked(Need).MaxAttribute))();
-}
-
 float UBBNeedSet::GetValue(EBBNeed Need) const
 {
-	return (this->* Attributes.FindChecked(Need).Getter)();
+	const FBBGetAttributeDelegate & Get = Attributes.FindChecked(Need).GetValue;
+
+	return Get.IsBound() ? Get.Execute() : -1.0f;
 }
 
 void UBBNeedSet::SetValue(EBBNeed Need, float NewValue)
 {
-	(this->* Attributes.FindChecked(Need).Setter)(NewValue);
+	Attributes.FindChecked(Need).SetValue.ExecuteIfBound(NewValue);
 }
 
 float UBBNeedSet::GetMaxValue(EBBNeed Need) const
 {
-	return (this->* Attributes.FindChecked(Need).MaxGetter)();
+	const FBBGetAttributeDelegate & GetMax = Attributes.FindChecked(Need).GetMaxValue;
+
+	return GetMax.IsBound() ? GetMax.Execute() : -1.0f;
 }
 
 void UBBNeedSet::SetMaxValue(EBBNeed Need, float NewMaxValue)
 {
-	(this->* Attributes.FindChecked(Need).MaxSetter)(NewMaxValue);
+	Attributes.FindChecked(Need).SetMaxValue.ExecuteIfBound(NewMaxValue);
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBNeedSet::GetValueDelegate(EBBNeed Need) const
+{
+	return Attributes.FindChecked(Need).GetValue;
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBNeedSet::GetMaxValueDelegate(EBBNeed Need) const
+{
+	return Attributes.FindChecked(Need).GetMaxValue;
+}
+
+UIBBBaseAttributeSet::FBBAttributeUpdate * UBBNeedSet::OnUpdate(EBBNeed Need) const
+{
+	return Attributes.FindChecked(Need).OnUpdate;
 }
 
 
@@ -83,23 +113,21 @@ void UBBNeedSet::InitMaxValues()
 void UBBNeedSet::MapAttributes()
 {
 	Attributes.Empty();
-	Attributes.Emplace(EBBNeed::Hunger, BB_ATTRIBUTE_STRUCT(UBBNeedSet, Hunger, MaxHunger));
-	Attributes.Emplace(EBBNeed::Sleep, BB_ATTRIBUTE_STRUCT(UBBNeedSet, Sleep, MaxSleep));
-	Attributes.Emplace(EBBNeed::Thirst, BB_ATTRIBUTE_STRUCT(UBBNeedSet, Thirst, MaxThirst));
+	Attributes.Emplace(EBBNeed::Hunger, BB_ATTRIBUTE_STRUCT(UBBNeedSet, Hunger));
+	Attributes.Emplace(EBBNeed::Sleep, BB_ATTRIBUTE_STRUCT(UBBNeedSet, Sleep));
+	Attributes.Emplace(EBBNeed::Thirst, BB_ATTRIBUTE_STRUCT(UBBNeedSet, Thirst));
 
-	AttributeUpdates.Empty();
-	AttributeUpdates.Emplace(GetHungerAttribute(), & UBBNeedSet::OnHungerUpdate);
-	AttributeUpdates.Emplace(GetMaxHungerAttribute(), & UBBNeedSet::OnMaxHungerUpdate);
-	AttributeUpdates.Emplace(GetSleepAttribute(), & UBBNeedSet::OnSleepUpdate);
-	AttributeUpdates.Emplace(GetMaxSleepAttribute(), & UBBNeedSet::OnMaxSleepUpdate);
-	AttributeUpdates.Emplace(GetThirstAttribute(), & UBBNeedSet::OnThirstUpdate);
-	AttributeUpdates.Emplace(GetMaxThirstAttribute(), & UBBNeedSet::OnMaxThirstUpdate);
+	AttributeToEnum.Empty();
+	AttributeToEnum.Emplace(GetHungerAttribute(), EBBNeed::Hunger);
+	AttributeToEnum.Emplace(GetMaxHungerAttribute(), EBBNeed::Hunger);
+	AttributeToEnum.Emplace(GetSleepAttribute(), EBBNeed::Sleep);
+	AttributeToEnum.Emplace(GetMaxSleepAttribute(), EBBNeed::Sleep);
+	AttributeToEnum.Emplace(GetThirstAttribute(), EBBNeed::Thirst);
+	AttributeToEnum.Emplace(GetMaxThirstAttribute(), EBBNeed::Thirst);
 }
 
-void UBBNeedSet::Subscribe()
+void UBBNeedSet::Subscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	verifyf(IsValid(AbilityComponent), TEXT("Ability Component is invalid."))
 
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHungerAttribute()).AddUObject(this, & UBBNeedSet::UpdateAttribute);
@@ -110,10 +138,8 @@ void UBBNeedSet::Subscribe()
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetMaxThirstAttribute()).AddUObject(this, & UBBNeedSet::UpdateAttribute);
 }
 
-void UBBNeedSet::Unsubscribe()
+void UBBNeedSet::Unsubscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	if (IsValid(AbilityComponent))
 	{
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHungerAttribute()).RemoveAll(this);
@@ -127,7 +153,19 @@ void UBBNeedSet::Unsubscribe()
 
 void UBBNeedSet::UpdateAttribute(const FOnAttributeChangeData & Data)
 {
-	(this->* (AttributeUpdates.FindChecked(Data.Attribute)))().Broadcast(Data.NewValue);
+	EBBNeed AttributeToUpdate = AttributeToEnum.FindChecked(Data.Attribute);
+
+	FBBAttribute & UpdatedAttribute = Attributes.FindChecked(AttributeToUpdate);
+
+	verifyf(UpdatedAttribute.GetValue.IsBound(), TEXT("Value Delegate is unbound."));
+	verifyf(UpdatedAttribute.GetMaxValue.IsBound(), TEXT("Max Value Delegate is unbound."));
+
+	float Value = UpdatedAttribute.GetValue.Execute();
+	float MaxValue = UpdatedAttribute.GetMaxValue.Execute();
+
+	verifyf(UpdatedAttribute.OnUpdate, TEXT("On Update is null."));
+
+	UpdatedAttribute.OnUpdate->Broadcast(Value, MaxValue);
 }
 
 void UBBNeedSet::OnRep_Hunger(const FGameplayAttributeData & OldHunger)

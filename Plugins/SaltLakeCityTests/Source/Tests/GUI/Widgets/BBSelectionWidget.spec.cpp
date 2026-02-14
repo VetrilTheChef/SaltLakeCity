@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,11 @@
 #include "GUI/Widgets/BBSelectionWidget.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBSelectionWidgetSpec, "SaltLakeCity.GUI.Widgets.Selection", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBSelectionWidgetSpec,
+	"SaltLakeCity.GUI.Widgets.Selection",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -77,7 +81,7 @@ void UBBSelectionWidgetSpec::Define()
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (auto& ViewClass : ViewClasses)
+	for (UClass * & ViewClass : ViewClasses)
 	{
 		Describe("[" + ViewClass->GetName() + "]", [this, ViewClass]()
 		{

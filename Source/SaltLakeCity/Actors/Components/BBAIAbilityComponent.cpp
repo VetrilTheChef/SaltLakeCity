@@ -43,17 +43,12 @@ void UBBAIAbilityComponent::Initialize(AIBBAIController * NewAIController, const
 		CreateAttributes(SetData.Class.LoadSynchronous(), SetData.DataTable.LoadSynchronous());
 	}
 
-	/*CreateAttributes(NeedsAttributeSetClass.LoadSynchronous(), NeedsDataTable);
-	CreateAttributes(SkillAttributeSetClass.LoadSynchronous(), SkillsDataTable);
-	CreateAttributes(AttributeSetClass.LoadSynchronous(), AttributeSetDataTable.LoadSynchronous());
-
-	verifyf(GetSpawnedAttributes_Mutable().FindItemByClass<UIBBNeedAttributeSet>(& NeedsSet), TEXT("Needs Attribute Set not found."));
-	verifyf(GetSpawnedAttributes_Mutable().FindItemByClass<UIBBSkillAttributeSet>(& SkillsSet), TEXT("Skills Attribute Set not found."));
-	verifyf(GetSpawnedAttributes_Mutable().FindItemByClass<UIBBAttributeSet>(& DerivedSet), TEXT("Derived Attribute Set not found."));*/
+	InitializeAttributes(this);
 }
 
 void UBBAIAbilityComponent::Finalize()
 {
+	FinalizeAttributes(this);
 	DestroyAttributes();
 
 	AIController = nullptr;
@@ -208,7 +203,38 @@ void UBBAIAbilityComponent::DestroyAttributes()
 
 	for (UAttributeSet * & AttributeSet : AttibuteSets)
 	{
-		AttributeSet->MarkPendingKill();
+		if (IsValid(AttributeSet))
+		{
+			AttributeSet->MarkAsGarbage();
+		}
+	}
+}
+
+void UBBAIAbilityComponent::InitializeAttributes(UIBBAIAbilityComponent * AbilityComponent)
+{
+	TArray<UAttributeSet *> AttibuteSets = GetSpawnedAttributes();
+
+	for (UAttributeSet * & AttributeSet : AttibuteSets)
+	{
+		UIBBBaseAttributeSet * BaseAttributeSet = Cast<UIBBBaseAttributeSet>(AttributeSet);
+
+		verifyf(IsValid(BaseAttributeSet), TEXT("Base Attribute Set is invalid"));
+
+		BaseAttributeSet->Initialize(AbilityComponent);
+	}
+}
+
+void UBBAIAbilityComponent::FinalizeAttributes(UIBBAIAbilityComponent * AbilityComponent)
+{
+	TArray<UAttributeSet *> AttibuteSets = GetSpawnedAttributes();
+
+	for (UAttributeSet * & AttributeSet : AttibuteSets)
+	{
+		UIBBBaseAttributeSet * BaseAttributeSet = Cast<UIBBBaseAttributeSet>(AttributeSet);
+
+		verifyf(IsValid(BaseAttributeSet), TEXT("Base Attribute Set is invalid"));
+
+		BaseAttributeSet->Finalize(AbilityComponent);
 	}
 }
 

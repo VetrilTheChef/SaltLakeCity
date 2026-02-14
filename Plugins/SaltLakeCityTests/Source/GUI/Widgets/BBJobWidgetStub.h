@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -22,13 +22,10 @@ struct FBBJob
 	GENERATED_BODY()
 
 	public:
-		UPROPERTY()
 		EBBJob Job;
 
-		UPROPERTY()
 		FText Name;
 
-		UPROPERTY()
 		FText Tooltip;
 
 		FBBJob()
@@ -47,9 +44,6 @@ struct FBBJob
 
 		~FBBJob()
 		{
-			Job = EBBJob::None;
-			Name = FText::FromString("");
-			Tooltip = FText::FromString("");
 		}
 	};
 
@@ -60,13 +54,15 @@ class UBBJobWidgetStub : public UIBBJobWidget
 	GENERATED_BODY()
 
 	public:
-		UBBJobWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBJobWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
 		virtual void BeginDestroy() override;
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		FText GetDisplayName();
 
@@ -90,27 +86,24 @@ class UBBJobWidgetStub : public UIBBJobWidget
 
 		FText GetSelectedJobName();
 
-		virtual UIBBTitleWidget * & GetTitle() override;
+		virtual UIBBTitleWidget*& GetTitle() override;
 
-		UIBBCommand * GetAcceptCommand();
+		UIBBCommand* GetAcceptCommand();
 
-		virtual void SetAcceptCommand(UIBBCommand * NewAcceptCommand) override;
+		virtual void SetAcceptCommand(UIBBCommand* NewAcceptCommand) override;
 
-		UIBBCommand * GetCancelCommand();
+		UIBBCommand* GetCancelCommand();
 
-		virtual void SetCancelCommand(UIBBCommand * NewCancelCommand) override;
+		virtual void SetCancelCommand(UIBBCommand* NewCancelCommand) override;
 
 	protected:
-		UPROPERTY()
+		TSoftObjectPtr<UIBBCommand> AcceptCommand;
+
+		TSoftObjectPtr<UIBBCommand> CancelCommand;
+
 		FText DisplayName;
 
 		EBBJob SelectedJob;
 
 		TArray<FBBJob> Jobs;
-
-		UPROPERTY()
-		UIBBCommand * AcceptCommand;
-
-		UPROPERTY()
-		UIBBCommand * CancelCommand;
 };

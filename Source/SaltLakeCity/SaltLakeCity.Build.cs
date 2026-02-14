@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 using UnrealBuildTool;
 
@@ -6,13 +6,14 @@ public class SaltLakeCity : ModuleRules
 {
 	public SaltLakeCity(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        PrivatePCHHeaderFile = "SaltLakeCityPCH.h";
-        MinFilesUsingPrecompiledHeaderOverride = 1;
-        bUseUnity = false;
+        CppStandard = CppStandardVersion.Default;
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        //PrivatePCHHeaderFile = "SaltLakeCityPCH.h";
 
         PrivateDependencyModuleNames.AddRange(new string[]
             {
+                "AIModule",
+                "AssetRegistry",
                 "Core",
                 "CoreUObject",
                 "Engine",
@@ -26,8 +27,8 @@ public class SaltLakeCity : ModuleRules
                 "RHI",
                 "Slate",
                 "SlateCore",
-                "UMG",
-                "UnrealEd"
+                "StructUtils",
+                "UMG"
             }
         );
 
@@ -37,21 +38,14 @@ public class SaltLakeCity : ModuleRules
             {
                 "Core",
                 "CoreUObject",
-                "Engine",
-                "Foliage",
-                "GameplayAbilities",
-                "GameplayTags",
-                "GameplayTasks",
-                "InputCore",
-                "Landscape",
-                "RenderCore",
-                "RHI",
-                "Slate",
-                "SlateCore",
-                "UMG",
-                "UnrealEd"
+                "Engine"
             }
         );
+
+        if (Target.Type == TargetType.Editor)
+        {
+            PrivateDependencyModuleNames.Add("UnrealEd");
+        }
 
         // Uncomment if you are using online features
         // PrivateDependencyModuleNames.Add("OnlineSubsystem");

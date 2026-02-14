@@ -1,11 +1,11 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #include "BBModesWidget.h"
 #include "Components/TextBlock.h"
 #include "GameInstances/BBGameInstance.h"
 #include "GUI/Components/Interfaces/IBBRadioBox.h"
 
-UBBModesWidget::UBBModesWidget(const FObjectInitializer & ObjectInitializer) :
+UBBModesWidget::UBBModesWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Modes.Empty();
@@ -30,14 +30,19 @@ EBBWidget UBBModesWidget::GetType() const
 	return EBBWidget::Modes;
 }
 
-void UBBModesWidget::SetPlayModeCommand(UIBBCommand * Command)
+void UBBModesWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
+void UBBModesWidget::SetPlayModeCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(PlayButton), TEXT("Play Button is invalid."));
 
 	PlayButton->SetCommand(Command);
 }
 
-void UBBModesWidget::SetBuildModeCommand(UIBBCommand * Command)
+void UBBModesWidget::SetBuildModeCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(BuildButton), TEXT("Build Button is invalid."));
 
@@ -58,9 +63,9 @@ void UBBModesWidget::InitializeModes()
 	Modes.Emplace(EBBGameMode::Play, PlayButton);
 	Modes.Emplace(EBBGameMode::Build, BuildButton);
 
-	for (TPair<EBBGameMode, UIBBRadioBox *> & Mode : Modes)
+	for (TPair<EBBGameMode, UIBBRadioBox*> & Mode : Modes)
 	{
-		UIBBRadioBox * RadioBox = Mode.Value;
+		UIBBRadioBox* RadioBox = Mode.Value;
 
 		verifyf(IsValid(RadioBox), TEXT("Radio Box is invalid."));
 
@@ -71,9 +76,9 @@ void UBBModesWidget::InitializeModes()
 
 void UBBModesWidget::FinalizeModes()
 {
-	for (TPair<EBBGameMode, UIBBRadioBox *> & Mode : Modes)
+	for (TPair<EBBGameMode, UIBBRadioBox*> & Mode : Modes)
 	{
-		UIBBRadioBox * RadioBox = Mode.Value;
+		UIBBRadioBox* RadioBox = Mode.Value;
 
 		if (IsValid(RadioBox))
 		{
@@ -89,11 +94,11 @@ void UBBModesWidget::FinalizeModes()
 
 void UBBModesWidget::ChangeRadioState(int Index)
 {
-	for (TPair<EBBGameMode, UIBBRadioBox *> & Mode : Modes)
+	for (TPair<EBBGameMode, UIBBRadioBox*> & Mode : Modes)
 	{
 		bool Checked = ((int)(Mode.Key) == Index);
 
-		UIBBRadioBox * RadioBox = Mode.Value;
+		UIBBRadioBox* RadioBox = Mode.Value;
 
 		verifyf(IsValid(RadioBox), TEXT("Radio Box is invalid."));
 

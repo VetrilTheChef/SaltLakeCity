@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,13 +18,18 @@ class SALTLAKECITY_API UIBBWidgetComponent : public UWidgetComponent, public IBB
 	public:	
 		UIBBWidgetComponent() : Super() { };
 
-		virtual void SetWidget(UUserWidget * NewWidget) override { Super::SetWidget(NewWidget); };
+		virtual void SetWidget(UUserWidget* NewWidget) override { Super::SetWidget(NewWidget); };
 
-		virtual const TScriptInterface<IBBWidgetTarget> GetWidgetTarget() const PURE_VIRTUAL(UIBBWidgetComponent::GetWidgetTarget, return TScriptInterface<IBBWidgetTarget>(); );
+		virtual const TScriptInterface<IBBWidgetTarget> GetWidgetTarget() const
+			PURE_VIRTUAL(UIBBWidgetComponent::GetWidgetTarget, return TScriptInterface<IBBWidgetTarget>(); );
 
-		DECLARE_DERIVED_EVENT(UIBBWidgetComponent, IBBWidgetTargetComponent::FBBWidgetTargetUpdate, FBBWidgetTargetUpdate);
+		DECLARE_DERIVED_EVENT(
+			UIBBWidgetComponent,
+			IBBWidgetTargetComponent::FBBWidgetTargetUpdate,
+			FBBWidgetTargetUpdate
+		);
 
-		virtual FBBWidgetTargetUpdate & OnWidgetTargetUpdate() final override { return WidgetTargetUpdate; };
+		virtual FBBWidgetTargetUpdate& OnWidgetTargetUpdate() final override { return WidgetTargetUpdate; };
 
 	protected:
 		FBBWidgetTargetUpdate WidgetTargetUpdate;

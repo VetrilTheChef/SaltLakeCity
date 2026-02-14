@@ -23,12 +23,22 @@ class UBBDossierEntryControllerStub : public UIBBDossierEntryController
 
 		virtual void Finalize() override;
 
+		float GetValue() const;
+
+		float GetMaxValue() const;
+
 	protected:
 		UPROPERTY()
 		UIBBDossierEntryModel * Model;
 
 		UPROPERTY()
 		UIBBDossierEntryWidget * View;
+
+		FText ValueText;
+
+		float Value;
+
+		float MaxValue;
 
 		void InitializeModel(UIBBDossierEntryModel * DossierEntryModel);
 		
@@ -37,4 +47,7 @@ class UBBDossierEntryControllerStub : public UIBBDossierEntryController
 		void InitializeView(UIBBDossierEntryWidget * DossierEntryView, UIBBDossierEntryModel * DossierEntryModel);
 
 		void FinalizeView();
+
+		UFUNCTION()
+		void Update(float NewValue, float NewMaxValue);
 };

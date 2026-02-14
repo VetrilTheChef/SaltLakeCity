@@ -50,6 +50,18 @@ class SALTLAKECITY_API UIBBDossierModel : public UIBBTargetedModel
 
 		virtual FText GetDisplayName() const PURE_VIRTUAL(UIBBDossierModel::GetDisplayName, return FText::FromString(""); );
 
+		virtual float GetValue(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBDossierModel::GetValue, return -1.0f; );
+
+		virtual float GetValue(EBBNeed Need) const PURE_VIRTUAL(UIBBDossierModel::GetValue, return -1.0f; );
+
+		virtual float GetValue(EBBSkill Skill) const PURE_VIRTUAL(UIBBDossierModel::GetValue, return -1.0f; );
+
+		virtual float GetMaxValue(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBDossierModel::GetMaxValue, return -1.0f; );
+
+		virtual float GetMaxValue(EBBNeed Need) const PURE_VIRTUAL(UIBBDossierModel::GetMaxValue, return -1.0f; );
+
+		virtual float GetMaxValue(EBBSkill Skill) const PURE_VIRTUAL(UIBBDossierModel::GetMaxValue, return -1.0f; );
+
 		virtual UIBBDossierEntry * GetDossierEntry(EBBAttribute Attribute) const PURE_VIRTUAL(UIBBDossierModel::GetDossierEntry, return nullptr; );
 
 		virtual UIBBDossierEntry * GetDossierEntry(EBBNeed Need) const PURE_VIRTUAL(UIBBDossierModel::GetDossierEntry, return nullptr; );

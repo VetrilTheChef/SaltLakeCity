@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,13 +19,15 @@ class SALTLAKECITY_API UBBProgressWidget : public UIBBProgressWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBProgressWidget(const FObjectInitializer & ObjectInitializer);
+		UBBProgressWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		virtual void SetProgress(float NewPercent) override;
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UProgressBar * ProgressBar;
+		UProgressBar* ProgressBar;
 };

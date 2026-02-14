@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,11 @@
 #include "GUI/Data/BBDossierEntryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBSkillSetSpec, "SaltLakeCity.Attributes.SkillSet", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBSkillSetSpec,
+	"SaltLakeCity.Attributes.SkillSet",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -260,11 +264,31 @@ void UBBSkillSetSpec::Define()
 				UTEST_TRUE("Lead Entry is valid", IsValid(Entries.FindChecked(EBBSkill::Lead)))
 				UTEST_TRUE("Research Entry is valid", IsValid(Entries.FindChecked(EBBSkill::Research)))
 
-				Entries.FindChecked(EBBSkill::Build)->Initialize(FText::FromString("Build Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Build), & Set->OnMaxValueUpdate(EBBSkill::Build));
-				Entries.FindChecked(EBBSkill::Fuck)->Initialize(FText::FromString("Fuck Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Fuck), & Set->OnMaxValueUpdate(EBBSkill::Fuck));
-				Entries.FindChecked(EBBSkill::Guard)->Initialize(FText::FromString("Guard Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Guard), & Set->OnMaxValueUpdate(EBBSkill::Guard));
-				Entries.FindChecked(EBBSkill::Lead)->Initialize(FText::FromString("Lead Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Lead), & Set->OnMaxValueUpdate(EBBSkill::Lead));
-				Entries.FindChecked(EBBSkill::Research)->Initialize(FText::FromString("Research Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Research), & Set->OnMaxValueUpdate(EBBSkill::Research));
+				Entries.FindChecked(EBBSkill::Build)->Initialize(FText::FromString("Build Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Build),
+					Set->GetMaxValueDelegate(EBBSkill::Build),
+					Set->OnUpdate(EBBSkill::Build));
+				Entries.FindChecked(EBBSkill::Fuck)->Initialize(FText::FromString("Fuck Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Fuck),
+					Set->GetMaxValueDelegate(EBBSkill::Fuck),
+					Set->OnUpdate(EBBSkill::Fuck));
+				Entries.FindChecked(EBBSkill::Guard)->Initialize(FText::FromString("Guard Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Guard),
+					Set->GetMaxValueDelegate(EBBSkill::Guard),
+					Set->OnUpdate(EBBSkill::Guard));
+				Entries.FindChecked(EBBSkill::Lead)->Initialize(FText::FromString("Lead Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Lead),
+					Set->GetMaxValueDelegate(EBBSkill::Lead),
+					Set->OnUpdate(EBBSkill::Lead));
+				Entries.FindChecked(EBBSkill::Research)->Initialize(FText::FromString("Research Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Research),
+					Set->GetMaxValueDelegate(EBBSkill::Research),
+					Set->OnUpdate(EBBSkill::Research));
 
 				TArray<float> UpdateValues;
 				UpdateValues.Emplace(735.12f);
@@ -295,7 +319,7 @@ void UBBSkillSetSpec::Define()
 				return true;
 			});
 
-			It("Given a skill value update, expect the skill set to broadcast the update", [this, SetClass]()
+			It("Given a skill max value update, expect the skill set to broadcast the update", [this, SetClass]()
 			{
 				Set = NewObject<UBBSkillSet>(Character, SetClass);
 
@@ -313,13 +337,32 @@ void UBBSkillSetSpec::Define()
 				UTEST_TRUE("Guard Entry is valid", IsValid(Entries.FindChecked(EBBSkill::Guard)))
 				UTEST_TRUE("Lead Entry is valid", IsValid(Entries.FindChecked(EBBSkill::Lead)))
 				UTEST_TRUE("Research Entry is valid", IsValid(Entries.FindChecked(EBBSkill::Research)))
-
-				Entries.FindChecked(EBBSkill::Build)->Initialize(FText::FromString("Build Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Build), & Set->OnMaxValueUpdate(EBBSkill::Build));
-				Entries.FindChecked(EBBSkill::Fuck)->Initialize(FText::FromString("Fuck Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Fuck), & Set->OnMaxValueUpdate(EBBSkill::Fuck));
-				Entries.FindChecked(EBBSkill::Guard)->Initialize(FText::FromString("Guard Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Guard), & Set->OnMaxValueUpdate(EBBSkill::Guard));
-				Entries.FindChecked(EBBSkill::Lead)->Initialize(FText::FromString("Lead Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Lead), & Set->OnMaxValueUpdate(EBBSkill::Lead));
-				Entries.FindChecked(EBBSkill::Research)->Initialize(FText::FromString("Research Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBSkill::Research), & Set->OnMaxValueUpdate(EBBSkill::Research));
-
+				
+				Entries.FindChecked(EBBSkill::Build)->Initialize(FText::FromString("Build Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Build),
+					Set->GetMaxValueDelegate(EBBSkill::Build),
+					Set->OnUpdate(EBBSkill::Build));
+				Entries.FindChecked(EBBSkill::Fuck)->Initialize(FText::FromString("Fuck Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Fuck),
+					Set->GetMaxValueDelegate(EBBSkill::Fuck),
+					Set->OnUpdate(EBBSkill::Fuck));
+				Entries.FindChecked(EBBSkill::Guard)->Initialize(FText::FromString("Guard Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Guard),
+					Set->GetMaxValueDelegate(EBBSkill::Guard),
+					Set->OnUpdate(EBBSkill::Guard));
+				Entries.FindChecked(EBBSkill::Lead)->Initialize(FText::FromString("Lead Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Lead),
+					Set->GetMaxValueDelegate(EBBSkill::Lead),
+					Set->OnUpdate(EBBSkill::Lead));
+				Entries.FindChecked(EBBSkill::Research)->Initialize(FText::FromString("Research Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBSkill::Research),
+					Set->GetMaxValueDelegate(EBBSkill::Research),
+					Set->OnUpdate(EBBSkill::Research));
 				TArray<float> UpdateValues;
 				UpdateValues.Emplace(0.0f);
 				UpdateValues.Emplace(672.23f);

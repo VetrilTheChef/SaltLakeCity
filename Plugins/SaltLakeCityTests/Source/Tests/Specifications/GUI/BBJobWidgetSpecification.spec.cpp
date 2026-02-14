@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,7 +19,11 @@
 #include "Specifications/GUI/BBJobWidgetSpecification.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBJobWidgetSpecificationSpec, "SaltLakeCity.Specifications.GUI.JobWidgetSpecification", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBJobWidgetSpecificationSpec,
+	"SaltLakeCity.Specifications.GUI.JobWidgetSpecification",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

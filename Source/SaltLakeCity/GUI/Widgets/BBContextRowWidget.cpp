@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBContextRowWidget.h"
 #include "Components/Image.h"
@@ -7,7 +7,7 @@
 #include "GUI/Components/BBButton.h"
 #include "GUI/Widgets/BBContextWidget.h"
 
-UBBContextRowWidget::UBBContextRowWidget(const FObjectInitializer & ObjectInitializer) :
+UBBContextRowWidget::UBBContextRowWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 }
@@ -31,13 +31,18 @@ EBBWidget UBBContextRowWidget::GetType() const
 	return EBBWidget::None;
 }
 
+void UBBContextRowWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
 void UBBContextRowWidget::SetRowName(FText NewName)
 {
 	verifyf(IsValid(RowText), TEXT("Row Text is invalid."));
 
 	RowText->SetText(NewName);
 }
-void UBBContextRowWidget::SetRowIcon(UTexture2D * NewIcon)
+void UBBContextRowWidget::SetRowIcon(UTexture2D* NewIcon)
 {
 	verifyf(IsValid(RowIcon), TEXT("Row Icon is invalid."));
 
@@ -51,7 +56,7 @@ void UBBContextRowWidget::SetRowTooltip(FText NewTooltip)
 	RowButton->SetToolTipText(NewTooltip);
 }
 
-void UBBContextRowWidget::SetCommand(UIBBCommand * Command)
+void UBBContextRowWidget::SetCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(RowButton), TEXT("Row Button is invalid."));
 	

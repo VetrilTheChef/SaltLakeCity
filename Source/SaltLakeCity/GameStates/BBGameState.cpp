@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBGameState.h"
 #include "Landscape.h"
@@ -10,7 +10,6 @@
 #include "Controllers/BBPlayerController.h"
 #include "Engine/Level.h"
 #include "Engine/World.h"
-#include "Engine/Public/EngineUtils.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
 #include "GameModes/BBGameMode.h"
 #include "GameStates/Components/BBGameClock.h"
@@ -298,7 +297,7 @@ void ABBGameState::DestroyGameClock()
 {
 	if (IsValid(GameClock))
 	{
-		GameClock->MarkPendingKill();
+		GameClock->MarkAsGarbage();
 	}
 
 	GameClock = nullptr;
@@ -309,7 +308,7 @@ void ABBGameState::DestroyJobManagers()
 	for (TPair<EBBJob, UIBBJobManager *> JobManager : JobManagers)
 	{
 		JobManager.Value->Finalize();
-		JobManager.Value->MarkPendingKill();
+		JobManager.Value->MarkAsGarbage();
 	}
 
 	JobManagers.Empty();
@@ -363,7 +362,7 @@ void ABBGameState::FinalizeGameGrid()
 	if (IsValid(GameGrid))
 	{
 		GameGrid->Finalize();
-		GameGrid->MarkPendingKill();
+		GameGrid->MarkAsGarbage();
 	}
 }
 

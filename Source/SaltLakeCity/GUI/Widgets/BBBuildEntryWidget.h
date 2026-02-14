@@ -1,4 +1,4 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,32 +21,34 @@ class SALTLAKECITY_API UBBBuildEntryWidget : public UIBBBuildEntryWidget
 	GENERATED_BODY()
 
 	public:
-		UBBBuildEntryWidget(const FObjectInitializer & ObjectInitializer);
+		UBBBuildEntryWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
 
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
 		virtual void SetEntryName(FText NewName) override;
 
-		virtual void SetIcon(UTexture2D * NewIcon) override;
+		virtual void SetIcon(UTexture2D* NewIcon) override;
 
 		virtual void SetPrice(float NewPrice) override;
 
 		virtual void SetTime(float NewTime) override;
 
-		virtual void SetCommand(UIBBCommand * NewCommand) override;
+		virtual void SetCommand(UIBBCommand* NewCommand) override;
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UIBBButton * EntryButton;
+		UIBBButton* EntryButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UBorder * EntryIcon;
+		UBorder* EntryIcon;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * EntryPrice;
+		UTextBlock* EntryPrice;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * EntryTime;
+		UTextBlock* EntryTime;
 
-		virtual void NativeOnListItemObjectSet(UObject * ListItemObject) override;
+		virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 };

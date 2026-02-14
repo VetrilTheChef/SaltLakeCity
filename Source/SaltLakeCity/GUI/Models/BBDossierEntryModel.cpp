@@ -36,28 +36,28 @@ void UBBDossierEntryModel::Finalize()
 
 FText UBBDossierEntryModel::GetEntryName() const
 {
-	verifyf(IsValid(DossierEntry), TEXT("Attribute Entry is invalid."));
+	verifyf(IsValid(DossierEntry), TEXT("Dossier Entry is invalid."));
 
 	return DossierEntry->GetEntryName();
 }
 
 TSoftObjectPtr<UTexture2D> UBBDossierEntryModel::GetIcon() const
 {
-	verifyf(IsValid(DossierEntry), TEXT("Attribute Entry is invalid."));
+	verifyf(IsValid(DossierEntry), TEXT("Dossier Entry is invalid."));
 
 	return DossierEntry->GetIcon();
 }
 
 float UBBDossierEntryModel::GetValue() const
 {
-	verifyf(IsValid(DossierEntry), TEXT("Attribute Entry is invalid."));
+	verifyf(IsValid(DossierEntry), TEXT("Dossier Entry is invalid."));
 
 	return DossierEntry->GetValue();
 }
 
 float UBBDossierEntryModel::GetMaxValue() const
 {
-	verifyf(IsValid(DossierEntry), TEXT("Attribute Entry is invalid."));
+	verifyf(IsValid(DossierEntry), TEXT("Dossier Entry is invalid."));
 
 	return DossierEntry->GetMaxValue();
 }
@@ -77,12 +77,11 @@ void UBBDossierEntryModel::InitializeEntry(UIBBDossierEntry * NewDossierEntry)
 {
 	FinalizeEntry();
 
-	verifyf(IsValid(NewDossierEntry), TEXT("New Attribute Entry is invalid."));
+	verifyf(IsValid(NewDossierEntry), TEXT("New Dossier Entry is invalid."));
 
 	DossierEntry = NewDossierEntry;
 
-	DossierEntry->OnValueUpdate().AddUObject(this, & UBBDossierEntryModel::UpdateValue);
-	DossierEntry->OnMaxValueUpdate().AddUObject(this, & UBBDossierEntryModel::UpdateMaxValue);
+	DossierEntry->OnUpdate().AddUObject(this, & UBBDossierEntryModel::UpdateValues);
 }
 
 void UBBDossierEntryModel::FinalizeView()
@@ -94,27 +93,13 @@ void UBBDossierEntryModel::FinalizeEntry()
 {
 	if (IsValid(DossierEntry))
 	{
-		DossierEntry->OnValueUpdate().RemoveAll(this);
-		DossierEntry->OnMaxValueUpdate().RemoveAll(this);
+		DossierEntry->OnUpdate().RemoveAll(this);
 	}
 
 	DossierEntry = nullptr;
 }
 
-void UBBDossierEntryModel::UpdateValue(float NewValue)
+void UBBDossierEntryModel::UpdateValues(float NewValue, float NewMaxValue)
 {
-	float Value = NewValue;
-
-	// Perform any changes as required
-
-	ValueUpdate.Broadcast(Value);
-}
-
-void UBBDossierEntryModel::UpdateMaxValue(float NewMaxValue)
-{
-	float MaxValue = NewMaxValue;
-
-	// Perform any changes as required
-
-	ValueUpdate.Broadcast(MaxValue);
+	Update.Broadcast(NewValue, NewMaxValue);
 }

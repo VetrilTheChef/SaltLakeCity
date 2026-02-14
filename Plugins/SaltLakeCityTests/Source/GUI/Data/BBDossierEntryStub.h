@@ -20,7 +20,7 @@ class UBBDossierEntryStub : public UIBBDossierEntry
 	public:
 		UBBDossierEntryStub();
 		
-		virtual void Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBUpdate * NewAttributeValueUpdate, FBBUpdate * NewMaxAttributeValueUpdate) override;
+		virtual void Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBGetAttributeDelegate NewValueDelegate, FBBGetAttributeDelegate NewMaxValueDelegate, FBBAttributeUpdate * NewAttributeUpdate) override;
 
 		virtual void Finalize() override;
 		
@@ -32,15 +32,13 @@ class UBBDossierEntryStub : public UIBBDossierEntry
 
 		void SetIcon(TSoftObjectPtr<UTexture2D> NewIcon);
 
-		virtual float GetValue() const override;
+		float GetValue() const;
 
 		void SetValue(float NewValue);
 
-		virtual float GetMaxValue() const override;
+		float GetMaxValue() const;
 
 		void SetMaxValue(const float NewMaxValue);
-
-		FORCEINLINE virtual bool operator==(const UIBBDossierEntry * Other) const override;
 
 	protected:
 		UPROPERTY()
@@ -48,15 +46,16 @@ class UBBDossierEntryStub : public UIBBDossierEntry
 
 		FText Name;
 
-		FBBUpdate * AttributeValueUpdate;
+		FBBGetAttributeDelegate ValueDelegate;
 
-		FBBUpdate * MaxAttributeValueUpdate;
+		FBBGetAttributeDelegate MaxValueDelegate;
+
+		FBBAttributeUpdate * AttributeUpdate;
 
 		float Value;
 
 		float MaxValue;
 
-		void UpdateValue(float NewValue);
-
-		void UpdateMaxValue(float NewMaxValue);
+		UFUNCTION()
+		void UpdateEntry(float NewValue, float NewMaxValue);
 };

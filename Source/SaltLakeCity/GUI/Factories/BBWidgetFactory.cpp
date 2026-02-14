@@ -1,4 +1,4 @@
- // SaltLakeCity 4.27
+ // SaltLakeCity 5.7
 
 #include "BBWidgetFactory.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
@@ -308,7 +308,7 @@ void UBBWidgetFactory::InitializeModelFactory()
 
 	verifyf(IsValid(ModelFactory), TEXT("Model Factory is invalid."));
 
-	ModelFactory->Initialize(GameState, GameMode, HUD);
+	ModelFactory->Initialize(GameState, GameMode, HUD, GameInstance->GetWidgetManager());
 }
 
 void UBBWidgetFactory::InitializeViewFactory()
@@ -330,7 +330,7 @@ void UBBWidgetFactory::InitializeControllerFactory()
 
 	verifyf(IsValid(ControllerFactory), TEXT("Controller Factory is invalid."));
 
-	ControllerFactory->Initialize(GameInstance, HUD);
+	ControllerFactory->Initialize(GameInstance, GameInstance->GetWidgetManager());
 }
 
 void UBBWidgetFactory::FinalizeFactories()
@@ -344,7 +344,7 @@ void UBBWidgetFactory::FinalizeModelFactory()
 {
 	if (IsValid(ModelFactory))
 	{
-		ModelFactory->MarkPendingKill();
+		ModelFactory->MarkAsGarbage();
 	}
 
 	ModelFactory = nullptr;
@@ -354,7 +354,7 @@ void UBBWidgetFactory::FinalizeViewFactory()
 {
 	if (IsValid(ViewFactory))
 	{
-		ViewFactory->MarkPendingKill();
+		ViewFactory->MarkAsGarbage();
 	}
 
 	ViewFactory = nullptr;
@@ -364,7 +364,7 @@ void UBBWidgetFactory::FinalizeControllerFactory()
 {
 	if (IsValid(ControllerFactory))
 	{
-		ControllerFactory->MarkPendingKill();
+		ControllerFactory->MarkAsGarbage();
 	}
 
 	ControllerFactory = nullptr;

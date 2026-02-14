@@ -1,10 +1,9 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Actors/Characters/BBCharacterStub.h"
-#include "Actors/Characters/Interfaces/IBBCharacter.h"
 #include "Actors/Components/BBAIAbilityComponentStub.h"
 #include "Attributes/BBAttributeSetStub.h"
 #include "Attributes/BBNeedSetStub.h"
@@ -15,7 +14,11 @@
 #include "GUI/Widgets/BBDossierWidgetStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBDossierModelSpec, "SaltLakeCity.GUI.Models.Dossier", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBDossierModelSpec,
+	"SaltLakeCity.GUI.Models.Dossier",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -81,6 +84,7 @@ void UBBDossierModelSpec::Define()
 	{
 		Model = nullptr;
 
+		View = nullptr;
 		GameInstance = nullptr;
 
 		UBBTestUtil::CloseTestWorld(TestWorld);
@@ -104,6 +108,8 @@ void UBBDossierModelSpec::Define()
 					UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
 
 					UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
+
+					Character->SetAbilitySystemComponent(AbilityComponent);
 					
 					UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
 
@@ -120,8 +126,6 @@ void UBBDossierModelSpec::Define()
 					AbilityComponent->AddAttributeSet(AttributeSet);
 					AbilityComponent->AddAttributeSet(NeedSet);
 					AbilityComponent->AddAttributeSet(SkillSet);
-
-					Character->SetAbilitySystemComponent(AbilityComponent);
 
 					Characters.Emplace(Character);
 				}
@@ -190,6 +194,8 @@ void UBBDossierModelSpec::Define()
 					UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
 
 					UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
+
+					Character->SetAbilitySystemComponent(AbilityComponent);
 						
 					UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
 
@@ -206,8 +212,6 @@ void UBBDossierModelSpec::Define()
 					AbilityComponent->AddAttributeSet(AttributeSet);
 					AbilityComponent->AddAttributeSet(NeedSet);
 					AbilityComponent->AddAttributeSet(SkillSet);
-
-					Character->SetAbilitySystemComponent(AbilityComponent);
 
 					AttributeSet->SetValue(TestCases[i].Attribute, TestCases[i].Value);
 					AttributeSet->SetMaxValue(TestCases[i].Attribute, TestCases[i].MaxValue);
@@ -292,6 +296,9 @@ void UBBDossierModelSpec::Define()
 					UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
 
 					UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
+
+					Character->SetAbilitySystemComponent(AbilityComponent);
+
 					UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
 
 					UTEST_TRUE("Attribute Set is valid", IsValid(AttributeSet))
@@ -307,8 +314,6 @@ void UBBDossierModelSpec::Define()
 					AbilityComponent->AddAttributeSet(AttributeSet);
 					AbilityComponent->AddAttributeSet(NeedSet);
 					AbilityComponent->AddAttributeSet(SkillSet);
-
-					Character->SetAbilitySystemComponent(AbilityComponent);
 
 					NeedSet->SetValue(TestCases[i].Need, TestCases[i].Value);
 					NeedSet->SetMaxValue(TestCases[i].Need, TestCases[i].MaxValue);
@@ -404,6 +409,8 @@ void UBBDossierModelSpec::Define()
 
 					UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
 
+					Character->SetAbilitySystemComponent(AbilityComponent);
+
 					UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
 
 					UTEST_TRUE("Attribute Set is valid", IsValid(AttributeSet))
@@ -419,10 +426,6 @@ void UBBDossierModelSpec::Define()
 					AbilityComponent->AddAttributeSet(AttributeSet);
 					AbilityComponent->AddAttributeSet(NeedSet);
 					AbilityComponent->AddAttributeSet(SkillSet);
-
-					AbilityComponent->AddAttributeSet(SkillSet);
-
-					Character->SetAbilitySystemComponent(AbilityComponent);
 
 					SkillSet->SetValue(TestCases[i].Skill, TestCases[i].Value);
 					SkillSet->SetMaxValue(TestCases[i].Skill, TestCases[i].MaxValue);
@@ -480,6 +483,8 @@ void UBBDossierModelSpec::Define()
 				UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
 
 				UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
+
+				Character->SetAbilitySystemComponent(AbilityComponent);
 					
 				UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
 
@@ -497,8 +502,6 @@ void UBBDossierModelSpec::Define()
 				AbilityComponent->AddAttributeSet(NeedSet);
 				AbilityComponent->AddAttributeSet(SkillSet);
 
-				Character->SetAbilitySystemComponent(AbilityComponent);
-
 				Model->Initialize(View, Character);
 
 				for (FText & DisplayName : DisplayNames)
@@ -506,292 +509,6 @@ void UBBDossierModelSpec::Define()
 					Character->SetDisplayName(DisplayName);
 
 					TEST_TRUE(Model->GetDisplayName().EqualTo(Character->GetDisplayName(EBBDisplayName::Full)))
-				}
-
-				Model->Finalize();
-
-				TestWorld->DestroyActor(Character);
-
-				return true;
-			});
-
-			It("Given an attribute update from the character, expect the model to update the related attribute entry", [this, ModelClass]()
-			{
-				struct FBBAttributeTestCase
-				{
-					public:
-						FBBAttributeTestCase(EBBAttribute NewAttribute, float NewValue, float NewMaxValue) :
-							Attribute(NewAttribute),
-							Value(NewValue),
-							MaxValue(NewMaxValue)
-						{};
-
-						EBBAttribute Attribute = EBBAttribute::Health;
-
-						float Value = 0.0f;
-
-						float MaxValue = 0.0f;
-				};
-
-				TArray<FBBAttributeTestCase> TestCases;
-				TestCases.Empty();
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Health, 235.7f, 97.4f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Health, 18.2f, -34.8f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Health, -412.9f, 158.3f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Health, 1427.8f, -623.4f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Health, -37.6f, 74.9f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Stamina, -1892.5f, -721.8f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Stamina, 0.19f, 23.6f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Stamina, 64.3f, -832.5f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Stamina, 1012.8f, 4895.4f));
-				TestCases.Emplace(FBBAttributeTestCase(EBBAttribute::Stamina, -478.2f, 92.7f));
-
-				Model = NewObject<UBBDossierModel>(TestWorld, ModelClass);
-
-				UTEST_TRUE("Model is valid", IsValid(Model))
-
-				ABBCharacterStub * Character = TestWorld->SpawnActor<ABBCharacterStub>(SpawnParameters);
-
-				UTEST_TRUE("Character is valid", IsValid(Character))
-
-				UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
-
-				UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
-
-				UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
-
-				UTEST_TRUE("Derived Attribute Set is valid", IsValid(AttributeSet))
-				
-				UBBNeedSetStub * NeedSet = NewObject<UBBNeedSetStub>(Character, UBBNeedSetStub::StaticClass());
-
-				UTEST_TRUE("Need Set is valid", IsValid(NeedSet))
-				
-				UBBSkillSetStub * SkillSet = NewObject<UBBSkillSetStub>(Character, UBBSkillSetStub::StaticClass());
-
-				UTEST_TRUE("Skill Set is valid", IsValid(SkillSet))
-
-				AbilityComponent->AddAttributeSet(AttributeSet);
-				AbilityComponent->AddAttributeSet(NeedSet);
-				AbilityComponent->AddAttributeSet(SkillSet);
-
-				Character->SetAbilitySystemComponent(AbilityComponent);
-
-				AttributeSet->SetValue(EBBAttribute::Health, 0.0f);
-				AttributeSet->SetValue(EBBAttribute::Stamina, 0.0f);
-				AttributeSet->SetMaxValue(EBBAttribute::Health, 0.0f);
-				AttributeSet->SetMaxValue(EBBAttribute::Stamina, 0.0f);
-
-				Model->Initialize(View, Character);
-
-				for (FBBAttributeTestCase & TestCase : TestCases)
-				{
-					AttributeSet->SetValue(TestCase.Attribute, TestCase.Value);
-
-					#define EBBATTRIBUTE_OPERATION(Value) TestEntry<EBBAttribute, UIBBAttributeSet, UIBBDossierEntry>(Value, Model, AttributeSet);
-
-						FOREACH_ENUM_EBBATTRIBUTE(EBBATTRIBUTE_OPERATION)
-
-					#undef EBBATTRIBUTE_OPERATION
-				}
-
-				Model->Finalize();
-
-				TestWorld->DestroyActor(Character);
-
-				return true;
-			});
-
-			It("Given a need update from the character, expect the model to update the related need entry", [this, ModelClass]()
-			{
-				struct FBBNeedTestCase
-				{
-					public:
-						FBBNeedTestCase(EBBNeed NewNeed, float NewValue, float NewMaxValue) :
-							Need(NewNeed),
-							Value(NewValue),
-							MaxValue(NewMaxValue)
-						{};
-
-						EBBNeed Need = EBBNeed::Hunger;
-
-						float Value = 0.0f;
-
-						float MaxValue = 0.0f;
-				};
-
-				TArray<FBBNeedTestCase> TestCases;
-				TestCases.Empty();
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Hunger, 347.8f, 129.4f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Hunger, 22.5f, -45.3f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Hunger, -526.4f, 198.2f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Hunger, 1583.7f, -712.9f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Hunger, -52.1f, 89.6f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Sleep, -2035.6f, -841.3f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Sleep, 0.45f, 30.2f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Sleep, 78.2f, -912.4f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Sleep, 1124.5f, 5213.6f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Sleep, -512.8f, 108.3f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Thirst, -1756.3f, -648.7f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Thirst, 0.32f, 28.4f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Thirst, 85.4f, -726.5f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Thirst, 1345.7f, 4827.8f));
-				TestCases.Emplace(FBBNeedTestCase(EBBNeed::Thirst, -528.9f, 116.2f));
-
-				Model = NewObject<UBBDossierModel>(TestWorld, ModelClass);
-
-				UTEST_TRUE("Model is valid", IsValid(Model))
-
-				ABBCharacterStub * Character = TestWorld->SpawnActor<ABBCharacterStub>(SpawnParameters);
-
-				UTEST_TRUE("Character is valid", IsValid(Character))
-
-				UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
-
-				UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
-
-				UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
-
-				UTEST_TRUE("Derived Attribute Set is valid", IsValid(AttributeSet))
-				
-				UBBNeedSetStub * NeedSet = NewObject<UBBNeedSetStub>(Character, UBBNeedSetStub::StaticClass());
-
-				UTEST_TRUE("Need Set is valid", IsValid(NeedSet))
-				
-				UBBSkillSetStub * SkillSet = NewObject<UBBSkillSetStub>(Character, UBBSkillSetStub::StaticClass());
-
-				UTEST_TRUE("Skill Set is valid", IsValid(SkillSet))
-
-				AbilityComponent->AddAttributeSet(AttributeSet);
-				AbilityComponent->AddAttributeSet(NeedSet);
-				AbilityComponent->AddAttributeSet(SkillSet);
-
-				Character->SetAbilitySystemComponent(AbilityComponent);
-
-				NeedSet->SetValue(EBBNeed::Hunger, 0.0f);
-				NeedSet->SetValue(EBBNeed::Sleep, 0.0f);
-				NeedSet->SetValue(EBBNeed::Thirst, 0.0f);
-				NeedSet->SetMaxValue(EBBNeed::Hunger, 0.0f);
-				NeedSet->SetMaxValue(EBBNeed::Sleep, 0.0f);
-				NeedSet->SetMaxValue(EBBNeed::Thirst, 0.0f);
-
-				Model->Initialize(View, Character);
-
-				for (FBBNeedTestCase & TestCase : TestCases)
-				{
-					NeedSet->SetValue(TestCase.Need, TestCase.Value);
-
-					#define EBBNEED_OPERATION(Value) TestEntry<EBBNeed, UIBBNeedSet, UIBBDossierEntry>(Value, Model, NeedSet);
-
-						FOREACH_ENUM_EBBNEED(EBBNEED_OPERATION)
-
-					#undef EBBNEED_OPERATION
-				}
-
-				Model->Finalize();
-
-				TestWorld->DestroyActor(Character);
-
-				return true;
-			});
-
-			It("Given a skill update from the character, expect the model to update the related skill entry", [this, ModelClass]()
-			{
-				struct FBBSkillTestCase
-				{
-					public:
-						FBBSkillTestCase(EBBSkill NewSkill, float NewValue, float NewMaxValue) :
-							Skill(NewSkill),
-							Value(NewValue),
-							MaxValue(NewMaxValue)
-						{};
-
-						EBBSkill Skill = EBBSkill::Build;
-
-						float Value = 0.0f;
-
-						float MaxValue = 0.0f;
-				};
-
-				TArray<FBBSkillTestCase> TestCases;
-				TestCases.Empty();
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Build, 15.12f, 348.89f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Build, -2285.43f, 127.06f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Build, 74.13f, -1215.18f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Build, 924.38f, 367.62f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Build, -423.72f, 145.8f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Fuck, 2374.8f, -167.33f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Fuck, 4.9f, 236.7f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Fuck, -298.44f, 18.9f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Fuck, 567.2f, -384.68f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Fuck, 721.88f, 2.3f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Guard, -764.3f, 21.71f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Guard, 394.38f, -8167.2f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Guard, 53.15f, 427.638f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Guard, -3485.9f, 312.8f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Guard, 734.2f, 5136.69f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Lead, 28.951f, 52.6f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Lead, -384.1f, 145.38f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Lead, 7.4f, -1493.7f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Lead, 52.7f, 2265.434f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Lead, -315.23f, 19.178f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Research, -672.3f, 47.8f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Research, 394.187f, -183.62f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Research, 53.21f, 472.94f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Research, -4238.7f, 152.62f));
-				TestCases.Emplace(FBBSkillTestCase(EBBSkill::Research, 749.83f, 28.11f));
-
-				Model = NewObject<UBBDossierModel>(TestWorld, ModelClass);
-
-				UTEST_TRUE("Model is valid", IsValid(Model))
-
-				ABBCharacterStub * Character = TestWorld->SpawnActor<ABBCharacterStub>(SpawnParameters);
-
-				UTEST_TRUE("Character is valid", IsValid(Character))
-
-				UBBAIAbilityComponentStub * AbilityComponent = NewObject<UBBAIAbilityComponentStub>(Character, UBBAIAbilityComponentStub::StaticClass());
-
-				UTEST_TRUE("Ability Component is valid", IsValid(AbilityComponent))
-
-				UBBAttributeSetStub * AttributeSet = NewObject<UBBAttributeSetStub>(Character, UBBAttributeSetStub::StaticClass());
-
-				UTEST_TRUE("Derived Attribute Set is valid", IsValid(AttributeSet))
-				
-				UBBNeedSetStub * NeedSet = NewObject<UBBNeedSetStub>(Character, UBBNeedSetStub::StaticClass());
-
-				UTEST_TRUE("Need Set is valid", IsValid(NeedSet))
-				
-				UBBSkillSetStub * SkillSet = NewObject<UBBSkillSetStub>(Character, UBBSkillSetStub::StaticClass());
-
-				UTEST_TRUE("Skill Set is valid", IsValid(SkillSet))
-
-				AbilityComponent->AddAttributeSet(AttributeSet);
-				AbilityComponent->AddAttributeSet(NeedSet);
-				AbilityComponent->AddAttributeSet(SkillSet);
-
-				Character->SetAbilitySystemComponent(AbilityComponent);
-
-				SkillSet->SetValue(EBBSkill::Build, 0.0f);
-				SkillSet->SetValue(EBBSkill::Fuck, 0.0f);
-				SkillSet->SetValue(EBBSkill::Guard, 0.0f);
-				SkillSet->SetValue(EBBSkill::Lead, 0.0f);
-				SkillSet->SetValue(EBBSkill::Research, 0.0f);
-				SkillSet->SetMaxValue(EBBSkill::Build, 0.0f);
-				SkillSet->SetMaxValue(EBBSkill::Fuck, 0.0f);
-				SkillSet->SetMaxValue(EBBSkill::Guard, 0.0f);
-				SkillSet->SetMaxValue(EBBSkill::Lead, 0.0f);
-				SkillSet->SetMaxValue(EBBSkill::Research, 0.0f);
-
-				Model->Initialize(View, Character);
-
-				for (FBBSkillTestCase & TestCase : TestCases)
-				{
-					SkillSet->SetValue(TestCase.Skill, TestCase.Value);
-
-					#define EBBSKILL_OPERATION(Value) TestEntry<EBBSkill, UIBBSkillSet, UIBBDossierEntry>(Value, Model, SkillSet);
-
-						FOREACH_ENUM_EBBSKILL(EBBSKILL_OPERATION)
-
-					#undef EBBSKILL_OPERATION
 				}
 
 				Model->Finalize();

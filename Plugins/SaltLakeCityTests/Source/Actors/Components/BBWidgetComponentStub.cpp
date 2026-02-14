@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBWidgetComponentStub.h"
 
@@ -17,7 +17,7 @@ void UBBWidgetComponentStub::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void UBBWidgetComponentStub::SetWidget(UUserWidget * NewWidget)
+void UBBWidgetComponentStub::SetWidget(UUserWidget* NewWidget)
 {
 	Super::SetWidget(NewWidget);
 }

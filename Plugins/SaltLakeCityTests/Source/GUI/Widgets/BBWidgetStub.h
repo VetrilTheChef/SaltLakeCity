@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -20,9 +20,9 @@ class UBBWidgetStub : public UIBBWidget
 	GENERATED_BODY()
 
 	public:
-		UBBWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBWidgetStub(const FObjectInitializer& ObjectInitializer);
 
-		virtual void AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		virtual EBBWidget GetType() const override;
 
@@ -33,6 +33,5 @@ class UBBWidgetStub : public UIBBWidget
 		void SetIsInViewport(bool IsInViewport);
 
 	protected:
-		UPROPERTY()
 		bool InViewport;
 };

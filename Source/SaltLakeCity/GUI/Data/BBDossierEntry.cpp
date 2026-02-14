@@ -8,45 +8,46 @@ UBBDossierEntry::UBBDossierEntry() :
 {
 	Name = FText::FromString("");
 	Icon = TSoftObjectPtr<UTexture2D>();
-	AttributeValueUpdate = nullptr;
-	MaxAttributeValueUpdate = nullptr;
+	ValueDelegate = FBBGetAttributeDelegate();
+	MaxValueDelegate = FBBGetAttributeDelegate();
+	AttributeUpdate = nullptr;
 }
 
-void UBBDossierEntry::Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, UIBBBaseAttributeSet::FBBUpdate * NewAttributeValueUpdate, UIBBBaseAttributeSet::FBBUpdate * NewMaxAttributeValueUpdate)
+void UBBDossierEntry::Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBGetAttributeDelegate NewValueDelegate, FBBGetAttributeDelegate NewMaxValueDelegate, FBBAttributeUpdate * NewAttributeUpdate)
 {
 	Finalize();
 
 	Name = NewName;
 	Icon = NewIcon;
 
-	verifyf(NewAttributeValueUpdate, TEXT("New Attribute Value Update is null."));
-	verifyf(NewMaxAttributeValueUpdate, TEXT("New Max Attribute Value Update is null."));
+	verifyf(NewValueDelegate.IsBound(), TEXT("New Value Delegate is unbound."));
 
-	AttributeValueUpdate = NewAttributeValueUpdate;
-	MaxAttributeValueUpdate = NewMaxAttributeValueUpdate;
+	ValueDelegate = NewValueDelegate;
 
-	AttributeValueUpdate->AddUObject(this, & UBBDossierEntry::UpdateValue);
-	MaxAttributeValueUpdate->AddUObject(this, & UBBDossierEntry::UpdateMaxValue);
+	verifyf(NewMaxValueDelegate.IsBound(), TEXT("New Max Value Delegate is unbound."));
+
+	MaxValueDelegate = NewMaxValueDelegate;
+
+	verifyf(NewAttributeUpdate, TEXT("New Attribute Update is null."));
+
+	AttributeUpdate = NewAttributeUpdate;
+
+	AttributeUpdate->AddUObject(this, & UBBDossierEntry::UpdateEntry);
 }
 
 void UBBDossierEntry::Finalize()
 {
 	Name = FText::FromString("");
 	Icon = TSoftObjectPtr<UTexture2D>();
+	ValueDelegate = FBBGetAttributeDelegate();
+	MaxValueDelegate = FBBGetAttributeDelegate();
 
-	if (AttributeValueUpdate)
+	if (AttributeUpdate)
 	{
-		AttributeValueUpdate->RemoveAll(this);
+		AttributeUpdate->RemoveAll(this);
 	}
 
-	AttributeValueUpdate = nullptr;
-
-	if (MaxAttributeValueUpdate)
-	{
-		MaxAttributeValueUpdate->RemoveAll(this);
-	}
-
-	MaxAttributeValueUpdate = nullptr;
+	AttributeUpdate = nullptr;
 }
 
 FText UBBDossierEntry::GetEntryName() const
@@ -59,14 +60,19 @@ TSoftObjectPtr<UTexture2D> UBBDossierEntry::GetIcon() const
 	return Icon;
 }
 
-
-
-void UBBDossierEntry::UpdateValue(float NewValue) const
+float UBBDossierEntry::GetValue() const
 {
-	ValueUpdate.Broadcast(NewValue);
+	return ValueDelegate.IsBound() ? ValueDelegate.Execute() : -1.0f;
 }
 
-void UBBDossierEntry::UpdateMaxValue(float NewMaxValue) const
+float UBBDossierEntry::GetMaxValue() const
 {
-	MaxValueUpdate.Broadcast(NewMaxValue);
+	return MaxValueDelegate.IsBound() ? MaxValueDelegate.Execute() : -1.0f;
+}
+
+
+
+void UBBDossierEntry::UpdateEntry(float NewValue, float NewMaxValue) const
+{
+	Update.Broadcast(NewValue, NewMaxValue);
 }

@@ -1,6 +1,7 @@
 // SaltLakeCity 4.27
 
 #include "BBAttributeSetStub.h"
+#include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UBBAttributeSetStub::UBBAttributeSetStub() :
@@ -10,8 +11,7 @@ UBBAttributeSetStub::UBBAttributeSetStub() :
 	InitStamina(-1.0f);
 
 	Attributes.Empty();
-	AttributeUpdates.Empty();
-	AttributeSetters.Empty();
+	AttributeToEnum.Empty();
 }
 
 void UBBAttributeSetStub::PostInitProperties()
@@ -19,17 +19,26 @@ void UBBAttributeSetStub::PostInitProperties()
 	Super::PostInitProperties();
 
 	MapAttributes();
-	Subscribe();
 }
 
 void UBBAttributeSetStub::BeginDestroy()
 {
-	Unsubscribe();
 	Attributes.Empty();
-	AttributeUpdates.Empty();
-	AttributeSetters.Empty();
+	AttributeToEnum.Empty();
 
 	Super::BeginDestroy();
+}
+
+void UBBAttributeSetStub::Initialize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Finalize(AbilityComponent);
+
+	Subscribe(AbilityComponent);
+}
+
+void UBBAttributeSetStub::Finalize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Unsubscribe(AbilityComponent);
 }
 
 void UBBAttributeSetStub::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -57,34 +66,39 @@ void UBBAttributeSetStub::PreAttributeChange(const FGameplayAttribute & Attribut
 	*/
 }
 
-FGameplayAttribute UBBAttributeSetStub::GetAttribute(EBBAttribute Attribute) const
-{
-	return (* (Attributes.FindChecked(Attribute).Attribute))();
-}
-
-FGameplayAttribute UBBAttributeSetStub::GetMaxAttribute(EBBAttribute Attribute) const
-{
-	return (* (Attributes.FindChecked(Attribute).MaxAttribute))();
-}
-
 float UBBAttributeSetStub::GetValue(EBBAttribute Attribute) const
 {
-	return (this->* (Attributes.FindChecked(Attribute).Getter))();
+	return Attributes.FindChecked(Attribute).GetValue.Execute();
 }
 
 void UBBAttributeSetStub::SetValue(EBBAttribute Attribute, float NewValue)
 {
-	(this->* (Attributes.FindChecked(Attribute).Setter))(NewValue);
+	Attributes.FindChecked(Attribute).SetValue.ExecuteIfBound(NewValue);
 }
 
 float UBBAttributeSetStub::GetMaxValue(EBBAttribute Attribute) const
 {
-	return (this->* (Attributes.FindChecked(Attribute).MaxGetter))();
+	return Attributes.FindChecked(Attribute).GetMaxValue.Execute();
 }
 
-void UBBAttributeSetStub::SetMaxValue(EBBAttribute Attribute, float NewValue)
+void UBBAttributeSetStub::SetMaxValue(EBBAttribute Attribute, float NewMaxValue)
 {
-	(this->* (Attributes.FindChecked(Attribute).MaxSetter))(NewValue);
+	Attributes.FindChecked(Attribute).SetMaxValue.ExecuteIfBound(NewMaxValue);
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBAttributeSetStub::GetValueDelegate(EBBAttribute Attribute) const
+{
+	return Attributes.FindChecked(Attribute).GetValue;
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBAttributeSetStub::GetMaxValueDelegate(EBBAttribute Attribute) const
+{
+	return Attributes.FindChecked(Attribute).GetMaxValue;
+}
+
+UIBBBaseAttributeSet::FBBAttributeUpdate * UBBAttributeSetStub::OnUpdate(EBBAttribute Attribute) const
+{
+	return Attributes.FindChecked(Attribute).OnUpdate;
 }
 
 
@@ -92,26 +106,18 @@ void UBBAttributeSetStub::SetMaxValue(EBBAttribute Attribute, float NewValue)
 void UBBAttributeSetStub::MapAttributes()
 {
 	Attributes.Empty();
-	Attributes.Emplace(EBBAttribute::Health, BB_ATTRIBUTE_STRUCT(UBBAttributeSetStub, Health, MaxHealth));
-	Attributes.Emplace(EBBAttribute::Stamina, BB_ATTRIBUTE_STRUCT(UBBAttributeSetStub, Stamina, MaxStamina));
+	Attributes.Emplace(EBBAttribute::Health, BB_ATTRIBUTE_STRUCT(UBBAttributeSetStub, Health));
+	Attributes.Emplace(EBBAttribute::Stamina, BB_ATTRIBUTE_STRUCT(UBBAttributeSetStub, Stamina));
 
-	AttributeUpdates.Empty();
-	AttributeUpdates.Emplace(GetHealthAttribute(), & UBBAttributeSetStub::OnHealthUpdate);
-	AttributeUpdates.Emplace(GetMaxHealthAttribute(), & UBBAttributeSetStub::OnMaxHealthUpdate);
-	AttributeUpdates.Emplace(GetStaminaAttribute(), & UBBAttributeSetStub::OnStaminaUpdate);
-	AttributeUpdates.Emplace(GetMaxStaminaAttribute(), & UBBAttributeSetStub::OnMaxStaminaUpdate);
-
-	AttributeSetters.Empty();
-	AttributeSetters.Emplace(GetHealthAttribute(), & UBBAttributeSetStub::SetHealth);
-	AttributeSetters.Emplace(GetMaxHealthAttribute(), & UBBAttributeSetStub::SetMaxStamina);
-	AttributeSetters.Emplace(GetStaminaAttribute(), & UBBAttributeSetStub::SetStamina);
-	AttributeSetters.Emplace(GetMaxStaminaAttribute(), & UBBAttributeSetStub::SetMaxStamina);
+	AttributeToEnum.Empty();
+	AttributeToEnum.Emplace(GetHealthAttribute(), EBBAttribute::Health);
+	AttributeToEnum.Emplace(GetMaxHealthAttribute(), EBBAttribute::Health);
+	AttributeToEnum.Emplace(GetStaminaAttribute(), EBBAttribute::Stamina);
+	AttributeToEnum.Emplace(GetMaxStaminaAttribute(), EBBAttribute::Stamina);
 }
 
-void UBBAttributeSetStub::Subscribe()
+void UBBAttributeSetStub::Subscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	verifyf(IsValid(AbilityComponent), TEXT("Ability Component is invalid."))
 
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHealthAttribute()).AddUObject(this, & UBBAttributeSetStub::UpdateAttribute);
@@ -120,10 +126,8 @@ void UBBAttributeSetStub::Subscribe()
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetMaxStaminaAttribute()).AddUObject(this, & UBBAttributeSetStub::UpdateAttribute);
 }
 
-void UBBAttributeSetStub::Unsubscribe()
+void UBBAttributeSetStub::Unsubscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	if (IsValid(AbilityComponent))
 	{
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHealthAttribute()).RemoveAll(this);
@@ -135,9 +139,17 @@ void UBBAttributeSetStub::Unsubscribe()
 
 void UBBAttributeSetStub::UpdateAttribute(const FOnAttributeChangeData & Data)
 {
-	(this->* (AttributeSetters.FindChecked(Data.Attribute)))(Data.NewValue);
+	EBBAttribute AttributeToUpdate = AttributeToEnum.FindChecked(Data.Attribute);
 
-	(this->* (AttributeUpdates.FindChecked(Data.Attribute)))().Broadcast(Data.NewValue);
+	FBBAttribute & UpdatedAttribute = Attributes.FindChecked(AttributeToUpdate);
+
+	float Value = UpdatedAttribute.GetValue.Execute();
+	float MaxValue = UpdatedAttribute.GetMaxValue.Execute();
+
+	if (UpdatedAttribute.OnUpdate)
+	{
+		UpdatedAttribute.OnUpdate->Broadcast(Value, MaxValue);
+	}
 }
 
 void UBBAttributeSetStub::OnRep_Health(const FGameplayAttributeData & OldHealth)

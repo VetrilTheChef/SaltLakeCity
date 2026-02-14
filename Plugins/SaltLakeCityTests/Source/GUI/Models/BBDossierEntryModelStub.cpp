@@ -80,6 +80,8 @@ float UBBDossierEntryModelStub::GetValue() const
 void UBBDossierEntryModelStub::SetValue(float NewValue)
 {
 	Value = NewValue;
+
+	Update.Broadcast(Value, MaxValue);
 }
 
 float UBBDossierEntryModelStub::GetMaxValue() const
@@ -90,4 +92,6 @@ float UBBDossierEntryModelStub::GetMaxValue() const
 void UBBDossierEntryModelStub::SetMaxValue(float NewMaxValue)
 {
 	MaxValue = NewMaxValue;
+
+	Update.Broadcast(Value, MaxValue);
 }

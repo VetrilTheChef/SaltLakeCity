@@ -1,6 +1,7 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBWidgetStub.h"
+#include "Blueprint/GameViewportSubsystem.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
 UBBWidgetStub::UBBWidgetStub(const FObjectInitializer & ObjectInitializer) :
@@ -9,18 +10,20 @@ UBBWidgetStub::UBBWidgetStub(const FObjectInitializer & ObjectInitializer) :
 	InViewport = false;
 }
 
-void UBBWidgetStub::AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder)
-{
-	InViewport = true;
-}
-
 EBBWidget UBBWidgetStub::GetType() const
 {
 	return EBBWidget::None;
 }
 
+void UBBWidgetStub::AddToScreen(int32 ZOrder)
+{
+	InViewport = true;
+}
+
 FVector2D UBBWidgetStub::GetPositionInViewport(bool bRemoveDPIScale)
 {
+	//UGameViewportSubsystem* Subsystem = UGameViewportSubsystem::Get(GetWorld());
+
 	FVector2D Position = GetFullScreenOffset().GetTopLeft();;
 
 	float Scale = bRemoveDPIScale ? UWidgetLayoutLibrary::GetViewportScale(this) : 1.0f;

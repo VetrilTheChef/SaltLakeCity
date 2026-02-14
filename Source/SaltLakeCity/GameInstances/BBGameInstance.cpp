@@ -1,12 +1,14 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBGameInstance.h"
 #include "Actors/Components/Factories/Interfaces/IBBComponentFactory.h"
 #include "Commands/Factories/Interfaces/IBBCommandFactory.h"
 #include "Controllers/Interfaces/IBBPlayerController.h"
+#include "GameInstances/Subsystems/Interfaces/IBBUINotificationSubsystem.h"
 #include "GameModes/Interfaces/IBBGameMode.h"
 #include "GameStates/Interfaces/IBBGameState.h"
 #include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
 #include "Levels/BBLevelScriptActor.h"
 #include "Specifications/Factories/Interfaces/IBBSpecificationFactory.h"
 
@@ -16,6 +18,7 @@ UBBGameInstance::UBBGameInstance() :
 	GameMode = nullptr;
 	GameState = nullptr;
 	HUD = nullptr;
+	WidgetManager = nullptr;
 	PlayerController = nullptr;
 
 	CommandFactory = nullptr;
@@ -25,30 +28,34 @@ UBBGameInstance::UBBGameInstance() :
 
 void UBBGameInstance::Init()
 {
-	Super::Init();
+	CreateFactories();
 
-	CreateInstances();
+	Super::Init();
 }
 
 void UBBGameInstance::Shutdown()
 {
-	DestroyInstances();
-
 	Super::Shutdown();
+
+	DestroyFactories();
 }
 
-void UBBGameInstance::Initialize(UWorld * NewWorld, AIBBGameMode * NewGameMode, AIBBGameState * NewGameState, AIBBHUD * NewHUD, AIBBPlayerController * NewPlayerController)
+void UBBGameInstance::Initialize(
+	UWorld * NewWorld,
+	AIBBGameMode* NewGameMode,
+	AIBBGameState* NewGameState,
+	AIBBHUD* NewHUD,
+	AIBBPlayerController* NewPlayerController
+)
 {
-	verifyf(IsValid(NewWorld), TEXT("New World is invalid."));
-	verifyf(IsValid(NewGameMode), TEXT("New Game Mode is invalid."));
-	verifyf(IsValid(NewGameState), TEXT("New Game State is invalid."));
-	verifyf(IsValid(NewHUD), TEXT("New HUD is invalid."));
-	verifyf(IsValid(NewPlayerController), TEXT("New Player Controller is invalid."));
+	SetGameModeChecked(NewGameMode);
+	SetGameStateChecked(NewGameState);
+	SetHUDChecked(NewHUD);
+	SetPlayerControllerChecked(NewPlayerController);
 
-	GameMode = NewGameMode;
-	GameState = NewGameState;
-	HUD = NewHUD;
-	PlayerController = NewPlayerController;
+	CreateWidgetManager(this, NewGameState, NewGameMode, NewHUD, NewPlayerController);
+
+	verifyf(IsValid(NewWorld), TEXT("New World is invalid."));
 	
 	ULevel * Level = NewWorld->GetCurrentLevel();
 
@@ -56,21 +63,28 @@ void UBBGameInstance::Initialize(UWorld * NewWorld, AIBBGameMode * NewGameMode, 
 	
 	AIBBLevelScriptActor * LevelScriptActor = Cast<AIBBLevelScriptActor>(Level->GetLevelScriptActor());
 
-	GameMode->OnActiveModeUpdate().AddUObject(GameState, &AIBBGameState::UpdateActiveMode);
-	GameMode->OnActiveModeUpdate().AddUObject(HUD, &AIBBHUD::UpdateActiveMode);
-	GameMode->OnActiveModeUpdate().AddUObject(PlayerController, &AIBBPlayerController::UpdateActiveMode);
-	PlayerController->OnFloorChangeRequested().AddUObject(GameState, &AIBBGameState::HandleFloorChangeRequest);
+	GameMode->OnActiveModeUpdate().AddUObject(NewGameState, &AIBBGameState::UpdateActiveMode);
+	GameMode->OnActiveModeUpdate().AddUObject(NewHUD, &AIBBHUD::UpdateActiveMode);
+	GameMode->OnActiveModeUpdate().AddUObject(NewPlayerController, &AIBBPlayerController::UpdateActiveMode);
 
-	ComponentFactory->Initialize(HUD);
+	PlayerController->OnFloorChangeRequested().AddUObject(NewGameState, &AIBBGameState::HandleFloorChangeRequest);
+
+	ComponentFactory->Initialize(NewHUD);
 
 	GameMode->Initialize();
 	GameState->Initialize(LevelScriptActor);
-	HUD->Initialize(this, GameMode, GameState, PlayerController);
+	HUD->Initialize(GetSubsystem<UIBBPresentationSubsystem>(), WidgetManager);
+	WidgetManager->Initialize(this, NewGameState, NewGameMode, NewHUD, NewPlayerController);
 }
 
-void UBBGameInstance::Finalize(UWorld * OldWorld)
+void UBBGameInstance::Finalize(UWorld* OldWorld)
 {
-	if (IsValid(GameState))
+	if (HUD.IsValid())
+	{
+		HUD->Finalize();
+	}
+
+	if (GameState.IsValid())
 	{
 		verifyf(IsValid(OldWorld), TEXT("Old World is invalid."));
 
@@ -83,68 +97,131 @@ void UBBGameInstance::Finalize(UWorld * OldWorld)
 		GameState->Finalize(LevelScriptActor);
 	}
 
-	if (IsValid(GameMode))
+	if (GameMode.IsValid())
 	{
-		GameMode->OnActiveModeUpdate().RemoveAll(PlayerController);
-		GameMode->OnActiveModeUpdate().RemoveAll(HUD);
-		GameMode->OnActiveModeUpdate().RemoveAll(GameState);
+		GameMode->OnActiveModeUpdate().RemoveAll(PlayerController.Get());
+		GameMode->OnActiveModeUpdate().RemoveAll(HUD.Get());
+		GameMode->OnActiveModeUpdate().RemoveAll(GameState.Get());
 
 		GameMode->Finalize();
 	}
 
-	if (IsValid(PlayerController))
+	if (PlayerController.IsValid())
 	{
-		PlayerController->OnFloorChangeRequested().RemoveAll(GameState);
+		PlayerController->OnFloorChangeRequested().RemoveAll(GameState.Get());
 	}
+
+	DestroyWidgetManager();
 
 	GameState = nullptr;
 	GameMode = nullptr;
+	HUD = nullptr;
+	WidgetManager = nullptr;
 	PlayerController = nullptr;
 }
 
 AIBBGameMode * UBBGameInstance::GetGameMode() const
 {
-	return GameMode;
+	return GameMode.Get();
 }
 
 AIBBGameState * UBBGameInstance::GetGameState() const
 {
-	return GameState;
+	return GameState.Get();
 }
 
-AIBBHUD * UBBGameInstance::GetHUD() const
+AIBBHUD* UBBGameInstance::GetHUD() const
 {
-	return HUD;
+	return HUD.Get();
 }
 
-AIBBPlayerController * UBBGameInstance::GetPlayerController() const
+AIBBPlayerController* UBBGameInstance::GetPlayerController() const
 {
-	return PlayerController;
+	return PlayerController.Get();
 }
 
-const UIBBCommandFactory * UBBGameInstance::GetCommandFactory() const
+UIBBWidgetManager* UBBGameInstance::GetWidgetManager() const
+{
+	return WidgetManager;
+}
+
+const UIBBCommandFactory* UBBGameInstance::GetCommandFactory() const
 {
 	return CommandFactory;
 }
 
-const UIBBComponentFactory * UBBGameInstance::GetComponentFactory() const
+const UIBBComponentFactory* UBBGameInstance::GetComponentFactory() const
 {
 	return ComponentFactory;
 }
 
-const UIBBSpecificationFactory * UBBGameInstance::GetSpecificationFactory() const
+const UIBBSpecificationFactory* UBBGameInstance::GetSpecificationFactory() const
 {
 	return SpecificationFactory;
 }
 
 
 
-void UBBGameInstance::CreateInstances()
+AIBBGameMode* UBBGameInstance::GetGameModeChecked() const
+{
+	verifyf(GameMode.IsValid(), TEXT("Game Mode is invalid."));
+
+	return GameMode.Get();
+}
+
+void UBBGameInstance::SetGameModeChecked(AIBBGameMode* NewGameMode)
+{
+	verifyf(IsValid(NewGameMode), TEXT("New Game Mode is invalid."));
+
+	GameMode = NewGameMode;
+}
+
+AIBBGameState* UBBGameInstance::GetGameStateChecked() const
+{
+	verifyf(GameState.IsValid(), TEXT("Game State is invalid."));
+
+	return GameState.Get();
+}
+
+void UBBGameInstance::SetGameStateChecked(AIBBGameState* NewGameState)
+{
+	verifyf(IsValid(NewGameState), TEXT("New Game State is invalid."));
+
+	GameState = NewGameState;
+}
+
+AIBBHUD* UBBGameInstance::GetHUDChecked() const
+{
+	verifyf(HUD.IsValid(), TEXT("HUD is invalid."));
+
+	return HUD.Get();
+}
+
+void UBBGameInstance::SetHUDChecked(AIBBHUD* NewHUD)
+{
+	verifyf(IsValid(NewHUD), TEXT("New HUD is invalid."));
+
+	HUD = NewHUD;
+}
+
+AIBBPlayerController* UBBGameInstance::GetPlayerControllerChecked() const
+{
+	verifyf(PlayerController.IsValid(), TEXT("Player Controller is invalid."));
+
+	return PlayerController.Get();
+}
+
+void UBBGameInstance::SetPlayerControllerChecked(AIBBPlayerController* NewPlayerController)
+{
+	verifyf(IsValid(NewPlayerController), TEXT("New Player Controller is invalid."));
+
+	PlayerController = NewPlayerController;
+}
+
+void UBBGameInstance::CreateFactories()
 {
 	CreateCommandFactory();
-
 	CreateComponentFactory();
-
 	CreateSpecificationFactory();
 }
 
@@ -171,7 +248,7 @@ void UBBGameInstance::CreateComponentFactory()
 
 	verifyf(IsValid(ComponentFactory), TEXT("Component Factory is invalid."));
 
-	ComponentFactory->Initialize(HUD);
+	ComponentFactory->Initialize(HUD.Get());
 }
 
 void UBBGameInstance::CreateSpecificationFactory()
@@ -185,7 +262,7 @@ void UBBGameInstance::CreateSpecificationFactory()
 	verifyf(IsValid(SpecificationFactory), TEXT("Specification Factory is invalid."));
 }
 
-void UBBGameInstance::DestroyInstances()
+void UBBGameInstance::DestroyFactories()
 {
 	DestroySpecificationFactory();
 	DestroyComponentFactory();
@@ -196,7 +273,7 @@ void UBBGameInstance::DestroyCommandFactory()
 {
 	if (IsValid(CommandFactory))
 	{
-		CommandFactory->MarkPendingKill();
+		CommandFactory->MarkAsGarbage();
 	}
 
 	CommandFactory = nullptr;
@@ -206,7 +283,7 @@ void UBBGameInstance::DestroyComponentFactory()
 {
 	if (IsValid(ComponentFactory))
 	{
-		ComponentFactory->MarkPendingKill();
+		ComponentFactory->MarkAsGarbage();
 	}
 
 	ComponentFactory = nullptr;
@@ -216,8 +293,38 @@ void UBBGameInstance::DestroySpecificationFactory()
 {
 	if (IsValid(SpecificationFactory))
 	{
-		SpecificationFactory->MarkPendingKill();
+		SpecificationFactory->MarkAsGarbage();
 	}
 
 	SpecificationFactory = nullptr;
+}
+
+void UBBGameInstance::CreateWidgetManager(
+	const UIBBGameInstance* NewGameInstance,
+	const AIBBGameState* NewGameState,
+	AIBBGameMode* NewGameMode,
+	AIBBHUD* NewHUD,
+	APlayerController* NewPlayerController
+)
+{
+	DestroyWidgetManager();
+
+	verifyf(!WidgetManagerClass.IsNull(), TEXT("Widget Manager class is null."));
+
+	WidgetManager = NewObject<UIBBWidgetManager>(this, WidgetManagerClass.LoadSynchronous());
+
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
+
+	WidgetManager->Initialize(NewGameInstance, NewGameState, NewGameMode, NewHUD, NewPlayerController);
+}
+
+void UBBGameInstance::DestroyWidgetManager()
+{
+	if (IsValid(WidgetManager))
+	{
+		WidgetManager->Finalize();
+		WidgetManager->MarkAsGarbage();
+	}
+
+	WidgetManager = nullptr;
 }

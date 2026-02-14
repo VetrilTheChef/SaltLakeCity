@@ -9,7 +9,11 @@
 #include "GameInstances/BBGameInstanceStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBBuildDataSpec, "SaltLakeCity.Abilities.Data.BuildData", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBBuildDataSpec,
+	"SaltLakeCity.Abilities.Data.BuildData",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

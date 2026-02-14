@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,7 +18,7 @@ class SALTLAKECITY_API UIBBWidget : public UUserWidget
 	GENERATED_BODY()
 
 	public:
-		UIBBWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
 		virtual void NativePreConstruct() override { Super::NativePreConstruct(); };
 
@@ -27,4 +27,6 @@ class SALTLAKECITY_API UIBBWidget : public UUserWidget
 		virtual void BeginDestroy() override { Super::BeginDestroy(); };
 
 		virtual EBBWidget GetType() const PURE_VIRTUAL(UIBBWidget::GetType, return EBBWidget::None; );
+
+		virtual void AddToScreen(int32 ZOrder = 0) PURE_VIRTUAL(UIBBWidget::AddToScreen, );
 };

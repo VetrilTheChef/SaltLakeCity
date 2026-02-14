@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,25 +19,36 @@ class SALTLAKECITY_API UIBBContextWidget : public UIBBWidget
 	GENERATED_BODY()
 	
 	public:
-		UIBBContextWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBContextWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
-		virtual void NativeOnInitialized() override { Super::NativeOnInitialized(); };
+		virtual void NativeOnInitialized() override
+			{ Super::NativeOnInitialized(); };
 
-		virtual void NativeOnMouseLeave(const FPointerEvent & MouseEvent) override { Super::NativeOnMouseLeave(MouseEvent); };
+		virtual void NativeOnMouseLeave(const FPointerEvent & MouseEvent) override
+			{ Super::NativeOnMouseLeave(MouseEvent); };
 
-		virtual EBBWidget GetType() const PURE_VIRTUAL(UIBBContextWidget::GetType, return EBBWidget::None; );
+		virtual EBBWidget GetType() const
+			PURE_VIRTUAL(UIBBContextWidget::GetType, return EBBWidget::None; );
 
-		virtual void AddRow(UIBBContextRowWidget * & NewRowWidget) PURE_VIRTUAL(UIBBContextWidget::AddRow, );
+		virtual void AddToScreen(int32 ZOrder = 0)
+			PURE_VIRTUAL(UIBBContextWidget::AddToScreen, );
 
-		virtual void ClearRows() PURE_VIRTUAL(UIBBContextWidget::ClearRows, );
+		virtual void AddRow(UIBBContextRowWidget*& NewRowWidget)
+			PURE_VIRTUAL(UIBBContextWidget::AddRow, );
 
-		virtual void UpdateVisibility(UObject * NewTarget) PURE_VIRTUAL(UIBBContextWidget::UpdateVisibility, );
+		virtual void ClearRows()
+			PURE_VIRTUAL(UIBBContextWidget::ClearRows, );
 
-		virtual TSoftClassPtr<UIBBContextRowWidget> GetRowWidgetClass() const PURE_VIRTUAL(UIBBContextWidget::GetRowWidgetClass, return TSoftClassPtr<UIBBContextRowWidget>(); );
+		virtual void UpdateVisibility(UObject* NewTarget)
+			PURE_VIRTUAL(UIBBContextWidget::UpdateVisibility, );
 
-		DECLARE_EVENT_OneParam(UIBBContextWidget, FBBMouseLeave, const FPointerEvent &);
+		virtual TSoftClassPtr<UIBBContextRowWidget> GetRowWidgetClass() const
+			PURE_VIRTUAL(UIBBContextWidget::GetRowWidgetClass, return TSoftClassPtr<UIBBContextRowWidget>(); );
 
-		FBBMouseLeave & OnMouseLeave() { return LeaveMouse; };
+		DECLARE_EVENT_OneParam(UIBBContextWidget, FBBMouseLeave, const FPointerEvent&);
+
+		FBBMouseLeave& OnMouseLeave()
+			{ return LeaveMouse; };
 
 	protected:
 		FBBMouseLeave LeaveMouse;

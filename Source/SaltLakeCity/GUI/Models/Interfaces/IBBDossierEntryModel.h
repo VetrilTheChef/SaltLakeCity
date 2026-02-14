@@ -39,16 +39,10 @@ class SALTLAKECITY_API UIBBDossierEntryModel : public UIBBGUIModel
 
 		virtual float GetMaxValue() const PURE_VIRTUAL(UIBBDossierEntryModel::GetMaxValue, return -1.0f; );
 
-		DECLARE_EVENT_OneParam(UIBBDossierEntryModel, FBBValueUpdate, float);
+		DECLARE_EVENT_TwoParams(UIBBDossierEntryModel, FBBUpdate, float, float);
 
-		FBBValueUpdate & OnValueUpdate() { return ValueUpdate; };
-
-		DECLARE_EVENT_OneParam(UIBBDossierEntryModel, FBBMaxValueUpdate, float);
-
-		FBBMaxValueUpdate & OnMaxValueUpdate() { return MaxValueUpdate; };
+		FBBUpdate & OnUpdate() { return Update; };
 
 	protected:
-		FBBValueUpdate ValueUpdate;
-
-		FBBMaxValueUpdate MaxValueUpdate;
+		FBBUpdate Update;
 };

@@ -1,9 +1,9 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBContextRowWidgetStub.h"
 #include "Commands/Interfaces/IBBCommand.h"
 
-UBBContextRowWidgetStub::UBBContextRowWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBContextRowWidgetStub::UBBContextRowWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Name = FText::FromString("");
@@ -18,6 +18,10 @@ EBBWidget UBBContextRowWidgetStub::GetType() const
 	return EBBWidget::None;
 }
 
+void UBBContextRowWidgetStub::AddToScreen(int32 ZOrder)
+{
+}
+
 FText UBBContextRowWidgetStub::GetRowName() const
 {
 	return Name;
@@ -28,12 +32,12 @@ void UBBContextRowWidgetStub::SetRowName(FText NewName)
 	Name = NewName;
 }
 
-UTexture2D * UBBContextRowWidgetStub::GetRowIcon() const
+UTexture2D* UBBContextRowWidgetStub::GetRowIcon() const
 {
 	return Icon;
 }
 
-void UBBContextRowWidgetStub::SetRowIcon(UTexture2D * NewIcon)
+void UBBContextRowWidgetStub::SetRowIcon(UTexture2D* NewIcon)
 {
 	Icon = NewIcon;
 }
@@ -48,12 +52,12 @@ void UBBContextRowWidgetStub::SetRowTooltip(FText NewTooltip)
 	Tooltip = NewTooltip;
 }
 
-UIBBCommand * UBBContextRowWidgetStub::GetCommand()
+UIBBCommand* UBBContextRowWidgetStub::GetCommand()
 {
 	return Command;
 }
 
-void UBBContextRowWidgetStub::SetCommand(UIBBCommand * NewCommand)
+void UBBContextRowWidgetStub::SetCommand(UIBBCommand* NewCommand)
 {
 	Command = NewCommand;
 }

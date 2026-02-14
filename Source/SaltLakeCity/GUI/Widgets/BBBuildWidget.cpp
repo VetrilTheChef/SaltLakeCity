@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBBuildWidget.h"
 #include "Abilities/Player/Interfaces/IBBOrderBuildAbility.h"
@@ -8,7 +8,7 @@
 #include "GUI/Data/Interfaces/IBBBuildEntry.h"
 #include "GUI/Factories/Interfaces/IBBWidgetFactory.h"
 
-UBBBuildWidget::UBBBuildWidget(const FObjectInitializer & ObjectInitializer) :
+UBBBuildWidget::UBBBuildWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Tabs.Empty();
@@ -36,7 +36,12 @@ EBBWidget UBBBuildWidget::GetType() const
 	return EBBWidget::Build;
 }
 
-void UBBBuildWidget::AddEntry(EBBBuildCategory Category, UIBBBuildEntry * & NewEntry)
+void UBBBuildWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
+void UBBBuildWidget::AddEntry(EBBBuildCategory Category, UIBBBuildEntry*& NewEntry)
 {
 	if (Tiles.Contains(Category))
 	{
@@ -71,9 +76,9 @@ void UBBBuildWidget::InitializeTabs()
 	Tabs.Emplace(EBBBuildCategory::Indoors, Tab2);
 	Tabs.Emplace(EBBBuildCategory::Customization, Tab3);
 
-	for (TPair<EBBBuildCategory, UIBBRadioBox *> & Tab : Tabs)
+	for (TPair<EBBBuildCategory, UIBBRadioBox*>& Tab : Tabs)
 	{
-		UIBBRadioBox * RadioBox = Tab.Value;
+		UIBBRadioBox* RadioBox = Tab.Value;
 
 		verifyf(IsValid(RadioBox), TEXT("Radio Box is invalid."));
 
@@ -94,7 +99,7 @@ void UBBBuildWidget::InitializeTiles()
 
 void UBBBuildWidget::FinalizeTabs()
 {
-	for (TPair<EBBBuildCategory, UIBBRadioBox *> & Tab : Tabs)
+	for (TPair<EBBBuildCategory, UIBBRadioBox*>& Tab : Tabs)
 	{
 		UIBBRadioBox * RadioBox = Tab.Value;
 
@@ -121,7 +126,7 @@ void UBBBuildWidget::ChangeRadioState(int Index)
 	{
 		bool Checked = (TabIndex == Index);
 
-		UIBBRadioBox * RadioBox = Tabs[(EBBBuildCategory)TabIndex];
+		UIBBRadioBox* RadioBox = Tabs[(EBBBuildCategory)TabIndex];
 
 		verifyf(IsValid(RadioBox), TEXT("Radio Box is invalid."));
 

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,13 +19,15 @@ class UBBDossierWidgetStub : public UIBBDossierWidget
 	GENERATED_BODY()
 
 	public:
-		UBBDossierWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBDossierWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
 		virtual void NativeDestruct() override;
 
 		virtual EBBWidget GetType() const override;
+
+		void AddToScreen(int32 ZOrder = 0) override;
 
 		virtual void CreateCharacterPreview(const AIBBCharacter * TemplateCharacter) override;
 
@@ -35,35 +37,29 @@ class UBBDossierWidgetStub : public UIBBDossierWidget
 
 		virtual void SetDisplayName(FText NewDisplayName) override;
 
-		int GetNumAttributeEntries();
+		TArray<UIBBDossierEntry*> GetAttributeEntries() const;
 
-		UIBBDossierEntry * GetAttributeEntry(int Index);
+		virtual void AddAttributeEntry(UIBBDossierEntry* NewEntry) override;
 
-		virtual void AddAttributeEntry(UIBBDossierEntry * NewEntry) override;
+		TArray<UIBBDossierEntry*> GetNeedEntries() const;
 
-		int GetNumNeedEntries();
+		virtual void AddNeedEntry(UIBBDossierEntry* NewEntry) override;
 
-		UIBBDossierEntry * GetNeedEntry(int Index);
+		TArray<UIBBDossierEntry*> GetSkillEntries() const;
 
-		virtual void AddNeedEntry(UIBBDossierEntry * NewEntry) override;
+		virtual void AddSkillEntry(UIBBDossierEntry* NewEntry) override;
 
-		int GetNumSkillEntries();
-
-		UIBBDossierEntry * GetSkillEntry(int Index);
-
-		virtual void AddSkillEntry(UIBBDossierEntry * NewEntry) override;
-
-		virtual UIBBTitleWidget * & GetTitle() override;
+		virtual UIBBTitleWidget*& GetTitle() override;
 
 	protected:
 		UPROPERTY()
-		TArray<UIBBDossierEntry *> AttributeEntries;
+		TArray<UIBBDossierEntry*> AttributeEntries;
 
 		UPROPERTY()
-		TArray<UIBBDossierEntry *> NeedEntries;
+		TArray<UIBBDossierEntry*> NeedEntries;
 
 		UPROPERTY()
-		TArray<UIBBDossierEntry *> SkillEntries;
+		TArray<UIBBDossierEntry*> SkillEntries;
 
 		FText DisplayName;
 };

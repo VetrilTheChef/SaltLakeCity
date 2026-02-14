@@ -1,4 +1,4 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #include "BBGameModePlay.h"
 #include "Controllers/Interfaces/IBBPlayerController.h"
@@ -55,7 +55,7 @@ void UBBGameModePlay::DestroyInputComponent()
 	{
 		InputComponent->ClearActionBindings();
 		InputComponent->UnregisterComponent();
-		InputComponent->MarkPendingKill();
+		InputComponent->MarkAsGarbage();
 	}
 
 	InputComponent = nullptr;

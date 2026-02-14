@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -20,23 +20,23 @@ class UBBContextWidgetStub : public UIBBContextWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBContextWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBContextWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		virtual void RemoveFromParent() override;
 
-		virtual void AddRow(UIBBContextRowWidget * & NewRowWidget) override;
+		virtual void AddRow(UIBBContextRowWidget*& NewRowWidget) override;
 
 		virtual void ClearRows() override;
 
 		int GetNumRows();
 
-		UIBBContextRowWidget * GetRowWidget(int Index);
+		UIBBContextRowWidget* GetRowWidget(int Index);
 
-		virtual void UpdateVisibility(UObject * NewTarget) override;
+		virtual void UpdateVisibility(UObject* NewTarget) override;
 
 		virtual TSoftClassPtr<UIBBContextRowWidget> GetRowWidgetClass() const override;
 
@@ -46,14 +46,14 @@ class UBBContextWidgetStub : public UIBBContextWidget
 
 		void SetIsInViewport(bool IsInViewport);
 
-		void BroadcastOnMouseLeave(FPointerEvent & MouseEvent);
+		void BroadcastOnMouseLeave(FPointerEvent& MouseEvent);
 
 	protected:
 		UPROPERTY()
 		TSoftClassPtr<UIBBContextRowWidget> RowWidgetClass;
 
 		UPROPERTY()
-		TArray<UIBBContextRowWidget *> RowWidgets;
+		TArray<UIBBContextRowWidget*> RowWidgets;
 
 		bool InViewport;
 };

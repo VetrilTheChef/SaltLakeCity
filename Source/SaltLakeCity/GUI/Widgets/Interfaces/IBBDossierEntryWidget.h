@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,18 +18,27 @@ class SALTLAKECITY_API UIBBDossierEntryWidget : public UIBBWidget, public IUserO
 	GENERATED_BODY()
 
 	public:
-		UIBBDossierEntryWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBDossierEntryWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
-		virtual EBBWidget GetType() const PURE_VIRTUAL(UIBBDossierEntryWidget::GetType, return EBBWidget::None; );
+		virtual EBBWidget GetType() const
+			PURE_VIRTUAL(UIBBDossierEntryWidget::GetType, return EBBWidget::None; );
 
-		virtual void SetEntryName(FText NewName) PURE_VIRTUAL(UIBBDossierEntryWidget::SetEntryName, );
+		virtual void AddToScreen(int32 ZOrder = 0)
+			PURE_VIRTUAL(UIBBDossierEntryWidget::AddToScreen, );
 
-		virtual void SetIcon(UTexture2D * NewIcon) PURE_VIRTUAL(UIBBDossierEntryWidget::SetIcon, );
+		virtual void SetEntryName(FText NewName)
+			PURE_VIRTUAL(UIBBDossierEntryWidget::SetEntryName, );
 
-		virtual void SetValue(float NewValue) PURE_VIRTUAL(UIBBDossierEntryWidget::SetPrice, );
+		virtual void SetIcon(UTexture2D* NewIcon)
+			PURE_VIRTUAL(UIBBDossierEntryWidget::SetIcon, );
 
-		virtual void SetMaxValue(float NewMaxValue) PURE_VIRTUAL(UIBBDossierEntryWidget::SetTime, );
+		virtual void SetValue(FText NewValue)
+			PURE_VIRTUAL(UIBBDossierEntryWidget::SetValue, );
+
+		virtual void SetProgress(float NewProgress)
+			PURE_VIRTUAL(UIBBDossierEntryWidget::SetProgress, );
 
 	protected:
-		virtual void NativeOnListItemObjectSet(UObject * ListItemObject) override { IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject); };
+		virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override
+			{ IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject); };
 };

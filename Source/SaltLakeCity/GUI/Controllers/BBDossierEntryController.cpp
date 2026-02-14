@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBDossierEntryController.h"
 #include "GUI/Models/Interfaces/IBBDossierEntryModel.h"
@@ -31,16 +31,14 @@ void UBBDossierEntryController::InitializeModel(UIBBDossierEntryModel * DossierE
 
 	Model = DossierEntryModel;
 
-	Model->OnValueUpdate().AddUObject(this, & UBBDossierEntryController::UpdateValue);
-	Model->OnMaxValueUpdate().AddUObject(this, & UBBDossierEntryController::UpdateMaxValue);
+	Model->OnUpdate().AddUObject(this, & UBBDossierEntryController::Update);
 }
 
 void UBBDossierEntryController::FinalizeModel()
 {
 	if (IsValid(Model))
 	{
-		Model->OnValueUpdate().RemoveAll(this);
-		Model->OnMaxValueUpdate().RemoveAll(this);
+		Model->OnUpdate().RemoveAll(this);
 	}
 
 	Model = nullptr;
@@ -56,30 +54,28 @@ void UBBDossierEntryController::InitializeView(UIBBDossierEntryWidget * DossierE
 
 	View->SetEntryName(DossierEntryModel.GetEntryName());
 	View->SetIcon(DossierEntryModel.GetIcon().LoadSynchronous());
-	View->SetValue(DossierEntryModel.GetValue());
-	View->SetMaxValue(DossierEntryModel.GetMaxValue());
+
+	float Value = DossierEntryModel.GetValue();
+	float MaxValue = DossierEntryModel.GetMaxValue();
+
+	View->SetValue(FText::AsNumber(FMath::FloorToInt(Value)));
+	View->SetProgress(Value / MaxValue);
 }
 
 void UBBDossierEntryController::FinalizeView()
 {
 	if (IsValid(View))
 	{
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;
 }
 
-void UBBDossierEntryController::UpdateValue(float NewValue)
+void UBBDossierEntryController::Update(float NewValue, float NewMaxValue)
 {
 	verifyf(IsValid(View), TEXT("Dossier Entry View is invalid."));
 
-	View->SetValue(NewValue);
-}
-
-void UBBDossierEntryController::UpdateMaxValue(float NewValue)
-{
-	verifyf(IsValid(View), TEXT("Dossier Entry View is invalid."));
-
-	View->SetMaxValue(NewValue);
+	View->SetValue(FText::AsNumber(FMath::FloorToInt(NewValue)));
+	View->SetProgress(NewValue / NewMaxValue);
 }

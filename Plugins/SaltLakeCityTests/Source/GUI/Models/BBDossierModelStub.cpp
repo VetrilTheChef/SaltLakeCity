@@ -82,34 +82,34 @@ void UBBDossierModelStub::SetDisplayName(FText NewDisplayName)
 	DisplayName = NewDisplayName;
 }
 
-UIBBDossierEntry * UBBDossierModelStub::GetEntry(EBBAttribute Attribute) const
+UIBBDossierEntry * UBBDossierModelStub::GetDossierEntry(EBBAttribute Attribute) const
 {
 	return AttributeEntries.Contains(Attribute) ? AttributeEntries.FindRef(Attribute) : nullptr;
 }
 
-void UBBDossierModelStub::SetEntry(EBBAttribute Attribute, UIBBDossierEntry * NewDossierEntry)
+void UBBDossierModelStub::SetDossierEntry(EBBAttribute Attribute, UIBBDossierEntry * NewDossierEntry)
 {
 	AttributeEntries.Remove(Attribute);
 	AttributeEntries.FindOrAdd(Attribute, NewDossierEntry);
 }
 
-UIBBDossierEntry * UBBDossierModelStub::GetEntry(EBBNeed Need) const
+UIBBDossierEntry * UBBDossierModelStub::GetDossierEntry(EBBNeed Need) const
 {
 	return NeedEntries.Contains(Need) ? NeedEntries.FindRef(Need) : nullptr;
 }
 
-void UBBDossierModelStub::SetEntry(EBBNeed Need, UIBBDossierEntry * NewNeedEntry)
+void UBBDossierModelStub::SetDossierEntry(EBBNeed Need, UIBBDossierEntry * NewNeedEntry)
 {
 	NeedEntries.Remove(Need);
 	NeedEntries.Add(Need, NewNeedEntry);
 }
 
-UIBBDossierEntry * UBBDossierModelStub::GetEntry(EBBSkill Skill) const
+UIBBDossierEntry * UBBDossierModelStub::GetDossierEntry(EBBSkill Skill) const
 {
 	return SkillEntries.Contains(Skill) ? SkillEntries.FindRef(Skill) : nullptr;
 }
 
-void UBBDossierModelStub::SetEntry(EBBSkill Skill, UIBBDossierEntry * NewSkillEntry)
+void UBBDossierModelStub::SetDossierEntry(EBBSkill Skill, UIBBDossierEntry * NewSkillEntry)
 {
 	SkillEntries.Remove(Skill);
 	SkillEntries.Add(Skill, NewSkillEntry);

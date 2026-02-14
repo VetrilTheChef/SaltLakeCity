@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -24,7 +24,7 @@ class SALTLAKECITY_API UBBContextRowWidget : public UIBBContextRowWidget
 	GENERATED_BODY()
 
 	public:
-		UBBContextRowWidget(const FObjectInitializer & ObjectInitializer);
+		UBBContextRowWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
@@ -32,23 +32,25 @@ class SALTLAKECITY_API UBBContextRowWidget : public UIBBContextRowWidget
 
 		virtual EBBWidget GetType() const override;
 
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
 		virtual void SetRowName(FText NewName) override;
 
-		virtual void SetRowIcon(UTexture2D * NewIcon) override;
+		virtual void SetRowIcon(UTexture2D* NewIcon) override;
 
 		virtual void SetRowTooltip(FText NewTooltip) override;
 		
-		virtual void SetCommand(UIBBCommand * Command) override;
+		virtual void SetCommand(UIBBCommand* Command) override;
 	
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UIBBButton * RowButton;
+		UIBBButton* RowButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UImage * RowIcon;
+		UImage* RowIcon;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * RowText;
+		UTextBlock* RowText;
 
 		UFUNCTION()
 		void Click();

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -12,7 +12,11 @@
 #include "GUI/Widgets/BBBuildWidget.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBBuildWidgetSpec, "SaltLakeCity.GUI.Widgets.Build", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBBuildWidgetSpec,
+	"SaltLakeCity.GUI.Widgets.Build",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -130,7 +134,7 @@ void UBBBuildWidgetSpec::Define()
 			if (IsValid(BuildEntry))
 			{
 				BuildEntry->RemoveFromRoot();
-				BuildEntry->MarkPendingKill();
+				BuildEntry->MarkAsGarbage();
 			}
 			
 			BuildEntry = nullptr;

@@ -1,48 +1,16 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actors/Interfaces/IBBContextualizable.h"
 #include "GUI/Includes/BBWidgetEnum.h"
 #include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Widgets/Interfaces/IBBWidget.h"
 #include "BBHUD.generated.h"
 
 /**
  * 
  */
-
-class IBBSelectable;
-class IBBWorkable;
-class UIBBBuildWidget;
-class UIBBBuildEntryWidget;
-class UIBBCommandFactory;
-class UIBBContextWidget;
-class UIBBContextRowWidget;
-class UIBBDossierWidget;
-class UIBBGameModeCommand;
-class UIBBJobWidget;
-
-USTRUCT(BlueprintType)
-
-struct FBBWidgetCategory
-{
-	GENERATED_BODY()
-
-	public:
-		UPROPERTY()
-		TArray<UIBBWidget *> Widgets;
-
-		FBBWidgetCategory()
-		{
-			Widgets.Empty();
-		}
-
-		~FBBWidgetCategory()
-		{
-			Widgets.Empty();
-		}
-};
 
 UCLASS(Abstract, Blueprintable, BlueprintType, DefaultToInstanced)
 
@@ -57,114 +25,58 @@ class SALTLAKECITY_API ABBHUD : public AIBBHUD
 		
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-		virtual void Initialize(UIBBGameInstance * GameInstance, AIBBGameMode * GameMode, AIBBGameState * GameState, APlayerController * PlayerController) override;
+		virtual void Initialize(
+			UIBBUINotificationSubsystem* NewUINotificationSubsystem,
+			UIBBWidgetManager* NewWidgetManager
+		) override;
 
 		virtual void Finalize() override;
+		
+		virtual void DrawMarquee(FVector2D MarqueeStart, FVector2D MarqueeEnd) override;
 
-		virtual const UIBBWidgetFactory * GetWidgetFactory() const override;
+		virtual void AttachWidget(
+			UIBBWidgetSpecification* Specification,
+			UIBBWidgetComponent* WidgetComponent
+		) override;
 
-		virtual void SetWidgetFactory(UIBBWidgetFactory * NewWidgetFactory) override;
-
-		virtual const UIBBWidgetSpecificationFactory * GetWidgetSpecificationFactory() const override;
-
-		virtual void SetWidgetSpecificationFactory(UIBBWidgetSpecificationFactory * NewWidgetSpecificationFactory) override;
-
-		virtual UIBBModelPool * GetModelPool() const override;
-
-		virtual void SetModelPool(UIBBModelPool * NewModelPool) override;
-
-		virtual void CloseWidget(UIBBWidgetSpecification * Specification) override;
-
-		virtual void OpenWidget(UIBBWidgetSpecification * Specification, bool PopUp) override;
-
-		virtual void AttachWidget(UIBBWidgetSpecification * Specification, UIBBWidgetComponent * WidgetComponent) override;
-
-		virtual void DetachWidget(UIBBWidgetComponent * WidgetComponent) override;
-
-		virtual bool ConvertToPIEViewportSpace(FVector2D & Position) override;
+		virtual void DetachWidget(UIBBWidgetComponent* WidgetComponent) override;
 
 		virtual void UpdateActiveMode(EBBGameMode NewActiveMode) override;
 
 	protected:
-		UPROPERTY(EditDefaultsOnly, Category = "HUD Colors")
+		UPROPERTY(EditDefaultsOnly, Category = "UI | Colors")
 		FLinearColor HUDColor;
 
-		UPROPERTY(EditAnywhere, Category = "Classes")
-		TSoftClassPtr<UIBBModelPool> ModelPoolClass;
+		UPROPERTY(EditDefaultsOnly, Category = "UI | Tags")
+		FGameplayTag CloseRequestTag;
 
-		UPROPERTY(EditAnywhere, Category = "Classes")
-		TSoftClassPtr<UIBBWidgetFactory> WidgetFactoryClass;
-
-		UPROPERTY(EditAnywhere, Category = "Classes")
-		TSoftClassPtr<UIBBWidgetSpecificationFactory> WidgetSpecificationFactoryClass;
-
-		UPROPERTY()
-		UIBBModelPool * ModelPool;
-
-		UPROPERTY()
-		UIBBWidgetFactory * WidgetFactory;
-
-		UPROPERTY()
-		UIBBWidgetSpecificationFactory * WidgetSpecificationFactory;
-
-		UPROPERTY()
-		UIBBContextWidget * ContextWidget;
-
-		UPROPERTY()
-		UIBBJobWidget * JobWidget;
-
-		UPROPERTY()
-		TMap<EBBWidget, FBBWidgetCategory> WidgetCategories;
-
-		UPROPERTY()
-		AIBBGameState * GameState;
+		UPROPERTY(EditDefaultsOnly, Category = "UI | Tags")
+		FGameplayTag OpenRequestTag;
 
 		FDelegateHandle OnLandscapeClickedHandle;
 
-		void CreateModelPool(UIBBGameInstance * NewGameInstance);
+		UIBBWidgetManager* GetWidgetManagerChecked() const;
 
-		void CreateWidgetFactory(const UIBBGameInstance * NewGameInstance, const AIBBGameState * NewGameState, AIBBGameMode * NewGameMode, APlayerController * NewPlayerController);
+		void SetWidgetManagerChecked(UIBBWidgetManager* NewWidgetManager);
 
-		void CreateWidgetSpecificationFactory();
+		UIBBUINotificationSubsystem* GetUINotificationSubsystemChecked() const;
 
-		void DestroyModelPool();
+		void SetUINotificationSubsystemChecked(UIBBUINotificationSubsystem* NewUINotificationSubsystem);
 
-		void DestroyWidgetFactory();
+		void AddWidgetToViewport(UIBBWidget& Widget, int32 ZOrder = -1);
 
-		void DestroyWidgetSpecificationFactory();
+		void Subscribe(UIBBUINotificationSubsystem& NewUINotificationSubsystem);
 
-		void AddWidgetToViewport(UIBBWidget & Widget, int32 ZOrder = -1);
+		void Unsubscribe(UIBBUINotificationSubsystem& SubscribedUINotificationSubsystem);
 
-		void AddWidgetToMap(EBBWidget WidgetType, UIBBWidget * Widget);
+		void DisplayWidget(const UWorld* World, UIBBWidget* Widget, bool PopUp);
 
-		void RemoveWidgetFromMap(UIBBWidget * Widget);
+	private:
+		TWeakObjectPtr<UIBBUINotificationSubsystem> UINotificationSubsystem;
 
-		UIBBWidget * GetWidget(UIBBWidgetSpecification & Specification);
+		TWeakObjectPtr<UIBBWidgetManager> WidgetManager;
 
-		bool EvaluateModelPool(UIBBWidget * & Widget, UIBBWidgetSpecification & Specification);
+		void CloseWidget(const UIBBWidgetSpecification* Specification);
 
-		UIBBWidget * NewWidgetFromSpecification(UIBBWidgetSpecification & Specification);
-
-		void CreateWidgets();
-
-		void DestroyWidgets();
-
-		void Subscribe(AIBBGameState * NewGameState);
-
-		void Unsubscribe(AIBBGameState * SubscribedGameState);
-
-		void ShowWidget(UIBBWidget * Widget, bool PopUp);
-
-		void HideWidget(UIBBWidget * Widget);
-
-		FVector2D GetPopUpCoordinates(UIBBWidget * Widget);
-
-		UFUNCTION()
-		void UpdateConsumer(TScriptInterface<IBBWorkable> Workable);
-
-		UFUNCTION()
-		void UpdateContext(TScriptInterface<IBBContextualizable> Contextualizable);
-
-		UFUNCTION()
-		void UpdateSelection(TScriptInterface<IBBSelectable> Selectable);
+		void OpenWidget(const UIBBWidgetSpecification* Specification, const bool PopUp);
 };

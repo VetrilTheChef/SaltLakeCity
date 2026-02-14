@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,54 +10,58 @@
 #include "Commands/GUI/BBAttachWidgetCommandStub.h"
 #include "Commands/GUI/BBDetachWidgetCommandStub.h"
 #include "GameInstances/BBGameInstanceStub.h"
-#include "GUI/BBHUDStub.h"
+#include "GUI/BBWidgetManagerStub.h"
 #include "GUI/Models/BBProgressModelStub.h"
 #include "GUI/Widgets/BBProgressWidgetStub.h"
 #include "Specifications/GUI/BBWidgetSpecificationStub.h"
 #include "Specifications/GUI/Factories/BBWidgetSpecificationFactoryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBProgressComponentSpec, "SaltLakeCity.Actors.Components.ProgressComponent", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBProgressComponentSpec,
+	"SaltLakeCity.Actors.Components.ProgressComponent",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
-	UWorld * TestWorld = nullptr;
+	UWorld* TestWorld = nullptr;
 
 	UPROPERTY()
-	UBBGameInstanceStub * GameInstance = nullptr;
+	UBBGameInstanceStub* GameInstance = nullptr;
 
 	UPROPERTY()
-	ABBHUDStub * HUD = nullptr;
+	UBBWidgetManagerStub* WidgetManager = nullptr;
 
 	UPROPERTY()
-	UBBProgressableStub * Progressable = nullptr;
+	UBBProgressableStub* Progressable = nullptr;
 
 	UPROPERTY()
-	ABBActor * Actor = nullptr;
+	ABBActor* Actor = nullptr;
 
 	UPROPERTY()
-	UBBCommandFactoryStub * CommandFactory = nullptr;
+	UBBCommandFactoryStub* CommandFactory = nullptr;
 
 	UPROPERTY()
-	UBBAttachWidgetCommandStub * AttachCommand = nullptr;
+	UBBAttachWidgetCommandStub* AttachCommand = nullptr;
 
 	UPROPERTY()
-	UBBDetachWidgetCommandStub * DetachCommand = nullptr;
+	UBBDetachWidgetCommandStub* DetachCommand = nullptr;
 
 	UPROPERTY()
-	UBBWidgetSpecificationFactoryStub * WidgetSpecificationFactory = nullptr;
+	UBBWidgetSpecificationFactoryStub* WidgetSpecificationFactory = nullptr;
 
 	UPROPERTY()
-	UBBWidgetSpecificationStub * WidgetSpecification = nullptr;
+	UBBWidgetSpecificationStub* WidgetSpecification = nullptr;
 
 	UPROPERTY()
-	UBBProgressWidgetStub * ProgressWidget = nullptr;
+	UBBProgressWidgetStub* ProgressWidget = nullptr;
 
 	UPROPERTY()
-	TArray<UClass *> ComponentClasses;
+	TArray<UClass*> ComponentClasses;
 
 	// SUT
 	UPROPERTY()
-	UBBProgressComponent * ProgressComponent = nullptr;
+	UBBProgressComponent* ProgressComponent = nullptr;
 
 	FActorSpawnParameters SpawnParameters;
 
@@ -81,57 +85,84 @@ void UBBProgressComponentSpec::Define()
 
 		UTEST_TRUE("Game Instance is valid", IsValid(GameInstance))
 
-		HUD = TestWorld->SpawnActor<ABBHUDStub>(ABBHUDStub::StaticClass(), SpawnParameters);
+		WidgetManager = NewObject<UBBWidgetManagerStub>(
+			GameInstance,
+			UBBWidgetManagerStub::StaticClass()
+		);
 
-		UTEST_TRUE("HUD is valid", IsValid(HUD))
+		UTEST_TRUE("Widget Manager is valid", IsValid(WidgetManager))
 
-		GameInstance->SetHUD(HUD);
+		GameInstance->SetWidgetManager(WidgetManager);
 
-		Progressable = NewObject<UBBProgressableStub>(TestWorld, UBBProgressableStub::StaticClass());
+		Progressable = NewObject<UBBProgressableStub>(
+			TestWorld,
+			UBBProgressableStub::StaticClass()
+		);
 
 		UTEST_TRUE("Progressable is valid", IsValid(Progressable))
 
-		Actor = TestWorld->SpawnActor<ABBActor>(ABBActor::StaticClass(), SpawnParameters);
+		Actor = TestWorld->SpawnActor<ABBActor>(
+			ABBActor::StaticClass(),
+			SpawnParameters
+		);
 
 		UTEST_TRUE("Actor is valid", IsValid(Actor))
 
 		Progressable->SetActor(Actor);
 
-		ProgressWidget = CreateWidget<UBBProgressWidgetStub>(TestWorld, UBBProgressWidgetStub::StaticClass());
+		ProgressWidget = CreateWidget<UBBProgressWidgetStub>(
+			TestWorld,
+			UBBProgressWidgetStub::StaticClass()
+		);
 
 		UTEST_TRUE("Progress Widget is valid", IsValid(ProgressWidget))
 
 		ProgressWidget->NativeOnInitialized();
 
-		CommandFactory = NewObject<UBBCommandFactoryStub>(GameInstance, UBBCommandFactoryStub::StaticClass());
+		CommandFactory = NewObject<UBBCommandFactoryStub>(
+			GameInstance,
+			UBBCommandFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Command Factory is valid", IsValid(CommandFactory))
 
-		AttachCommand = NewObject<UBBAttachWidgetCommandStub>(CommandFactory, UBBAttachWidgetCommandStub::StaticClass());
+		AttachCommand = NewObject<UBBAttachWidgetCommandStub>(
+			CommandFactory,
+			UBBAttachWidgetCommandStub::StaticClass()
+		);
 
 		UTEST_TRUE("Attach Command is valid", IsValid(AttachCommand))
 
 		AttachCommand->SetWidget(ProgressWidget);
 
-		DetachCommand = NewObject<UBBDetachWidgetCommandStub>(CommandFactory, UBBDetachWidgetCommandStub::StaticClass());
+		DetachCommand = NewObject<UBBDetachWidgetCommandStub>(
+			CommandFactory,
+			UBBDetachWidgetCommandStub::StaticClass()
+		);
 
 		UTEST_TRUE("Detach Command is valid", IsValid(DetachCommand))
 
 		CommandFactory->AddAttachWidgetCommand(AttachCommand);
 		CommandFactory->AddDetachWidgetCommand(DetachCommand);
 
-		WidgetSpecificationFactory = NewObject<UBBWidgetSpecificationFactoryStub>(HUD, UBBWidgetSpecificationFactoryStub::StaticClass());
+		WidgetSpecificationFactory = NewObject<UBBWidgetSpecificationFactoryStub>(
+			WidgetManager,
+			UBBWidgetSpecificationFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Widget Specification Factory is valid", IsValid(WidgetSpecificationFactory))
 
-		WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(WidgetSpecificationFactory, UBBWidgetSpecificationStub::StaticClass());
+		WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(
+			WidgetSpecificationFactory,
+			UBBWidgetSpecificationStub::StaticClass()
+		);
 
 		UTEST_TRUE("Widget Specification is valid", IsValid(WidgetSpecification))
 
 		WidgetSpecificationFactory->AddWidgetSpecification(WidgetSpecification);
 
 		GameInstance->SetCommandFactory(CommandFactory);
-		HUD->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
+		WidgetManager->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
 
 		return true;
 	});
@@ -152,18 +183,20 @@ void UBBProgressComponentSpec::Define()
 		AttachCommand = nullptr;
 		CommandFactory = nullptr;
 
-		TestWorld->DestroyActor(HUD);
+		WidgetManager = nullptr;
 
 		GameInstance = nullptr;
 
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (UClass * & ComponentClass : ComponentClasses)
+	for (UClass*& ComponentClass : ComponentClasses)
 	{
 		Describe("[" + ComponentClass->GetName() + "]", [this, ComponentClass]()
 		{
-			It("Given a progressable initiation event, expect the progress component to attach a new progress widget", [this, ComponentClass]()
+			It(
+				"Given a progressable initiation event, expect the progress component to attach a new progress widget",
+				[this, ComponentClass]()
 			{
 				ProgressComponent = NewObject<UBBProgressComponent>(Actor, ComponentClass);
 
@@ -187,7 +220,8 @@ void UBBProgressComponentSpec::Define()
 				return true;
 			});
 
-			It("Given a progressable completion event, expect the progress component to detach its progress widget", [this, ComponentClass]()
+			It("Given a progressable completion event, expect the progress component to detach its progress widget",
+				[this, ComponentClass]()
 			{
 				ProgressComponent = NewObject<UBBProgressComponent>(Actor, ComponentClass);
 
@@ -211,7 +245,9 @@ void UBBProgressComponentSpec::Define()
 				return true;
 			});
 
-			It("Given a new progress update, expect the progress component to update its widget model's progress value", [this, ComponentClass]()
+			It(
+				"Given a new progress update, expect the progress component to update its widget model's progress value",
+				[this, ComponentClass]()
 			{
 				ProgressComponent = NewObject<UBBProgressComponent>(Actor, ComponentClass);
 
@@ -222,7 +258,10 @@ void UBBProgressComponentSpec::Define()
 
 				ProgressComponent->Initialize(TScriptInterface<IBBProgressable>(Progressable));
 
-				UBBProgressModelStub * ProgressModel = NewObject<UBBProgressModelStub>(HUD, UBBProgressModelStub::StaticClass());
+				UBBProgressModelStub * ProgressModel = NewObject<UBBProgressModelStub>(
+					WidgetManager,
+					UBBProgressModelStub::StaticClass()
+				);
 
 				UTEST_TRUE("Progress Model is valid", IsValid(ProgressModel))
 

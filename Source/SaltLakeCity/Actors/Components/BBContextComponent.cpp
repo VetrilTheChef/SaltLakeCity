@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBContextComponent.h"
 #include "Actors/Interfaces/IBBContextualizable.h"
@@ -7,7 +7,7 @@
 #include "Commands/GUI/Interfaces/IBBCloseWidgetCommand.h"
 #include "Commands/GUI/Interfaces/IBBOpenWidgetCommand.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
-#include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
 #include "Specifications/GUI/Factories/Interfaces/IBBWidgetSpecificationFactory.h"
 
 UBBContextComponent::UBBContextComponent() :
@@ -39,9 +39,9 @@ void UBBContextComponent::Initialize(TScriptInterface<IBBContextualizable> && Ne
 
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
 
-	AIBBHUD * HUD = GameInstance->GetHUD();
+	UIBBWidgetManager * WidgetManager = GameInstance->GetWidgetManager();
 
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
 	Subscribe(Forward<TScriptInterface<IBBContextualizable>>(NewContextualizable));
 
@@ -49,7 +49,7 @@ void UBBContextComponent::Initialize(TScriptInterface<IBBContextualizable> && Ne
 
 	verifyf(IsValid(CommandFactory), TEXT("CommandFactory is invalid."));
 
-	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory = HUD->GetWidgetSpecificationFactory();
+	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory = WidgetManager->GetWidgetSpecificationFactory();
 
 	verifyf(IsValid(WidgetSpecificationFactory), TEXT("Widget Specification Factory is invalid."));
 
@@ -134,7 +134,7 @@ void UBBContextComponent::FinalizeOpenWidgetCommand()
 {
 	if (IsValid(OpenCommand))
 	{
-		OpenCommand->MarkPendingKill();
+		OpenCommand->MarkAsGarbage();
 	}
 
 	OpenCommand = nullptr;
@@ -144,7 +144,7 @@ void UBBContextComponent::FinalizeCloseWidgetCommand()
 {
 	if (IsValid(CloseCommand))
 	{
-		CloseCommand->MarkPendingKill();
+		CloseCommand->MarkAsGarbage();
 	}
 
 	CloseCommand = nullptr;
@@ -154,7 +154,7 @@ void UBBContextComponent::FinalizeSetContextCommand()
 {
 	if (IsValid(ContextCommand))
 	{
-		ContextCommand->MarkPendingKill();
+		ContextCommand->MarkAsGarbage();
 	}
 
 	ContextCommand = nullptr;

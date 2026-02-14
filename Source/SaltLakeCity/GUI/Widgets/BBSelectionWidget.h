@@ -24,9 +24,11 @@ class SALTLAKECITY_API UBBSelectionWidget : public UIBBSelectionWidget
 
 		virtual EBBWidget GetType() const override;
 
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
 		virtual void SetDisplayName(FText NewDisplayName) override;
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * DisplayNameText;
+		UTextBlock* DisplayNameText;
 };

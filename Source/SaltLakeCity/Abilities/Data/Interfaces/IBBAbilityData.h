@@ -1,4 +1,4 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,11 +21,15 @@ class SALTLAKECITY_API UIBBAbilityData : public UObject
 	public:
 		UIBBAbilityData() : Super() { };
 
-		virtual EBBJob GetJobType() const PURE_VIRTUAL(UIBBAbilityData::GetJobType, return EBBJob::None; );
+		virtual EBBJob GetJobType() const
+			PURE_VIRTUAL(UIBBAbilityData::GetJobType, return EBBJob::None; );
 
-		virtual FGameplayTag GetEventTag() const PURE_VIRTUAL(UIBBAbilityData::GetEventTag, return FGameplayTag(); );
+		virtual FGameplayTag GetEventTag() const
+			PURE_VIRTUAL(UIBBAbilityData::GetEventTag, return FGameplayTag(); );
 
-		virtual FGameplayEventData * GetEventData() PURE_VIRTUAL(UIBBAbilityData::GetEventData, return nullptr; );
+		virtual FGameplayEventData * GetEventData()
+			PURE_VIRTUAL(UIBBAbilityData::GetEventData, return nullptr; );
 
-		virtual FGameplayTagContainer GetAbilityTags() const PURE_VIRTUAL(UIBBAbilityData::GetAbilityTags, return FGameplayTagContainer(); );
+		virtual FGameplayTagContainer GetAbilityTags() const
+			PURE_VIRTUAL(UIBBAbilityData::GetAbilityTags, return FGameplayTagContainer(); );
 };

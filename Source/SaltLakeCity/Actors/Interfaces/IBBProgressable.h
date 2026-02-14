@@ -126,6 +126,6 @@ struct FBBProgressablePtr
 		}
 
 	protected:
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", MustImplement = "Progressable"))
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", MustImplement = "/Script/SaltLakeCity.BBProgressable"))
 		TSoftClassPtr<UObject> Class;
 };

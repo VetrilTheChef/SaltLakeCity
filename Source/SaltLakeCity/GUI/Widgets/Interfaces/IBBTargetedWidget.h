@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,19 +18,27 @@ class SALTLAKECITY_API UIBBTargetedWidget : public UIBBWidget, public IBBWidgetT
 	GENERATED_BODY()
 
 	public:
-		//UIBBTargetedWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBTargetedWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
-		virtual void NativePreConstruct() override { Super::NativePreConstruct(); };
+		virtual void NativePreConstruct() override
+			{ Super::NativePreConstruct(); };
 
-		virtual void NativeOnInitialized() override { Super::NativeOnInitialized(); };
+		virtual void NativeOnInitialized() override
+			{ Super::NativeOnInitialized(); };
 
-		virtual void BeginDestroy() override { Super::BeginDestroy(); };
+		virtual void BeginDestroy() override
+			{ Super::BeginDestroy(); };
 
-		virtual EBBWidget GetType() const override PURE_VIRTUAL(UIBBTargetedWidget::GetType, return EBBWidget::None; );
+		virtual EBBWidget GetType() const override
+			PURE_VIRTUAL(UIBBTargetedWidget::GetType, return EBBWidget::None; );
+
+		virtual void AddToScreen(int32 ZOrder = 0)
+			PURE_VIRTUAL(UIBBTargetedWidget::AddToScreen, );
 
 		DECLARE_DERIVED_EVENT(UIBBTargetedWidget, IBBWidgetTarget::FBBWidgetTargetUpdate, FBBWidgetTargetUpdate);
 
-		virtual FBBWidgetTargetUpdate & OnWidgetTargetUpdate() final override { return WidgetTargetUpdate; };
+		virtual FBBWidgetTargetUpdate & OnWidgetTargetUpdate() final override
+			{ return WidgetTargetUpdate; };
 
 	protected:
 		FBBWidgetTargetUpdate WidgetTargetUpdate;

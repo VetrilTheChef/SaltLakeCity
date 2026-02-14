@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -23,25 +23,36 @@ class SALTLAKECITY_API UBBGameInstance : public UIBBGameInstance
 
 		virtual void Shutdown() override;
 
-		virtual void Initialize(UWorld * NewWorld, AIBBGameMode * NewGameMode, AIBBGameState * NewGameState, AIBBHUD * NewHUD, AIBBPlayerController * NewPlayerController);
+		virtual void Initialize(
+			UWorld* NewWorld,
+			AIBBGameMode* NewGameMode,
+			AIBBGameState* NewGameState,
+			AIBBHUD* NewHUD,
+			AIBBPlayerController* NewPlayerController
+		);
 
-		virtual void Finalize(UWorld * OldWorld) override;
+		virtual void Finalize(UWorld* OldWorld) override;
 
-		virtual AIBBGameMode * GetGameMode() const override;
+		virtual AIBBGameMode* GetGameMode() const override;
 
-		virtual AIBBGameState * GetGameState() const override;
+		virtual AIBBGameState* GetGameState() const override;
 
-		virtual AIBBHUD * GetHUD() const override;
+		virtual AIBBHUD* GetHUD() const override;
 
-		virtual AIBBPlayerController * GetPlayerController() const override;
+		virtual AIBBPlayerController* GetPlayerController() const override;
+
+		virtual UIBBWidgetManager* GetWidgetManager() const override;
 		
-		virtual const UIBBCommandFactory * GetCommandFactory() const override;
+		virtual const UIBBCommandFactory* GetCommandFactory() const override;
 
-		virtual const UIBBComponentFactory * GetComponentFactory() const override;
+		virtual const UIBBComponentFactory* GetComponentFactory() const override;
 
-		virtual const UIBBSpecificationFactory * GetSpecificationFactory() const override;
+		virtual const UIBBSpecificationFactory* GetSpecificationFactory() const override;
 
 	protected:
+		UPROPERTY(EditAnywhere, Category = "Classes")
+		TSoftClassPtr<UIBBWidgetManager> WidgetManagerClass;
+
 		UPROPERTY(EditAnywhere, Category = "Classes")
 		TSoftClassPtr<UIBBCommandFactory> CommandFactoryClass;
 
@@ -52,29 +63,36 @@ class SALTLAKECITY_API UBBGameInstance : public UIBBGameInstance
 		TSoftClassPtr<UIBBSpecificationFactory> SpecificationFactoryClass;
 
 		UPROPERTY()
-		AIBBGameMode * GameMode;
+		UIBBWidgetManager* WidgetManager;
 
 		UPROPERTY()
-		AIBBGameState * GameState;
+		UIBBCommandFactory* CommandFactory;
 
 		UPROPERTY()
-		AIBBHUD * HUD;
+		UIBBComponentFactory* ComponentFactory;
 
 		UPROPERTY()
-		AIBBPlayerController * PlayerController;
+		UIBBSpecificationFactory* SpecificationFactory;
 
-		UPROPERTY()
-		UIBBCommandFactory * CommandFactory;
+		AIBBGameMode* GetGameModeChecked() const;
 
-		UPROPERTY()
-		UIBBComponentFactory * ComponentFactory;
+		void SetGameModeChecked(AIBBGameMode* NewGameMode);
 
-		UPROPERTY()
-		UIBBSpecificationFactory * SpecificationFactory;
+		AIBBGameState* GetGameStateChecked() const;
 
-		void CreateInstances();
+		void SetGameStateChecked(AIBBGameState* NewGameState);
 
-		void DestroyInstances();
+		AIBBHUD* GetHUDChecked() const;
+
+		void SetHUDChecked(AIBBHUD* NewHUD);
+
+		AIBBPlayerController * GetPlayerControllerChecked() const;
+
+		void SetPlayerControllerChecked(AIBBPlayerController* NewPlayerController);
+
+		void CreateFactories();
+
+		void DestroyFactories();
 
 		void CreateCommandFactory();
 
@@ -87,4 +105,23 @@ class SALTLAKECITY_API UBBGameInstance : public UIBBGameInstance
 		void DestroyComponentFactory();
 
 		void DestroySpecificationFactory();
+
+		void CreateWidgetManager(
+			const UIBBGameInstance* NewGameInstance,
+			const AIBBGameState* NewGameState,
+			AIBBGameMode* NewGameMode,
+			AIBBHUD* NewHUD,
+			APlayerController* NewPlayerController
+		);
+
+		void DestroyWidgetManager();
+
+	private:
+		TWeakObjectPtr<AIBBGameMode> GameMode;
+
+		TWeakObjectPtr<AIBBGameState> GameState;
+
+		TWeakObjectPtr<AIBBHUD> HUD;
+
+		TWeakObjectPtr<AIBBPlayerController> PlayerController;
 };

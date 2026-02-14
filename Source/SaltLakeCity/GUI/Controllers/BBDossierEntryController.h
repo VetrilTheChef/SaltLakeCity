@@ -39,8 +39,5 @@ class SALTLAKECITY_API UBBDossierEntryController : public UIBBDossierEntryContro
 		void FinalizeView();
 
 		UFUNCTION()
-		void UpdateValue(float NewValue);
-
-		UFUNCTION()
-		void UpdateMaxValue(float NewMaxValue);
+		void Update(float NewValue, float NewMaxValue);
 };

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,7 +19,11 @@
 #include "Specifications/GUI/BBTitleWidgetSpecification.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBTargetedWidgetSpecificationSpec, "SaltLakeCity.Specifications.GUI.TargetedWidgetSpecification", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBTargetedWidgetSpecificationSpec,
+	"SaltLakeCity.Specifications.GUI.TargetedWidgetSpecification",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -103,7 +107,7 @@ void UBBTargetedWidgetSpecificationSpec::Define()
 				{
 					UBBWidgetTargetStub * TestTarget = NewObject<UBBWidgetTargetStub>(TestWorld, UBBWidgetTargetStub::StaticClass());
 
-					TestModel->Initialize(TestView, nullptr, nullptr);
+					TestModel->Initialize(TestView, nullptr);
 
 					TestModel->SetWidgetTarget(TScriptInterface<IBBWidgetTarget>(TestTarget));
 

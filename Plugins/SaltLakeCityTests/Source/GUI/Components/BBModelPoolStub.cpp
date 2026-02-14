@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBModelPoolStub.h"
 
@@ -17,7 +17,7 @@ UBBModelPoolStub::UBBModelPoolStub() :
 	ReturnModel = nullptr;
 }
 
-void UBBModelPoolStub::Initialize(UIBBGameInstance * NewGameInstance)
+void UBBModelPoolStub::Initialize(const UIBBGameInstance * NewGameInstance)
 {
 }
 

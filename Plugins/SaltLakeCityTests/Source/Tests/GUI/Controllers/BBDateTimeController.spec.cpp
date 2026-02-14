@@ -1,10 +1,10 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetData.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetData.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Commands/Factories/BBCommandFactoryStub.h"
 #include "Commands/Controllers/BBPauseCommandStub.h"
 #include "Commands/Controllers/BBSpeedCommandStub.h"
@@ -17,7 +17,11 @@
 #include "GUI/Widgets/Interfaces/IBBDateTimeWidget.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBDateTimeControllerSpec, "SaltLakeCity.GUI.Controllers.DateTime", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBDateTimeControllerSpec,
+	"SaltLakeCity.GUI.Controllers.DateTime",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

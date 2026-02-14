@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,28 +19,28 @@ class UBBModesWidgetStub : public UIBBModesWidget
 	GENERATED_BODY()
 
 	public:
-		UBBModesWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBModesWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
 
-		UIBBCommand * GetPlayModeCommand() const;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
-		virtual void SetPlayModeCommand(UIBBCommand * Command) override;
+		UIBBCommand* GetPlayModeCommand() const;
 
-		UIBBCommand * UBBModesWidgetStub::GetBuildModeCommand() const;
+		virtual void SetPlayModeCommand(UIBBCommand* Command) override;
 
-		virtual void SetBuildModeCommand(UIBBCommand * Command) override;
+		UIBBCommand* GetBuildModeCommand() const;
+
+		virtual void SetBuildModeCommand(UIBBCommand* Command) override;
 
 		EBBGameMode GetActiveMode() const;
 
 		virtual void SetActiveMode(EBBGameMode GameMode) override;
 
 	protected:
-		UPROPERTY()
-		UIBBCommand * PlayModeCommand;
+		TSoftObjectPtr<UIBBCommand> PlayModeCommand;
 
-		UPROPERTY()
-		UIBBCommand * BuildModeCommand;
+		TSoftObjectPtr<UIBBCommand> BuildModeCommand;
 
 		EBBGameMode ActiveGameMode;
 };

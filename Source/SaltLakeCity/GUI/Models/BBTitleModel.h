@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -23,9 +23,11 @@ class SALTLAKECITY_API UBBTitleModel : public UIBBTitleModel
 
 		virtual UIBBWidget * GetWidget() const override;
 
-		virtual UIBBWidgetSpecification * GetWidgetSpecification(const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory) override;
+		virtual UIBBWidgetSpecification * GetWidgetSpecification(
+			const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory
+		) override;
 
-		virtual void Initialize(UIBBTitleWidget * NewView, UIBBGUIModel * NewParentModel, AIBBHUD * NewHUD) override;
+		virtual void Initialize(UIBBTitleWidget * NewView, UIBBGUIModel * NewParentModel) override;
 
 		virtual void Finalize() override;
 
@@ -33,27 +35,29 @@ class SALTLAKECITY_API UBBTitleModel : public UIBBTitleModel
 
 		virtual UIBBWidget * GetParentWidget() const override;
 
-		virtual UIBBWidgetSpecification * GetParentWidgetSpecification(const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory) override;
+		virtual UIBBWidgetSpecification * GetParentWidgetSpecification(
+			const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory
+		) override;
 
 	protected:
-		UPROPERTY()
-		UIBBTitleWidget * View;
-
-		UPROPERTY()
-		UIBBGUIModel * ParentModel;
-
-		UPROPERTY()
-		AIBBHUD * HUD;
-
 		void InitializeView(UIBBTitleWidget * NewView);
 
 		void InitializeParentModel(UIBBGUIModel * NewParentModel);
-
-		void InitializeHUD(AIBBHUD * NewHUD);
 
 		void FinalizeView();
 
 		void FinalizeParentModel();
 
-		void FinalizeHUD();
+		UIBBTitleWidget* GetTitleViewChecked() const;
+
+		void SetTitleViewChecked(UIBBTitleWidget* NewView);
+
+		UIBBGUIModel* GetParentModelChecked() const;
+
+		void SetParentModelChecked(UIBBGUIModel* NewParentModel);
+
+	private:
+		TSoftObjectPtr<UIBBTitleWidget> View;
+
+		TSoftObjectPtr<UIBBGUIModel> ParentModel;
 };

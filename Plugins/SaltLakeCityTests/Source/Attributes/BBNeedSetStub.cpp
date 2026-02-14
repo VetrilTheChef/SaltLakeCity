@@ -1,6 +1,8 @@
 // SaltLakeCity 4.27
 
 #include "BBNeedSetStub.h"
+#include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UBBNeedSetStub::UBBNeedSetStub() :
 	Super()
@@ -14,8 +16,6 @@ UBBNeedSetStub::UBBNeedSetStub() :
 	InitMaxThirst(-1.0f);
 
 	Attributes.Empty();
-	AttributeUpdates.Empty();
-	AttributeSetters.Empty();
 }
 
 void UBBNeedSetStub::PostInitProperties()
@@ -23,17 +23,34 @@ void UBBNeedSetStub::PostInitProperties()
 	Super::PostInitProperties();
 
 	MapAttributes();
-	Subscribe();
 }
 
 void UBBNeedSetStub::BeginDestroy()
 {
-	Unsubscribe();
 	Attributes.Empty();
-	AttributeUpdates.Empty();
-	AttributeSetters.Empty();
 
 	Super::BeginDestroy();
+}
+
+void UBBNeedSetStub::Initialize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Finalize(AbilityComponent);
+
+	Subscribe(AbilityComponent);
+}
+
+void UBBNeedSetStub::Finalize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Unsubscribe(AbilityComponent);
+}
+
+void UBBNeedSetStub::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBNeedSetStub, Hunger, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBNeedSetStub, Sleep, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBNeedSetStub, Thirst, COND_None, REPNOTIFY_Always);
 }
 
 void UBBNeedSetStub::PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue)
@@ -53,34 +70,43 @@ void UBBNeedSetStub::PreAttributeChange(const FGameplayAttribute & Attribute, fl
 	*/
 }
 
-FGameplayAttribute UBBNeedSetStub::GetAttribute(EBBNeed Need) const
-{
-	return (* (Attributes.FindChecked(Need).Attribute))();
-}
-
-FGameplayAttribute UBBNeedSetStub::GetMaxAttribute(EBBNeed Need) const
-{
-	return (* (Attributes.FindChecked(Need).MaxAttribute))();
-}
-
 float UBBNeedSetStub::GetValue(EBBNeed Need) const
 {
-	return (this->* (Attributes.FindChecked(Need).Getter))();
+	const FBBGetAttributeDelegate & Get = Attributes.FindChecked(Need).GetValue;
+
+	return Get.IsBound() ? Get.Execute() : -1.0f;
 }
 
 void UBBNeedSetStub::SetValue(EBBNeed Need, float NewValue)
 {
-	(this->* (Attributes.FindChecked(Need).Setter))(NewValue);
+	Attributes.FindChecked(Need).SetValue.ExecuteIfBound(NewValue);
 }
 
 float UBBNeedSetStub::GetMaxValue(EBBNeed Need) const
 {
-	return (this->* (Attributes.FindChecked(Need).MaxGetter))();
+	const FBBGetAttributeDelegate & GetMax = Attributes.FindChecked(Need).GetMaxValue;
+
+	return GetMax.IsBound() ? GetMax.Execute() : -1.0f;
 }
 
-void UBBNeedSetStub::SetMaxValue(EBBNeed Need, float NewValue)
+void UBBNeedSetStub::SetMaxValue(EBBNeed Need, float NewMaxValue)
 {
-	(this->* (Attributes.FindChecked(Need).MaxSetter))(NewValue);
+	Attributes.FindChecked(Need).SetMaxValue.ExecuteIfBound(NewMaxValue);
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBNeedSetStub::GetValueDelegate(EBBNeed Need) const
+{
+	return Attributes.FindChecked(Need).GetValue;
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBNeedSetStub::GetMaxValueDelegate(EBBNeed Need) const
+{
+	return Attributes.FindChecked(Need).GetMaxValue;
+}
+
+UIBBBaseAttributeSet::FBBAttributeUpdate * UBBNeedSetStub::OnUpdate(EBBNeed Need) const
+{
+	return Attributes.FindChecked(Need).OnUpdate;
 }
 
 
@@ -88,31 +114,21 @@ void UBBNeedSetStub::SetMaxValue(EBBNeed Need, float NewValue)
 void UBBNeedSetStub::MapAttributes()
 {
 	Attributes.Empty();
-	Attributes.Emplace(EBBNeed::Hunger, BB_ATTRIBUTE_STRUCT(UBBNeedSetStub, Hunger, MaxHunger));
-	Attributes.Emplace(EBBNeed::Sleep, BB_ATTRIBUTE_STRUCT(UBBNeedSetStub, Sleep, MaxSleep));
-	Attributes.Emplace(EBBNeed::Thirst, BB_ATTRIBUTE_STRUCT(UBBNeedSetStub, Thirst, MaxThirst));
+	Attributes.Emplace(EBBNeed::Hunger, BB_ATTRIBUTE_STRUCT(UBBNeedSetStub, Hunger));
+	Attributes.Emplace(EBBNeed::Sleep, BB_ATTRIBUTE_STRUCT(UBBNeedSetStub, Sleep));
+	Attributes.Emplace(EBBNeed::Thirst, BB_ATTRIBUTE_STRUCT(UBBNeedSetStub, Thirst));
 
-	AttributeUpdates.Empty();
-	AttributeUpdates.Emplace(GetHungerAttribute(), & UBBNeedSetStub::OnHungerUpdate);
-	AttributeUpdates.Emplace(GetMaxHungerAttribute(), & UBBNeedSetStub::OnMaxHungerUpdate);
-	AttributeUpdates.Emplace(GetSleepAttribute(), & UBBNeedSetStub::OnSleepUpdate);
-	AttributeUpdates.Emplace(GetMaxSleepAttribute(), & UBBNeedSetStub::OnMaxSleepUpdate);
-	AttributeUpdates.Emplace(GetThirstAttribute(), & UBBNeedSetStub::OnThirstUpdate);
-	AttributeUpdates.Emplace(GetMaxThirstAttribute(), & UBBNeedSetStub::OnMaxThirstUpdate);
-
-	AttributeSetters.Empty();
-	AttributeSetters.Emplace(GetHungerAttribute(), & UBBNeedSetStub::SetHunger);
-	AttributeSetters.Emplace(GetMaxHungerAttribute(), & UBBNeedSetStub::SetMaxHunger);
-	AttributeSetters.Emplace(GetSleepAttribute(), & UBBNeedSetStub::SetSleep);
-	AttributeSetters.Emplace(GetMaxSleepAttribute(), & UBBNeedSetStub::SetMaxSleep);
-	AttributeSetters.Emplace(GetThirstAttribute(), & UBBNeedSetStub::SetThirst);
-	AttributeSetters.Emplace(GetMaxThirstAttribute(), & UBBNeedSetStub::SetMaxThirst);
+	AttributeToEnum.Empty();
+	AttributeToEnum.Emplace(GetHungerAttribute(), EBBNeed::Hunger);
+	AttributeToEnum.Emplace(GetMaxHungerAttribute(), EBBNeed::Hunger);
+	AttributeToEnum.Emplace(GetSleepAttribute(), EBBNeed::Sleep);
+	AttributeToEnum.Emplace(GetMaxSleepAttribute(), EBBNeed::Sleep);
+	AttributeToEnum.Emplace(GetThirstAttribute(), EBBNeed::Thirst);
+	AttributeToEnum.Emplace(GetMaxThirstAttribute(), EBBNeed::Thirst);
 }
 
-void UBBNeedSetStub::Subscribe()
+void UBBNeedSetStub::Subscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	verifyf(IsValid(AbilityComponent), TEXT("Ability Component is invalid."))
 
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHungerAttribute()).AddUObject(this, & UBBNeedSetStub::UpdateAttribute);
@@ -123,10 +139,8 @@ void UBBNeedSetStub::Subscribe()
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetMaxThirstAttribute()).AddUObject(this, & UBBNeedSetStub::UpdateAttribute);
 }
 
-void UBBNeedSetStub::Unsubscribe()
+void UBBNeedSetStub::Unsubscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	if (IsValid(AbilityComponent))
 	{
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHungerAttribute()).RemoveAll(this);
@@ -140,9 +154,17 @@ void UBBNeedSetStub::Unsubscribe()
 
 void UBBNeedSetStub::UpdateAttribute(const FOnAttributeChangeData & Data)
 {
-	(this->* (AttributeSetters.FindChecked(Data.Attribute)))(Data.NewValue);
+	EBBNeed AttributeToUpdate = AttributeToEnum.FindChecked(Data.Attribute);
 
-	(this->* (AttributeUpdates.FindChecked(Data.Attribute)))().Broadcast(Data.NewValue);
+	FBBAttribute & UpdatedAttribute = Attributes.FindChecked(AttributeToUpdate);
+
+	float Value = UpdatedAttribute.GetValue.Execute();
+	float MaxValue = UpdatedAttribute.GetMaxValue.Execute();
+
+	if (UpdatedAttribute.OnUpdate)
+	{
+		UpdatedAttribute.OnUpdate->Broadcast(Value, MaxValue);
+	}
 }
 
 void UBBNeedSetStub::OnRep_Hunger(const FGameplayAttributeData & OldHunger)

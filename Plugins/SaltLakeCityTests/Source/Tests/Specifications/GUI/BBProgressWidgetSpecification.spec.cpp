@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,7 +18,10 @@
 #include "Specifications/GUI/BBProgressWidgetSpecification.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBProgressWidgetSpecificationSpec, "SaltLakeCity.Specifications.GUI.ProgressWidgetSpecification", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBProgressWidgetSpecificationSpec,
+	"SaltLakeCity.Specifications.GUI.ProgressWidgetSpecification",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

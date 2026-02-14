@@ -1,14 +1,15 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #include "BBBuildEntryWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
+#include "GameInstances/Interfaces/IBBGameInstance.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
 #include "GUI/Components/Interfaces/IBBButton.h"
 #include "GUI/Data/Interfaces/IBBBuildEntry.h"
 #include "GUI/Factories/Interfaces/IBBWidgetFactory.h"
-#include "IOC/BBIOC.h"
 
-UBBBuildEntryWidget::UBBBuildEntryWidget(const FObjectInitializer & ObjectInitializer) :
+UBBBuildEntryWidget::UBBBuildEntryWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 }
@@ -18,6 +19,11 @@ EBBWidget UBBBuildEntryWidget::GetType() const
 	return EBBWidget::BuildEntry;
 }
 
+void UBBBuildEntryWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
 void UBBBuildEntryWidget::SetEntryName(FText NewName)
 {
 	verifyf(IsValid(EntryButton), TEXT("Entry Button is invalid."));
@@ -25,7 +31,7 @@ void UBBBuildEntryWidget::SetEntryName(FText NewName)
 	EntryButton->SetToolTipText(NewName);
 }
 
-void UBBBuildEntryWidget::SetIcon(UTexture2D * NewIcon)
+void UBBBuildEntryWidget::SetIcon(UTexture2D* NewIcon)
 {
 	verifyf(IsValid(EntryIcon), TEXT("Entry Icon is invalid."));
 	
@@ -46,7 +52,7 @@ void UBBBuildEntryWidget::SetTime(float NewTime)
 	EntryTime->SetText(FText::FromString(FString::SanitizeFloat(NewTime) + " h"));
 }
 
-void UBBBuildEntryWidget::SetCommand(UIBBCommand * NewCommand)
+void UBBBuildEntryWidget::SetCommand(UIBBCommand* NewCommand)
 {
 	verifyf(IsValid(EntryButton), TEXT("Entry Button is invalid."));
 	
@@ -55,23 +61,23 @@ void UBBBuildEntryWidget::SetCommand(UIBBCommand * NewCommand)
 
 
 
-void UBBBuildEntryWidget::NativeOnListItemObjectSet(UObject * ListItemObject)
+void UBBBuildEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	Super::NativeOnListItemObjectSet(ListItemObject);
 
-	UIBBGameInstance * GameInstance = GetGameInstance<UIBBGameInstance>();
+	UIBBGameInstance* GameInstance = GetGameInstance<UIBBGameInstance>();
 
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
 
-	AIBBHUD * HUD = GameInstance->GetHUD();
+	UIBBWidgetManager* WidgetManager = GameInstance->GetWidgetManager();
 
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
-	const UIBBWidgetFactory * WidgetFactory = HUD->GetWidgetFactory();
+	const UIBBWidgetFactory* WidgetFactory = WidgetManager->GetWidgetFactory();
 
 	verifyf(IsValid(WidgetFactory), TEXT("Widget Factory is invalid."));
 
-	UIBBBuildEntryWidget * Widget = this;
+	UIBBBuildEntryWidget* Widget = this;
 
 	WidgetFactory->NewBuildEntryWidget(Widget, Cast<UIBBBuildEntry>(ListItemObject));
 }

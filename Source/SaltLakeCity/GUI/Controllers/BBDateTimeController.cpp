@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBDateTimeController.h"
 #include "Commands/Controllers/BBPauseCommand.h"
@@ -83,7 +83,7 @@ void UBBDateTimeController::FinalizeView()
 {
 	if (IsValid(View))
 	{
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;

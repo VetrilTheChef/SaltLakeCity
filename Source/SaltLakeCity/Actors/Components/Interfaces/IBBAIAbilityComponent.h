@@ -10,7 +10,7 @@
 #include "IBBAIAbilityComponent.generated.h"
 
 class UDataTable;
-class UIBBAttributeSet;
+class UIBBBaseAttributeSet;
 
 USTRUCT(BlueprintType)
 
@@ -20,20 +20,21 @@ struct FBBAttributeSetData
 
 	public:
 		UPROPERTY(Category = "Attribute Set", EditAnywhere, BlueprintReadWrite)
-		TSoftClassPtr<UIBBAttributeSet> Class;
+		TSoftClassPtr<UIBBBaseAttributeSet> Class;
 
 		UPROPERTY(Category = "Attribute Set", EditAnywhere, BlueprintReadWrite)
 		TSoftObjectPtr<UDataTable> DataTable;
 
 		FBBAttributeSetData() :
-			Class(TSoftClassPtr<UIBBAttributeSet>()),
+			Class(TSoftClassPtr<UIBBBaseAttributeSet>()),
 			DataTable(TSoftObjectPtr<UDataTable>())
 		{
 		}
 
-		FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet> NewClass, TSoftObjectPtr<UDataTable> NewDataTable) :
-				Class(NewClass),
-				DataTable(NewDataTable)
+		FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet> NewClass,
+			TSoftObjectPtr<UDataTable> NewDataTable) :
+			Class(NewClass),
+			DataTable(NewDataTable)
 		{
 		}
 

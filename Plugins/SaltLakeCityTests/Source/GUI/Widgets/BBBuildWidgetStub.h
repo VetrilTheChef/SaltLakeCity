@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,7 +21,7 @@ struct FBBBuildWidgetStubEntries
 	GENERATED_BODY()
 
 	public:
-		TArray<UIBBBuildEntry *> Entries;
+		TArray<UIBBBuildEntry*> Entries;
 
 		FBBBuildWidgetStubEntries()
 		{
@@ -36,7 +36,7 @@ class UBBBuildWidgetStub : public UIBBBuildWidget
 	GENERATED_BODY()
 
 	public:
-		UBBBuildWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBBuildWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeDestruct() override;
 
@@ -44,13 +44,15 @@ class UBBBuildWidgetStub : public UIBBBuildWidget
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void AddEntry(EBBBuildCategory Category, UIBBBuildEntry * & NewEntry) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
+		virtual void AddEntry(EBBBuildCategory Category, UIBBBuildEntry*& NewEntry) override;
 
 		virtual void ClearEntries(EBBBuildCategory Category) override;
 
 		int GetNumEntries(EBBBuildCategory Category);
 
-		UIBBBuildEntry * GetEntry(EBBBuildCategory Category, int Index);
+		UIBBBuildEntry* GetEntry(EBBBuildCategory Category, int Index);
 
 	protected:
 		friend class UBBBuildControllerSpec;

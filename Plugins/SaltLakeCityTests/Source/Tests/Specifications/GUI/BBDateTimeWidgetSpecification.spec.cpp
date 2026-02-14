@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,7 +18,11 @@
 #include "Specifications/GUI/BBDateTimeWidgetSpecification.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBDateTimeWidgetSpecificationSpec, "SaltLakeCity.Specifications.GUI.DateTimeWidgetSpecification", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBDateTimeWidgetSpecificationSpec,
+	"SaltLakeCity.Specifications.GUI.DateTimeWidgetSpecification",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

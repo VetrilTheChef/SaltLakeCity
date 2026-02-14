@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -20,17 +20,19 @@ class UBBBuildEntryWidgetStub : public UIBBBuildEntryWidget
 	GENERATED_BODY()
 
 	public:
-		UBBBuildEntryWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBBuildEntryWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		FText GetEntryName();
 
 		virtual void SetEntryName(FText NewName) override;
 
-		UTexture2D * GetIcon();
+		UTexture2D* GetIcon();
 
-		virtual void SetIcon(UTexture2D * NewImage) override;
+		virtual void SetIcon(UTexture2D* NewImage) override;
 
 		float GetPrice();
 
@@ -40,9 +42,9 @@ class UBBBuildEntryWidgetStub : public UIBBBuildEntryWidget
 
 		virtual void SetTime(float NewTime) override;
 
-		UIBBCommand * GetCommand();
+		UIBBCommand* GetCommand();
 
-		virtual void SetCommand(UIBBCommand * NewCommand) override;
+		virtual void SetCommand(UIBBCommand* NewCommand) override;
 
 		void ClickEntryButton();
 
@@ -50,14 +52,14 @@ class UBBBuildEntryWidgetStub : public UIBBBuildEntryWidget
 		FText Name;
 
 		UPROPERTY()
-		UTexture2D * Icon;
+		UTexture2D* Icon;
 
 		float Price;
 
 		float Time;
 
 		UPROPERTY()
-		UIBBCommand * Command;
+		UIBBCommand* Command;
 
-		virtual void NativeOnListItemObjectSet(UObject * ListItemObject) override;
+		virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 };

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -22,7 +22,11 @@
 
 class UBBModelPool;
 
-BEGIN_DEFINE_SPEC(UBBModelPoolSpec, "SaltLakeCity.Game States.Components.ModelPool", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBModelPoolSpec,
+	"SaltLakeCity.Game States.Components.ModelPool",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

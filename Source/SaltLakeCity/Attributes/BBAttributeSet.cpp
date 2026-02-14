@@ -1,6 +1,7 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBAttributeSet.h"
+#include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UBBAttributeSet::UBBAttributeSet() :
@@ -10,7 +11,7 @@ UBBAttributeSet::UBBAttributeSet() :
 	InitMaxValues();
 
 	Attributes.Empty();
-	AttributeUpdates.Empty();
+	AttributeToEnum.Empty();
 }
 
 void UBBAttributeSet::PostInitProperties()
@@ -18,16 +19,26 @@ void UBBAttributeSet::PostInitProperties()
 	Super::PostInitProperties();
 
 	MapAttributes();
-	Subscribe();
 }
 
 void UBBAttributeSet::BeginDestroy()
 {
-	Unsubscribe();
 	Attributes.Empty();
-	AttributeUpdates.Empty();
+	AttributeToEnum.Empty();
 
 	Super::BeginDestroy();
+}
+
+void UBBAttributeSet::Initialize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Finalize(AbilityComponent);
+
+	Subscribe(AbilityComponent);
+}
+
+void UBBAttributeSet::Finalize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Unsubscribe(AbilityComponent);
 }
 
 void UBBAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -55,34 +66,43 @@ void UBBAttributeSet::PreAttributeChange(const FGameplayAttribute & Attribute, f
 	*/
 }
 
-FGameplayAttribute UBBAttributeSet::GetAttribute(EBBAttribute Attribute) const
-{
-	return (* (Attributes.FindChecked(Attribute).Attribute))();
-}
-
-FGameplayAttribute UBBAttributeSet::GetMaxAttribute(EBBAttribute Attribute) const
-{
-	return (* (Attributes.FindChecked(Attribute).MaxAttribute))();
-}
-
 float UBBAttributeSet::GetValue(EBBAttribute Attribute) const
 {
-	return (this->* (Attributes.FindChecked(Attribute).Getter))();
+	const FBBGetAttributeDelegate & Get = Attributes.FindChecked(Attribute).GetValue;
+
+	return Get.IsBound() ? Get.Execute() : -1.0f;
 }
 
 void UBBAttributeSet::SetValue(EBBAttribute Attribute, float NewValue)
 {
-	(this->* (Attributes.FindChecked(Attribute).Setter))(NewValue);
+	Attributes.FindChecked(Attribute).SetValue.ExecuteIfBound(NewValue);
 }
 
 float UBBAttributeSet::GetMaxValue(EBBAttribute Attribute) const
 {
-	return (this->* (Attributes.FindChecked(Attribute).MaxGetter))();
+	const FBBGetAttributeDelegate & GetMax = Attributes.FindChecked(Attribute).GetMaxValue;
+
+	return GetMax.IsBound() ? GetMax.Execute() : -1.0f;
 }
 
-void UBBAttributeSet::SetMaxValue(EBBAttribute Attribute, float NewValue)
+void UBBAttributeSet::SetMaxValue(EBBAttribute Attribute, float NewMaxValue)
 {
-	(this->* (Attributes.FindChecked(Attribute).MaxSetter))(NewValue);
+	Attributes.FindChecked(Attribute).SetMaxValue.ExecuteIfBound(NewMaxValue);
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBAttributeSet::GetValueDelegate(EBBAttribute Attribute) const
+{
+	return Attributes.FindChecked(Attribute).GetValue;
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBAttributeSet::GetMaxValueDelegate(EBBAttribute Attribute) const
+{
+	return Attributes.FindChecked(Attribute).GetMaxValue;
+}
+
+UIBBBaseAttributeSet::FBBAttributeUpdate * UBBAttributeSet::OnUpdate(EBBAttribute Attribute) const
+{
+	return Attributes.FindChecked(Attribute).OnUpdate;
 }
 
 
@@ -102,20 +122,18 @@ void UBBAttributeSet::InitMaxValues()
 void UBBAttributeSet::MapAttributes()
 {
 	Attributes.Empty();
-	Attributes.Emplace(EBBAttribute::Health, BB_ATTRIBUTE_STRUCT(UBBAttributeSet, Health, MaxHealth));
-	Attributes.Emplace(EBBAttribute::Stamina, BB_ATTRIBUTE_STRUCT(UBBAttributeSet, Stamina, MaxStamina));
+	Attributes.Emplace(EBBAttribute::Health, BB_ATTRIBUTE_STRUCT(UBBAttributeSet, Health));
+	Attributes.Emplace(EBBAttribute::Stamina, BB_ATTRIBUTE_STRUCT(UBBAttributeSet, Stamina));
 
-	AttributeUpdates.Empty();
-	AttributeUpdates.Emplace(GetHealthAttribute(), & UBBAttributeSet::OnHealthUpdate);
-	AttributeUpdates.Emplace(GetMaxHealthAttribute(), & UBBAttributeSet::OnMaxHealthUpdate);
-	AttributeUpdates.Emplace(GetStaminaAttribute(), & UBBAttributeSet::OnStaminaUpdate);
-	AttributeUpdates.Emplace(GetMaxStaminaAttribute(), & UBBAttributeSet::OnMaxStaminaUpdate);
+	AttributeToEnum.Empty();
+	AttributeToEnum.Emplace(GetHealthAttribute(), EBBAttribute::Health);
+	AttributeToEnum.Emplace(GetMaxHealthAttribute(), EBBAttribute::Health);
+	AttributeToEnum.Emplace(GetStaminaAttribute(), EBBAttribute::Stamina);
+	AttributeToEnum.Emplace(GetMaxStaminaAttribute(), EBBAttribute::Stamina);
 }
 
-void UBBAttributeSet::Subscribe()
+void UBBAttributeSet::Subscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	verifyf(IsValid(AbilityComponent), TEXT("Ability Component is invalid."))
 
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHealthAttribute()).AddUObject(this, & UBBAttributeSet::UpdateAttribute);
@@ -124,10 +142,8 @@ void UBBAttributeSet::Subscribe()
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetMaxStaminaAttribute()).AddUObject(this, & UBBAttributeSet::UpdateAttribute);
 }
 
-void UBBAttributeSet::Unsubscribe()
+void UBBAttributeSet::Unsubscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	if (IsValid(AbilityComponent))
 	{
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetHealthAttribute()).RemoveAll(this);
@@ -139,7 +155,19 @@ void UBBAttributeSet::Unsubscribe()
 
 void UBBAttributeSet::UpdateAttribute(const FOnAttributeChangeData & Data)
 {
-	(this->* (AttributeUpdates.FindChecked(Data.Attribute)))().Broadcast(Data.NewValue);
+	EBBAttribute AttributeToUpdate = AttributeToEnum.FindChecked(Data.Attribute);
+
+	FBBAttribute & UpdatedAttribute = Attributes.FindChecked(AttributeToUpdate);
+
+	verifyf(UpdatedAttribute.GetValue.IsBound(), TEXT("Value Delegate is unbound."));
+	verifyf(UpdatedAttribute.GetMaxValue.IsBound(), TEXT("Max Value Delegate is unbound."));
+
+	float Value = UpdatedAttribute.GetValue.Execute();
+	float MaxValue = UpdatedAttribute.GetMaxValue.Execute();
+
+	verifyf(UpdatedAttribute.OnUpdate, TEXT("On Update is null."));
+
+	UpdatedAttribute.OnUpdate->Broadcast(Value, MaxValue);
 }
 
 void UBBAttributeSet::OnRep_Health(const FGameplayAttributeData & OldHealth)

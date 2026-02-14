@@ -1,11 +1,10 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Commands/Factories/BBCommandFactoryStub.h"
 #include "Commands/GUI/BBCloseWidgetCommandStub.h"
-#include "GUI/BBHUDStub.h"
 #include "GUI/Controllers/BBDossierController.h"
 #include "GUI/Data/BBDossierEntryStub.h"
 #include "GUI/Factories/BBWidgetFactoryStub.h"
@@ -17,60 +16,59 @@
 #include "Specifications/Factories/BBSpecificationFactoryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBDossierControllerSpec, "SaltLakeCity.GUI.Controllers.Dossier", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBDossierControllerSpec,
+	"SaltLakeCity.GUI.Controllers.Dossier",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
-	UWorld * TestWorld = nullptr;
+	UWorld* TestWorld = nullptr;
 
 	UPROPERTY()
-	ABBHUDStub * HUD = nullptr;
+	UBBDossierModelStub* Model = nullptr;
 
 	UPROPERTY()
-	UBBDossierModelStub * Model = nullptr;
+	UBBDossierWidgetStub* View = nullptr;
 
 	UPROPERTY()
-	UBBDossierWidgetStub * View = nullptr;
+	UBBCommandFactoryStub* CommandFactory = nullptr;
 
 	UPROPERTY()
-	UBBCommandFactoryStub * CommandFactory = nullptr;
+	UBBCloseWidgetCommandStub* CloseCommand = nullptr;
 
 	UPROPERTY()
-	UBBCloseWidgetCommandStub * CloseCommand = nullptr;
+	UBBSpecificationFactoryStub* SpecificationFactory = nullptr;
 
 	UPROPERTY()
-	UBBSpecificationFactoryStub * SpecificationFactory = nullptr;
+	UBBWidgetFactoryStub* WidgetFactory = nullptr;
 
 	UPROPERTY()
-	UBBWidgetFactoryStub * WidgetFactory = nullptr;
+	UBBTitleWidgetStub* TitleWidget = nullptr;
 
 	UPROPERTY()
-	UBBTitleWidgetStub * TitleWidget = nullptr;
+	TArray<UClass*> ControllerClasses;
 
-	UPROPERTY()
-	TArray<UClass *> ControllerClasses;
-
-	UPROPERTY()
 	TArray<float> Progresses;
 
 	// SUT
 	UPROPERTY()
-	UBBDossierController * Controller = nullptr;
+	UBBDossierController* Controller = nullptr;
 
 	FActorSpawnParameters SpawnParameters;
 
-	void TestAttribute(EBBAttribute Attribute, UBBDossierWidgetStub * DossierView, UBBDossierEntryStub * DossierEntry)
+	template<typename E>
+	bool InitializeEntry(E Enum, TMap<E, UBBDossierEntryStub*>& Entries, UObject* Outer)
 	{
-		TEST_TRUE(DossierView->GetAttributeEntry(0) == DossierEntry)
-	}
+		UBBDossierEntryStub* NewEntry = NewObject<UBBDossierEntryStub>(Model, UBBDossierEntryStub::StaticClass());
 
-	void TestNeed(EBBNeed Need, UBBDossierWidgetStub * DossierView, UBBDossierEntryStub * DossierEntry)
-	{
-		TEST_TRUE(DossierView->GetAttributeEntry(0) == DossierEntry)
-	}
+		UTEST_TRUE("New Entry is valid", IsValid(NewEntry))
 
-	void TestSkill(EBBSkill Skill, UBBDossierWidgetStub * DossierView, UBBDossierEntryStub * DossierEntry)
-	{
-		TEST_TRUE(DossierView->GetAttributeEntry(0) == DossierEntry)
+		Entries.Emplace(Enum, NewEntry);
+
+		Model->SetDossierEntry(Enum, Entries.FindChecked(Enum));
+
+		return true;
 	}
 
 END_DEFINE_SPEC(UBBDossierControllerSpec)
@@ -105,45 +103,60 @@ void UBBDossierControllerSpec::Define()
 
 		UTEST_TRUE("Test World is valid", IsValid(TestWorld))
 
-		HUD = TestWorld->SpawnActor<ABBHUDStub>(ABBHUDStub::StaticClass(), SpawnParameters);
-
-		UTEST_TRUE("HUD is valid", IsValid(HUD))
-
-		Model = NewObject<UBBDossierModelStub>(TestWorld, UBBDossierModelStub::StaticClass());
+		Model = NewObject<UBBDossierModelStub>(
+			TestWorld,
+			UBBDossierModelStub::StaticClass()
+		);
 
 		UTEST_TRUE("Model is valid", IsValid(Model))
 
-		View = CreateWidget<UBBDossierWidgetStub>(TestWorld, UBBDossierWidgetStub::StaticClass());
+		View = CreateWidget<UBBDossierWidgetStub>(
+			TestWorld,
+			UBBDossierWidgetStub::StaticClass()
+		);
 
 		UTEST_TRUE("View is valid", IsValid(View))
 
 		View->NativeOnInitialized();
 
-		CommandFactory = NewObject<UBBCommandFactoryStub>(TestWorld, UBBCommandFactoryStub::StaticClass());
+		CommandFactory = NewObject<UBBCommandFactoryStub>(
+			TestWorld,
+			UBBCommandFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Command Factory is valid", IsValid(CommandFactory))
 
-		CloseCommand = NewObject<UBBCloseWidgetCommandStub>(CommandFactory, UBBCloseWidgetCommandStub::StaticClass());
+		CloseCommand = NewObject<UBBCloseWidgetCommandStub>(
+			CommandFactory,
+			UBBCloseWidgetCommandStub::StaticClass()
+		);
 
 		UTEST_TRUE("Close Command is valid", IsValid(CloseCommand))
 
 		CommandFactory->AddCloseWidgetCommand(CloseCommand);
 
-		SpecificationFactory = NewObject<UBBSpecificationFactoryStub>(TestWorld, UBBSpecificationFactoryStub::StaticClass());
+		SpecificationFactory = NewObject<UBBSpecificationFactoryStub>(
+			TestWorld,
+			UBBSpecificationFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Specification Factory is valid", IsValid(SpecificationFactory))
 
-		WidgetFactory = NewObject<UBBWidgetFactoryStub>(HUD, UBBWidgetFactoryStub::StaticClass());
+		WidgetFactory = NewObject<UBBWidgetFactoryStub>(
+			TestWorld,
+			UBBWidgetFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Widget Factory is valid", IsValid(WidgetFactory))
 
-		TitleWidget = NewObject<UBBTitleWidgetStub>(WidgetFactory, UBBTitleWidgetStub::StaticClass());
+		TitleWidget = NewObject<UBBTitleWidgetStub>(
+			WidgetFactory,
+			UBBTitleWidgetStub::StaticClass()
+		);
 
 		UTEST_TRUE("Title Widget is valid", IsValid(TitleWidget))
 
 		WidgetFactory->AddWidget(TitleWidget);
-
-		HUD->SetWidgetFactory(WidgetFactory);
 
 		return true;
 	});
@@ -161,18 +174,18 @@ void UBBDossierControllerSpec::Define()
 		TitleWidget = nullptr;
 		WidgetFactory = nullptr;
 
-		TestWorld->DestroyActor(HUD);
-
 		Controller = nullptr;
 
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (UClass * & ControllerClass : ControllerClasses)
+	for (UClass*& ControllerClass : ControllerClasses)
 	{
 		Describe("[" + ControllerClass->GetName() + "]", [this, ControllerClass]()
 		{
-			It("Given a new view, expect the controller to initialize the view's title", [this, ControllerClass]()
+			It(
+				"Given a new view, expect the controller to initialize the view's title",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBDossierController>(View, ControllerClass);
 
@@ -187,7 +200,9 @@ void UBBDossierControllerSpec::Define()
 				return true;
 			});
 			
-			It("Given a new view, expect the controller to initialize the view's display name", [this, ControllerClass]()
+			It(
+				"Given a new view, expect the controller to initialize the view's display name",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBDossierController>(View, ControllerClass);
 
@@ -204,7 +219,9 @@ void UBBDossierControllerSpec::Define()
 				return true;
 			});
 
-			It("Given a new view, expect the controller to set the view's commands", [this, ControllerClass]()
+			It(
+				"Given a new view, expect the controller to set the view's commands",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBDossierController>(View, ControllerClass);
 
@@ -219,7 +236,9 @@ void UBBDossierControllerSpec::Define()
 				return true;
 			});
 			
-			It("Given a new view, expect the controller to initialize the view's attribute entries", [this, ControllerClass]()
+			It(
+				"Given a new view, expect the controller to initialize the view's attribute entries",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBDossierController>(View, ControllerClass);
 
@@ -228,32 +247,115 @@ void UBBDossierControllerSpec::Define()
 				Model->SetDisplayName(FText::FromString("Generic Default, Bland"));
 
 				TMap<EBBAttribute, UBBDossierEntryStub *> Entries;
-				Entries.Emplace(EBBAttribute::Health, NewObject<UBBDossierEntryStub>(Model, UBBDossierEntryStub::StaticClass()));
-				Entries.Emplace(EBBAttribute::Stamina, NewObject<UBBDossierEntryStub>(Model, UBBDossierEntryStub::StaticClass()));
 
-				UTEST_TRUE("Health Entry is valid", IsValid(Entries.FindChecked(EBBAttribute::Health)))
-				UTEST_TRUE("Stamina Entry is valid", IsValid(Entries.FindChecked(EBBAttribute::Stamina)))
-
-				Model->SetEntry(EBBAttribute::Health, Entries.FindChecked(EBBAttribute::Health));
-				Model->SetEntry(EBBAttribute::Stamina, Entries.FindChecked(EBBAttribute::Stamina));
-
-				Controller->Initialize(View, Model, WidgetFactory, SpecificationFactory, CommandFactory);
-
-				#define EBBATTRIBUTE_OPERATION(Value) TestEntry<EBBAttribute, UIBBAttributeSet, UIBBDossierEntry>(Value, Model, NeedSet);
+				#define EBBATTRIBUTE_OPERATION(Value) InitializeEntry(Value, Entries, Model);
 
 					FOREACH_ENUM_EBBATTRIBUTE(EBBATTRIBUTE_OPERATION)
 
 				#undef EBBATTRIBUTE_OPERATION
 
-				TEST_TRUE(View->GetAttributeEntry(0) == Entries.FindChecked(EBBAttribute::Health))
-				TEST_TRUE(View->GetAttributeEntry(1) == Entries.FindChecked(EBBAttribute::Stamina))
+				Controller->Initialize(View, Model, WidgetFactory, SpecificationFactory, CommandFactory);
+
+				TArray<UIBBDossierEntry *> ViewEntries = View->GetAttributeEntries();
+
+				TEST_TRUE(ViewEntries.Num() == Entries.Num())
+
+				for (const TPair<EBBAttribute, UIBBDossierEntry *> & EntryPair : Entries)
+				{
+					if (ViewEntries.Contains(EntryPair.Value))
+					{
+						ViewEntries.Remove(EntryPair.Value);
+					}
+				}
+
+				TEST_TRUE(ViewEntries.Num() == 0)
+
+				Controller->Finalize();
+
+				return true;
+			});
+			
+			It(
+				"Given a new view, expect the controller to initialize the view's need entries",
+				[this, ControllerClass]()
+			{
+				Controller = NewObject<UBBDossierController>(View, ControllerClass);
+
+				UTEST_TRUE("Controller is valid", IsValid(Controller))
+
+				Model->SetDisplayName(FText::FromString("Generic Default, Bland"));
+
+				TMap<EBBNeed, UBBDossierEntryStub *> Entries;
+
+				#define EBBNEED_OPERATION(Value) InitializeEntry(Value, Entries, Model);
+
+					FOREACH_ENUM_EBBNEED(EBBNEED_OPERATION)
+
+				#undef EBBNEED_OPERATION
+
+				Controller->Initialize(View, Model, WidgetFactory, SpecificationFactory, CommandFactory);
+
+				TArray<UIBBDossierEntry *> ViewEntries = View->GetNeedEntries();
+
+				TEST_TRUE(ViewEntries.Num() == Entries.Num())
+
+				for (const TPair<EBBNeed, UIBBDossierEntry *> & EntryPair : Entries)
+				{
+					if (ViewEntries.Contains(EntryPair.Value))
+					{
+						ViewEntries.Remove(EntryPair.Value);
+					}
+				}
+
+				TEST_TRUE(ViewEntries.Num() == 0)
+
+				Controller->Finalize();
+
+				return true;
+			});
+			
+			It(
+				"Given a new view, expect the controller to initialize the view's skill entries",
+				[this, ControllerClass]()
+			{
+				Controller = NewObject<UBBDossierController>(View, ControllerClass);
+
+				UTEST_TRUE("Controller is valid", IsValid(Controller))
+
+				Model->SetDisplayName(FText::FromString("Generic Default, Bland"));
+
+				TMap<EBBSkill, UBBDossierEntryStub *> Entries;
+
+				#define EBBSKILL_OPERATION(Value) InitializeEntry(Value, Entries, Model);
+
+					FOREACH_ENUM_EBBSKILL(EBBSKILL_OPERATION)
+
+				#undef EBBSKILL_OPERATION
+
+				Controller->Initialize(View, Model, WidgetFactory, SpecificationFactory, CommandFactory);
+
+				TArray<UIBBDossierEntry *> ViewEntries = View->GetSkillEntries();
+
+				TEST_TRUE(ViewEntries.Num() == Entries.Num())
+
+				for (const TPair<EBBSkill, UIBBDossierEntry *> & EntryPair : Entries)
+				{
+					if (ViewEntries.Contains(EntryPair.Value))
+					{
+						ViewEntries.Remove(EntryPair.Value);
+					}
+				}
+
+				TEST_TRUE(ViewEntries.Num() == 0)
 
 				Controller->Finalize();
 
 				return true;
 			});
 
-			It("Given a new view, expect the controller to set the view's title", [this, ControllerClass]()
+			It(
+				"Given a new view, expect the controller to set the view's title",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBDossierController>(View, ControllerClass);
 

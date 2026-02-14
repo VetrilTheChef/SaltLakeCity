@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBTitleController.h"
 #include "Commands/Factories/Interfaces/IBBCommandFactory.h"
@@ -112,14 +112,14 @@ void UBBTitleController::DestroyCloseCommand()
 {
 	if (IsValid(CloseCommand))
 	{
-		CloseCommand->MarkPendingKill();
+		CloseCommand->MarkAsGarbage();
 	}
 
 	CloseCommand = nullptr;
 
 	if (IsValid(CloseSpecification))
 	{
-		CloseSpecification->MarkPendingKill();
+		CloseSpecification->MarkAsGarbage();
 	}
 
 	CloseSpecification = nullptr;

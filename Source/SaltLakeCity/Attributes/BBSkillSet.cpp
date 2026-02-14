@@ -1,6 +1,8 @@
 // SaltLakeCity 4.27
 
 #include "BBSkillSet.h"
+#include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UBBSkillSet::UBBSkillSet() :
 	Super()
@@ -9,7 +11,7 @@ UBBSkillSet::UBBSkillSet() :
 	InitMaxValues();
 
 	Attributes.Empty();
-	AttributeUpdates.Empty();
+	AttributeToEnum.Empty();
 }
 
 void UBBSkillSet::PostInitProperties()
@@ -17,16 +19,42 @@ void UBBSkillSet::PostInitProperties()
 	Super::PostInitProperties();
 
 	MapAttributes();
-	Subscribe();
 }
 
 void UBBSkillSet::BeginDestroy()
 {
-	Unsubscribe();
 	Attributes.Empty();
-	AttributeUpdates.Empty();
+	AttributeToEnum.Empty();
 
 	Super::BeginDestroy();
+}
+
+void UBBSkillSet::Initialize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Finalize(AbilityComponent);
+
+	Subscribe(AbilityComponent);
+}
+
+void UBBSkillSet::Finalize(UIBBAIAbilityComponent * AbilityComponent)
+{
+	Unsubscribe(AbilityComponent);
+}
+
+void UBBSkillSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, Build, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, MaxBuild, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, Fuck, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, MaxFuck, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, Guard, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, MaxGuard, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, Lead, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, MaxLead, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, Research, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBBSkillSet, MaxResearch, COND_None, REPNOTIFY_Always);
 }
 
 void UBBSkillSet::PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue)
@@ -34,34 +62,43 @@ void UBBSkillSet::PreAttributeChange(const FGameplayAttribute & Attribute, float
 	//NewValue = FMath::Clamp(NewValue, 0.0f, 10.0f);
 }
 
-FGameplayAttribute UBBSkillSet::GetAttribute(EBBSkill Skill) const
-{
-	return (* (Attributes.FindChecked(Skill).Attribute))();
-}
-
-FGameplayAttribute UBBSkillSet::GetMaxAttribute(EBBSkill Skill) const
-{
-	return (* (Attributes.FindChecked(Skill).MaxAttribute))();
-}
-
 float UBBSkillSet::GetValue(EBBSkill Skill) const
 {
-	return (this->* Attributes.FindChecked(Skill).Getter)();
+	const FBBGetAttributeDelegate & Get = Attributes.FindChecked(Skill).GetValue;
+
+	return Get.IsBound() ? Get.Execute() : -1.0f;
 }
 
 void UBBSkillSet::SetValue(EBBSkill Skill, float NewValue)
 {
-	(this->* Attributes.FindChecked(Skill).Setter)(NewValue);
+	Attributes.FindChecked(Skill).SetValue.ExecuteIfBound(NewValue);
 }
 
 float UBBSkillSet::GetMaxValue(EBBSkill Skill) const
 {
-	return (this->* Attributes.FindChecked(Skill).MaxGetter)();
+	const FBBGetAttributeDelegate & GetMax = Attributes.FindChecked(Skill).GetMaxValue;
+
+	return GetMax.IsBound() ? GetMax.Execute() : -1.0f;
 }
 
 void UBBSkillSet::SetMaxValue(EBBSkill Skill, float NewMaxValue)
 {
-	(this->* Attributes.FindChecked(Skill).MaxSetter)(NewMaxValue);
+	Attributes.FindChecked(Skill).SetMaxValue.ExecuteIfBound(NewMaxValue);
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBSkillSet::GetValueDelegate(EBBSkill Skill) const
+{
+	return Attributes.FindChecked(Skill).GetValue;
+}
+
+UIBBBaseAttributeSet::FBBGetAttributeDelegate UBBSkillSet::GetMaxValueDelegate(EBBSkill Skill) const
+{
+	return Attributes.FindChecked(Skill).GetMaxValue;
+}
+
+UIBBBaseAttributeSet::FBBAttributeUpdate * UBBSkillSet::OnUpdate(EBBSkill Skill) const
+{
+	return Attributes.FindChecked(Skill).OnUpdate;
 }
 
 
@@ -87,29 +124,27 @@ void UBBSkillSet::InitMaxValues()
 void UBBSkillSet::MapAttributes()
 {
 	Attributes.Empty();
-	Attributes.Emplace(EBBSkill::Build, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Build, MaxBuild));
-	Attributes.Emplace(EBBSkill::Fuck, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Fuck, MaxFuck));
-	Attributes.Emplace(EBBSkill::Guard, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Guard, MaxGuard));
-	Attributes.Emplace(EBBSkill::Lead, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Lead, MaxLead));
-	Attributes.Emplace(EBBSkill::Research, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Research, MaxResearch));
+	Attributes.Emplace(EBBSkill::Build, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Build));
+	Attributes.Emplace(EBBSkill::Fuck, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Fuck));
+	Attributes.Emplace(EBBSkill::Guard, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Guard));
+	Attributes.Emplace(EBBSkill::Lead, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Lead));
+	Attributes.Emplace(EBBSkill::Research, BB_ATTRIBUTE_STRUCT(UBBSkillSet, Research));
 
-	AttributeUpdates.Empty();
-	AttributeUpdates.Emplace(GetBuildAttribute(), & UBBSkillSet::OnBuildUpdate);
-	AttributeUpdates.Emplace(GetMaxBuildAttribute(), & UBBSkillSet::OnMaxBuildUpdate);
-	AttributeUpdates.Emplace(GetFuckAttribute(), & UBBSkillSet::OnFuckUpdate);
-	AttributeUpdates.Emplace(GetMaxFuckAttribute(), & UBBSkillSet::OnMaxFuckUpdate);
-	AttributeUpdates.Emplace(GetGuardAttribute(), & UBBSkillSet::OnGuardUpdate);
-	AttributeUpdates.Emplace(GetMaxGuardAttribute(), & UBBSkillSet::OnMaxGuardUpdate);
-	AttributeUpdates.Emplace(GetLeadAttribute(), & UBBSkillSet::OnLeadUpdate);
-	AttributeUpdates.Emplace(GetMaxLeadAttribute(), & UBBSkillSet::OnMaxLeadUpdate);
-	AttributeUpdates.Emplace(GetResearchAttribute(), & UBBSkillSet::OnResearchUpdate);
-	AttributeUpdates.Emplace(GetMaxResearchAttribute(), & UBBSkillSet::OnMaxResearchUpdate);
+	AttributeToEnum.Empty();
+	AttributeToEnum.Emplace(GetBuildAttribute(), EBBSkill::Build);
+	AttributeToEnum.Emplace(GetMaxBuildAttribute(), EBBSkill::Build);
+	AttributeToEnum.Emplace(GetFuckAttribute(), EBBSkill::Fuck);
+	AttributeToEnum.Emplace(GetMaxFuckAttribute(), EBBSkill::Fuck);
+	AttributeToEnum.Emplace(GetGuardAttribute(), EBBSkill::Guard);
+	AttributeToEnum.Emplace(GetMaxGuardAttribute(), EBBSkill::Guard);
+	AttributeToEnum.Emplace(GetLeadAttribute(), EBBSkill::Lead);
+	AttributeToEnum.Emplace(GetMaxLeadAttribute(), EBBSkill::Lead);
+	AttributeToEnum.Emplace(GetResearchAttribute(), EBBSkill::Research);
+	AttributeToEnum.Emplace(GetMaxResearchAttribute(), EBBSkill::Research);
 }
 
-void UBBSkillSet::Subscribe()
+void UBBSkillSet::Subscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	verifyf(IsValid(AbilityComponent), TEXT("Ability Component is invalid."))
 
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetBuildAttribute()).AddUObject(this, & UBBSkillSet::UpdateAttribute);
@@ -124,10 +159,8 @@ void UBBSkillSet::Subscribe()
 	AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetMaxResearchAttribute()).AddUObject(this, & UBBSkillSet::UpdateAttribute);
 }
 
-void UBBSkillSet::Unsubscribe()
+void UBBSkillSet::Unsubscribe(UIBBAIAbilityComponent * AbilityComponent)
 {
-	UAbilitySystemComponent * AbilityComponent = GetOwningAbilitySystemComponent();
-
 	if (IsValid(AbilityComponent))
 	{
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(GetBuildAttribute()).RemoveAll(this);
@@ -145,7 +178,19 @@ void UBBSkillSet::Unsubscribe()
 
 void UBBSkillSet::UpdateAttribute(const FOnAttributeChangeData & Data)
 {
-	(this->* (AttributeUpdates.FindChecked(Data.Attribute)))().Broadcast(Data.NewValue);
+	EBBSkill AttributeToUpdate = AttributeToEnum.FindChecked(Data.Attribute);
+
+	FBBAttribute & UpdatedAttribute = Attributes.FindChecked(AttributeToUpdate);
+
+	verifyf(UpdatedAttribute.GetValue.IsBound(), TEXT("Value Delegate is unbound."));
+	verifyf(UpdatedAttribute.GetMaxValue.IsBound(), TEXT("Max Value Delegate is unbound."));
+
+	float Value = UpdatedAttribute.GetValue.Execute();
+	float MaxValue = UpdatedAttribute.GetMaxValue.Execute();
+
+	verifyf(UpdatedAttribute.OnUpdate, TEXT("On Update is null."));
+
+	UpdatedAttribute.OnUpdate->Broadcast(Value, MaxValue);
 }
 
 void UBBSkillSet::OnRep_Build(const FGameplayAttributeData & OldBuild)

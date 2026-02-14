@@ -2,34 +2,31 @@
 
 #include "BBDossierEntryStub.h"
 #include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
+#include "Attributes/Interfaces/IBBBaseAttributeSet.h"
 
 UBBDossierEntryStub::UBBDossierEntryStub() :
 	Super()
 {
 	Name = FText::FromString("");
 	Icon = TSoftObjectPtr<UTexture2D>();
-	AttributeValueUpdate = nullptr;
-	MaxAttributeValueUpdate = nullptr;
+	ValueDelegate = FBBGetAttributeDelegate();
+	MaxValueDelegate = FBBGetAttributeDelegate();
+	AttributeUpdate = nullptr;
 	Value = -1.0f;
 	MaxValue = -1.0f;
 }
 
-void UBBDossierEntryStub::Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBUpdate * NewAttributeValueUpdate, FBBUpdate * NewMaxAttributeValueUpdate)
+void UBBDossierEntryStub::Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBGetAttributeDelegate NewValueDelegate, FBBGetAttributeDelegate NewMaxValueDelegate, FBBAttributeUpdate * NewAttributeUpdate)
 {
-	Name = FText::FromString("");
-	Icon = TSoftObjectPtr<UTexture2D>();
-	AttributeValueUpdate = NewAttributeValueUpdate;
+	Name = NewName;
+	Icon = NewIcon;
+	ValueDelegate = NewValueDelegate;
+	MaxValueDelegate = NewMaxValueDelegate;
+	AttributeUpdate = NewAttributeUpdate;
 
-	if (AttributeValueUpdate)
+	if (AttributeUpdate)
 	{
-		AttributeValueUpdate->AddUObject(this, & UBBDossierEntryStub::UpdateValue);
-	}
-
-	MaxAttributeValueUpdate = NewMaxAttributeValueUpdate;
-
-	if (MaxAttributeValueUpdate)
-	{
-		MaxAttributeValueUpdate->AddUObject(this, & UBBDossierEntryStub::UpdateMaxValue);
+		AttributeUpdate->AddUObject(this, & UBBDossierEntryStub::UpdateEntry);
 	}
 }
 
@@ -38,22 +35,18 @@ void UBBDossierEntryStub::Finalize()
 	Name = FText::FromString("");
 	Icon = TSoftObjectPtr<UTexture2D>();
 
+	ValueDelegate = FBBGetAttributeDelegate();
+	MaxValueDelegate = FBBGetAttributeDelegate();
+
+	if (AttributeUpdate)
+	{
+		AttributeUpdate->RemoveAll(this);
+	}
+
+	AttributeUpdate = nullptr;
+
 	Value = -1.0f;
 	MaxValue = -1.0f;
-
-	if (AttributeValueUpdate)
-	{
-		AttributeValueUpdate->RemoveAll(this);
-	}
-
-	AttributeValueUpdate = nullptr;
-
-	if (MaxAttributeValueUpdate)
-	{
-		MaxAttributeValueUpdate->RemoveAll(this);
-	}
-
-	MaxAttributeValueUpdate = nullptr;
 }
 
 
@@ -85,6 +78,8 @@ float UBBDossierEntryStub::GetValue() const
 void UBBDossierEntryStub::SetValue(float NewValue)
 {
 	Value = NewValue;
+
+	Update.Broadcast(Value, MaxValue);
 }
 
 float UBBDossierEntryStub::GetMaxValue() const
@@ -95,26 +90,17 @@ float UBBDossierEntryStub::GetMaxValue() const
 void UBBDossierEntryStub::SetMaxValue(float NewMaxValue)
 {
 	MaxValue = NewMaxValue;
-}
 
-bool UBBDossierEntryStub::operator==(const UIBBDossierEntry * Other) const
-{
-	return (IsValid(Other) &&
-			Name == Other->GetEntryName() &&
-			Icon == Other->GetIcon() &&
-			ValueUpdate == Other->ValueUpdate &&
-			MaxValueUpdate == Other->MaxValueUpdate &&
-			Value == Other->Value &&
-			MaxValue == Other->MaxValue);
+	Update.Broadcast(Value, MaxValue);
 }
 
 
-void UBBDossierEntryStub::UpdateValue(float NewValue)
-{
-	ValueUpdate.Broadcast(NewValue);
-}
 
-void UBBDossierEntryStub::UpdateMaxValue(float NewMaxValue)
+void UBBDossierEntryStub::UpdateEntry(float NewValue, float NewMaxValue)
 {
-	MaxValueUpdate.Broadcast(NewMaxValue);
+	Value = NewValue;
+
+	MaxValue = NewMaxValue;
+
+	Update.Broadcast(Value, MaxValue);
 }

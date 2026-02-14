@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBSelectionComponent.h"
 #include "InputCoreTypes.h"
@@ -7,7 +7,7 @@
 #include "Commands/GUI/Interfaces/IBBAttachWidgetCommand.h"
 #include "Commands/GUI/Interfaces/IBBDetachWidgetCommand.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
-#include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
 #include "Specifications/GUI/Factories/Interfaces/IBBWidgetSpecificationFactory.h"
 
 UBBSelectionComponent::UBBSelectionComponent() :
@@ -48,15 +48,15 @@ void UBBSelectionComponent::Initialize(TScriptInterface<IBBSelectable> && NewSel
 
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
 
-	AIBBHUD * HUD = GameInstance->GetHUD();
+	UIBBWidgetManager * WidgetManager = GameInstance->GetWidgetManager();
 
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
 	const UIBBCommandFactory * CommandFactory = GameInstance->GetCommandFactory();
 
 	verifyf(IsValid(CommandFactory), TEXT("Command Factory is invalid."));
 
-	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory = HUD->GetWidgetSpecificationFactory();
+	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory = WidgetManager->GetWidgetSpecificationFactory();
 
 	verifyf(IsValid(WidgetSpecificationFactory), TEXT("Widget Specification Factory is invalid."));
 
@@ -160,7 +160,7 @@ void UBBSelectionComponent::FinalizeSelectCommand()
 {
 	if (IsValid(SelectCommand))
 	{
-		SelectCommand->MarkPendingKill();
+		SelectCommand->MarkAsGarbage();
 	}
 
 	SelectCommand = nullptr;
@@ -170,7 +170,7 @@ void UBBSelectionComponent::FinalizeAttachWidgetCommand()
 {
 	if (IsValid(AttachCommand))
 	{
-		AttachCommand->MarkPendingKill();
+		AttachCommand->MarkAsGarbage();
 	}
 
 	AttachCommand = nullptr;
@@ -180,7 +180,7 @@ void UBBSelectionComponent::FinalizeDetachWidgetCommand()
 {
 	if (IsValid(DetachCommand))
 	{
-		DetachCommand->MarkPendingKill();
+		DetachCommand->MarkAsGarbage();
 	}
 
 	DetachCommand = nullptr;

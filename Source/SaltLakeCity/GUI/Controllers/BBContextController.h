@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -24,37 +24,52 @@ class SALTLAKECITY_API UBBContextController : public UIBBContextController
 	public:
 		UBBContextController();
 
-		virtual void Initialize(UIBBContextWidget * ContextView, UIBBContextModel * ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory * CommandFactory) override;
+		virtual void Initialize(
+			UIBBContextWidget* ContextView,
+			UIBBContextModel* ContextModel,
+			const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory,
+			const UIBBCommandFactory* CommandFactory
+		) override;
 
 		virtual void Finalize() override;
 
 	protected:
 		UPROPERTY()
-		UIBBContextModel * Model;
+		UIBBContextModel* Model;
 
 		UPROPERTY()
-		UIBBContextWidget * View;
+		UIBBContextWidget* View;
 
 		UPROPERTY()
-		TMap<UIBBContextRowWidget *, EBBContext> RowWidgets;
+		TMap<UIBBContextRowWidget*, EBBContext> RowWidgets;
 
-		void InitializeModel(UIBBContextModel * ContextModel);
+		void InitializeModel(UIBBContextModel* ContextModel);
 
 		void FinalizeModel();
 
-		void InitializeView(UIBBContextWidget * ContextView, UIBBContextModel & ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory * CommandFactory);
+		void InitializeView(
+			UIBBContextWidget* ContextView,
+			UIBBContextModel& ContextModel,
+			const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory,
+			const UIBBCommandFactory* CommandFactory
+		);
 
 		void FinalizeView();
 
-		void CreateRows(UIBBContextWidget & ContextView, UIBBContextModel & ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory & CommandFactory);
+		void CreateRows(
+			UIBBContextWidget& ContextView,
+			UIBBContextModel& ContextModel,
+			const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory,
+			const UIBBCommandFactory& CommandFactory
+		);
 
-		void DestroyRows(UIBBContextWidget & ContextView);
+		void DestroyRows(UIBBContextWidget& ContextView);
 
 		UFUNCTION()
 		void UpdateContext();
 
 		UFUNCTION()
-		void LeaveMouse(const FPointerEvent & MouseEvent);
+		void LeaveMouse(const FPointerEvent& MouseEvent);
 
 		UFUNCTION()
 		void ClickRow();

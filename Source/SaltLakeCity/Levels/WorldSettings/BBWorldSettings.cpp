@@ -36,7 +36,7 @@ void ABBWorldSettings::NotifyBeginPlay()
 	AIBBLevelScriptActor * LevelScriptActor = nullptr;
 	UIBBGameInstance * GameInstance = nullptr;
 
-	if (!World->bBegunPlay)
+	if (!World->GetBegunPlay())
 	{
 		const bool bFromLevelLoad = true;
 

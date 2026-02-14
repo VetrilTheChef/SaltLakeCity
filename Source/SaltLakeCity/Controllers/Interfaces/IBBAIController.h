@@ -1,9 +1,9 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIModule/Classes/AIController.h"
+#include "AIController.h"
 #include "IBBAIController.generated.h"
 
 /**

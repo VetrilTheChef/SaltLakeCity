@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBSelectionController.h"
 #include "GUI/Models/Interfaces/IBBSelectionModel.h"
@@ -56,7 +56,7 @@ void UBBSelectionController::FinalizeView()
 {
 	if (IsValid(View))
 	{
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;

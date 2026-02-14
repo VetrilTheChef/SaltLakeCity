@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBTitleModelStub.h"
 #include "GUI/Widgets/Interfaces/IBBTitleWidget.h"
@@ -15,7 +15,6 @@ UBBTitleModelStub::UBBTitleModelStub() :
 	ParentWidget = nullptr;
 	WidgetTarget = TScriptInterface<IBBWidgetTarget>();
 	ParentWidgetSpecification = nullptr;
-	HUD = nullptr;
 }
 
 TScriptInterface<IBBWidgetTarget> UBBTitleModelStub::GetWidgetTarget() const
@@ -28,29 +27,30 @@ void UBBTitleModelStub::SetWidgetTarget(TScriptInterface<IBBWidgetTarget> NewWid
 	WidgetTarget = NewWidgetTarget;
 }
 
-UIBBWidget * UBBTitleModelStub::GetWidget() const
+UIBBWidget* UBBTitleModelStub::GetWidget() const
 {
-	return View;
+	return View.Get();
 }
 
-UIBBWidgetSpecification * UBBTitleModelStub::GetWidgetSpecification(const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory)
+UIBBWidgetSpecification* UBBTitleModelStub::GetWidgetSpecification(
+	const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory
+)
 {
 	return WidgetSpecification;
 }
 
-void UBBTitleModelStub::SetWidgetSpecification(UIBBWidgetSpecification * NewWidgetSpecification)
+void UBBTitleModelStub::SetWidgetSpecification(UIBBWidgetSpecification* NewWidgetSpecification)
 {
 	WidgetSpecification = NewWidgetSpecification;
 }
 
-void UBBTitleModelStub::Initialize(UIBBTitleWidget * NewView, UIBBGUIModel * NewParentModel, AIBBHUD * NewHUD)
+void UBBTitleModelStub::Initialize(UIBBTitleWidget* NewView, UIBBGUIModel* NewParentModel)
 {
 	Finalize();
 
 	View = NewView;
 	ParentModel = NewParentModel;
 	ParentWidgetSpecification = nullptr;
-	HUD = NewHUD;
 
 	OnTargetUpdate().Broadcast(TScriptInterface<IBBWidgetTarget>(ParentWidget));
 }
@@ -59,7 +59,6 @@ void UBBTitleModelStub::Finalize()
 {
 	View = nullptr;
 	ParentModel = nullptr;
-	HUD = nullptr;
 }
 
 FVector2D UBBTitleModelStub::GetPosition()
@@ -72,24 +71,26 @@ void UBBTitleModelStub::SetPosition(FVector2D NewPosition)
 	Position = NewPosition;
 }
 
-UIBBWidget * UBBTitleModelStub::GetParentWidget() const
+UIBBWidget* UBBTitleModelStub::GetParentWidget() const
 {
 	return ParentWidget;
 }
 
-void UBBTitleModelStub::SetParentWidget(UIBBWidget * NewParentWidget)
+void UBBTitleModelStub::SetParentWidget(UIBBWidget* NewParentWidget)
 {
 	ParentWidget = NewParentWidget;
 
 	OnTargetUpdate().Broadcast(TScriptInterface<IBBWidgetTarget>(ParentWidget));
 }
 
-UIBBWidgetSpecification * UBBTitleModelStub::GetParentWidgetSpecification(const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory)
+UIBBWidgetSpecification* UBBTitleModelStub::GetParentWidgetSpecification(
+	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory
+)
 {
 	return ParentWidgetSpecification;
 }
 
-void UBBTitleModelStub::SetParentWidgetSpecification(UIBBWidgetSpecification * NewParentWidgetSpecification)
+void UBBTitleModelStub::SetParentWidgetSpecification(UIBBWidgetSpecification* NewParentWidgetSpecification)
 {
 	ParentWidgetSpecification = NewParentWidgetSpecification;
 }

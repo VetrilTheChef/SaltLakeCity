@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,10 +21,10 @@ struct FBBConsumerCategory
 
 	public:
 		UPROPERTY()
-		TArray<UIBBWorkComponent *> Available;
+		TArray<UIBBWorkComponent*> Available;
 
 		UPROPERTY()
-		TArray<UIBBWorkComponent *> Busy;
+		TArray<UIBBWorkComponent*> Busy;
 
 		FBBConsumerCategory()
 		{
@@ -47,10 +47,10 @@ struct FBBTaskCategory
 
 	public:
 		UPROPERTY()
-		TArray<UIBBAbilityTask *> Unassigned;
+		TArray<UIBBAbilityTask*> Unassigned;
 
 		UPROPERTY()
-		TArray<UIBBAbilityTask *> Assigned;
+		TArray<UIBBAbilityTask*> Assigned;
 
 		FBBTaskCategory()
 		{
@@ -76,45 +76,31 @@ class ABBGameStateStub : public AIBBGameState
 
 		virtual void BeginPlay() override;
 
-		virtual void Initialize(AIBBLevelScriptActor * LevelScriptActor) override;
+		virtual void Initialize(AIBBLevelScriptActor* LevelScriptActor) override;
 
-		virtual void Finalize(AIBBLevelScriptActor * LevelScriptActor) override;
+		virtual void Finalize(AIBBLevelScriptActor* LevelScriptActor) override;
 
 		virtual void Tick(float DeltaTime);
 
 		virtual UIBBGameClock * GetGameClock() const override;
 
-		void SetGameClock(UIBBGameClock * NewGameClock);
+		void SetGameClock(UIBBGameClock* NewGameClock);
 
-		virtual TScriptInterface<IBBContextualizable> GetContext() const override;
+		virtual void AddConsumer(UIBBWorkComponent* Consumer, EBBJob Job) override;
 
-		virtual void SetContext(TScriptInterface<IBBContextualizable> && NewContextualizable);
+		virtual void RemoveConsumer(UIBBWorkComponent* Consumer, EBBJob Job) override;
 
-		virtual TScriptInterface<IBBSelectable> GetSelection() const override;
+		virtual void AddProducer(UIBBPlayerAbilityComponent* PlayerAbilityComponent) override;
 
-		virtual void SetSelection(TScriptInterface<IBBSelectable> && NewSelectedActor) override;
+		virtual void RemoveProducer(UIBBPlayerAbilityComponent* PlayerAbilityComponent) override;
 
-		virtual void AddConsumer(UIBBWorkComponent * Consumer, EBBJob Job) override;
-
-		virtual void RemoveConsumer(UIBBWorkComponent * Consumer, EBBJob Job) override;
-
-		virtual void AddProducer(UIBBPlayerAbilityComponent * PlayerAbilityComponent) override;
-
-		virtual void RemoveProducer(UIBBPlayerAbilityComponent * PlayerAbilityComponent) override;
-
-		virtual TArray<UIBBWorkComponent *> GetConsumers(EBBJob Work);
+		virtual TArray<UIBBWorkComponent*> GetConsumers(EBBJob Work);
 
 		EBBGameMode GetActiveMode();
 
 		virtual void UpdateActiveMode(EBBGameMode NewActiveMode) override;
 
-		void UpdateConsumer(TScriptInterface<IBBWorkable> NewWorkable) override;
-
-		void UpdateContext(TScriptInterface<IBBContextualizable> NewContextualizable) override;
-
-		void UpdateSelection(TScriptInterface<IBBSelectable> NewSelectable) override;
-
-		virtual void HandleFloorChangeRequest(const int TargetFloorDelta, float & TargetFloorHeight) override;
+		virtual void HandleFloorChangeRequest(const int TargetFloorDelta, float& TargetFloorHeight) override;
 
 		int GetRequestedTargetFloorDelta();
 
@@ -122,16 +108,7 @@ class ABBGameStateStub : public AIBBGameState
 
 	protected:
 		UPROPERTY()
-		UIBBGameClock * GameClock;
-
-		UPROPERTY()
-		TScriptInterface<IBBContextualizable>  Contextualizable;
-
-		UPROPERTY()
-		TScriptInterface<IBBSelectable> Selectable;
-
-		UPROPERTY()
-		TScriptInterface<IBBWorkable> Workable;
+		UIBBGameClock* GameClock;
 
 		UPROPERTY()
 		TMap<EBBJob, FBBConsumerCategory> ConsumersMap;
@@ -140,7 +117,7 @@ class ABBGameStateStub : public AIBBGameState
 		TMap<EBBJob, FBBTaskCategory> TasksMap;
 
 		UPROPERTY()
-		TArray<UIBBPlayerAbilityComponent *> Producers;
+		TArray<UIBBPlayerAbilityComponent*> Producers;
 
 		EBBGameMode ActiveGameMode;
 

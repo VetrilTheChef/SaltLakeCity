@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,7 +18,7 @@ class SALTLAKECITY_API UBBWidget : public UIBBWidget
 	GENERATED_BODY()
 
 	public:
-		UBBWidget(const FObjectInitializer & ObjectInitializer);
+		UBBWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativePreConstruct() override;
 
@@ -27,6 +27,8 @@ class SALTLAKECITY_API UBBWidget : public UIBBWidget
 		virtual void BeginDestroy() override;
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 	protected:
 		virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

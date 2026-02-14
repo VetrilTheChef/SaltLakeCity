@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBModesControllerStub.h"
 #include "GUI/Models/Interfaces/IBBModesModel.h"
@@ -82,7 +82,7 @@ void UBBModesControllerStub::FinalizeView()
 {
 	if (IsValid(View))
 	{
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;

@@ -51,12 +51,6 @@ class SALTLAKECITY_API UBBAIAbilityComponent : public UIBBAIAbilityComponent
 
 	protected:
 		UPROPERTY(Category = "Attribute Sets", EditAnywhere, BlueprintReadWrite)
-		TSoftClassPtr<UIBBAttributeSet> AttributeSetsClass;
-
-		UPROPERTY(Category = "Attribute Sets", EditAnywhere, BlueprintReadWrite)
-		TSoftObjectPtr<UDataTable> AttributeSetsDataTable;
-
-		UPROPERTY(Category = "Attribute Sets", EditAnywhere, BlueprintReadWrite)
 		TArray<FBBAttributeSetData> AttributeSetsData;
 
 		UPROPERTY(Category = "Abilities", EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
@@ -71,6 +65,10 @@ class SALTLAKECITY_API UBBAIAbilityComponent : public UIBBAIAbilityComponent
 		void CreateAttributes(UClass * AttributeSetClass, UDataTable * AttributeSetDataTable);
 
 		void DestroyAttributes();
+
+		void InitializeAttributes(UIBBAIAbilityComponent * AbilityComponent);
+
+		void FinalizeAttributes(UIBBAIAbilityComponent * AbilityComponent);
 
 		void GiveAbilities();
 

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -6,7 +6,7 @@
 #include "Commands/Factories/BBCommandFactoryStub.h"
 #include "Commands/GUI/BBOpenWidgetCommandStub.h"
 #include "GameInstances/BBGameInstanceStub.h"
-#include "GUI/BBHUDStub.h"
+#include "GUI/BBWidgetManagerStub.h"
 #include "GUI/Controllers/BBContextController.h"
 #include "GUI/Models/BBContextModelStub.h"
 #include "GUI/Widgets/BBContextRowWidgetStub.h"
@@ -16,35 +16,39 @@
 #include "Specifications/GUI/Factories/BBWidgetSpecificationFactoryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBContextControllerSpec, "SaltLakeCity.GUI.Controllers.Context", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBContextControllerSpec,
+	"SaltLakeCity.GUI.Controllers.Context",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
-	UWorld * TestWorld = nullptr;
+	UWorld* TestWorld = nullptr;
 
 	UPROPERTY()
-	UBBGameInstanceStub * GameInstance = nullptr;
+	UBBGameInstanceStub* GameInstance = nullptr;
 
 	UPROPERTY()
-	ABBHUDStub * HUD = nullptr;
+	UBBWidgetManagerStub* WidgetManager = nullptr;
 
 	UPROPERTY()
-	UBBContextModelStub * Model = nullptr;
+	UBBContextModelStub* Model = nullptr;
 
 	UPROPERTY()
-	UBBContextWidgetStub * View = nullptr;
+	UBBContextWidgetStub* View = nullptr;
 
 	UPROPERTY()
-	UBBWidgetSpecificationFactoryStub * WidgetSpecificationFactory = nullptr;
+	UBBWidgetSpecificationFactoryStub* WidgetSpecificationFactory = nullptr;
 
 	UPROPERTY()
-	UBBCommandFactoryStub * CommandFactory = nullptr;
+	UBBCommandFactoryStub* CommandFactory = nullptr;
 
 	UPROPERTY()
-	TArray<UClass *> ControllerClasses;
+	TArray<UClass*> ControllerClasses;
 
 	// SUT
 	UPROPERTY()
-	UBBContextController * Controller = nullptr;
+	UBBContextController* Controller = nullptr;
 
 	FActorSpawnParameters SpawnParameters;
 
@@ -68,20 +72,48 @@ void UBBContextControllerSpec::Define()
 
 		UTEST_TRUE("Game Instance is valid", IsValid(GameInstance))
 
-		HUD = TestWorld->SpawnActor<ABBHUDStub>(ABBHUDStub::StaticClass(), SpawnParameters);
+		WidgetManager = NewObject<UBBWidgetManagerStub>(GameInstance, UBBWidgetManagerStub::StaticClass());
 
-		UTEST_TRUE("HUD is valid", IsValid(HUD))
+		UTEST_TRUE("Widget Manager is valid", IsValid(WidgetManager))
 
-		GameInstance->SetHUD(HUD);
+		GameInstance->SetWidgetManager(WidgetManager);
 
 		Model = NewObject<UBBContextModelStub>(TestWorld, UBBContextModelStub::StaticClass());
 
 		UTEST_TRUE("Model is valid", IsValid(Model))
 
-		Model->AddRow(FText::FromString("SOME ROW"), nullptr, nullptr, FText::FromString("It's nice"), EBBContext::Build, EBBWidget::Build);
-		Model->AddRow(FText::FromString("OTHER ROW"), nullptr, nullptr, FText::FromString("Not so nice"), EBBContext::Dossier, EBBWidget::Progress);
-		Model->AddRow(FText::FromString("NICE ROW"), nullptr, nullptr, FText::FromString("Actually horrible"), EBBContext::Job, EBBWidget::Dossier);
-		Model->AddRow(FText::FromString("LAST ROW"), nullptr, nullptr, FText::FromString("None after her"), EBBContext::Build, EBBWidget::DateTime);
+		Model->AddRow(
+			FText::FromString("SOME ROW"),
+			nullptr,
+			nullptr,
+			FText::FromString("It's nice"),
+			EBBContext::Build,
+			EBBWidget::Build
+		);
+		Model->AddRow(
+			FText::FromString("OTHER ROW"),
+			nullptr,
+			nullptr,
+			FText::FromString("Not so nice"),
+			EBBContext::Dossier,
+			EBBWidget::Progress
+		);
+		Model->AddRow(
+			FText::FromString("NICE ROW"),
+			nullptr,
+			nullptr,
+			FText::FromString("Actually horrible"),
+			EBBContext::Job,
+			EBBWidget::Dossier
+		);
+		Model->AddRow(
+			FText::FromString("LAST ROW"),
+			nullptr,
+			nullptr,
+			FText::FromString("None after her"),
+			EBBContext::Build,
+			EBBWidget::DateTime
+		);
 
 		View = CreateWidget<UBBContextWidgetStub>(TestWorld, UBBContextWidgetStub::StaticClass());
 
@@ -90,11 +122,14 @@ void UBBContextControllerSpec::Define()
 		View->NativeOnInitialized();
 		View->SetRowWidgetClass(TSoftClassPtr<UIBBContextRowWidget>(UBBContextRowWidgetStub::StaticClass()));
 
-		WidgetSpecificationFactory = NewObject<UBBWidgetSpecificationFactoryStub>(HUD, UBBWidgetSpecificationFactoryStub::StaticClass());
+		WidgetSpecificationFactory = NewObject<UBBWidgetSpecificationFactoryStub>(
+			WidgetManager,
+			UBBWidgetSpecificationFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Widget Specification Factory is valid", IsValid(WidgetSpecificationFactory))
 
-		HUD->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
+		WidgetManager->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
 
 		CommandFactory = NewObject<UBBCommandFactoryStub>(GameInstance, UBBCommandFactoryStub::StaticClass());
 
@@ -104,9 +139,19 @@ void UBBContextControllerSpec::Define()
 
 		for (int Index = 0; Index < Model->GetNumRows(); Index++)
 		{
-			WidgetSpecificationFactory->AddWidgetSpecification(NewObject<UBBWidgetSpecificationStub>(WidgetSpecificationFactory, UBBWidgetSpecificationStub::StaticClass()));
+			WidgetSpecificationFactory->AddWidgetSpecification(
+				NewObject<UBBWidgetSpecificationStub>(
+					WidgetSpecificationFactory,
+					UBBWidgetSpecificationStub::StaticClass()
+				)
+			);
 
-			CommandFactory->AddOpenWidgetCommand(NewObject<UBBOpenWidgetCommandStub>(CommandFactory, UBBOpenWidgetCommandStub::StaticClass()));
+			CommandFactory->AddOpenWidgetCommand(
+				NewObject<UBBOpenWidgetCommandStub>(
+					CommandFactory,
+					UBBOpenWidgetCommandStub::StaticClass()
+				)
+			);
 		}
 
 		return true;
@@ -120,7 +165,7 @@ void UBBContextControllerSpec::Define()
 		CommandFactory = nullptr;
 		WidgetSpecificationFactory = nullptr;
 
-		HUD = nullptr;
+		WidgetManager = nullptr;
 		GameInstance = nullptr;
 
 		Controller = nullptr;
@@ -128,11 +173,13 @@ void UBBContextControllerSpec::Define()
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (UClass * & ControllerClass : ControllerClasses)
+	for (UClass*& ControllerClass : ControllerClasses)
 	{
 		Describe("[" + ControllerClass->GetName() + "]", [this, ControllerClass]()
 		{
-			It("Given a new view, expect the controller to set the view's rows", [this, ControllerClass]()
+			It(
+				"Given a new view, expect the controller to set the view's rows",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBContextController>(View, ControllerClass);
 
@@ -144,7 +191,7 @@ void UBBContextControllerSpec::Define()
 
 				for (int Index = 0; Index < Model->GetNumRows(); Index++)
 				{
-					UBBContextRowWidgetStub * RowWidget = Cast<UBBContextRowWidgetStub>(View->GetRowWidget(Index));
+					UBBContextRowWidgetStub* RowWidget = Cast<UBBContextRowWidgetStub>(View->GetRowWidget(Index));
 
 					UTEST_TRUE("Row Widget is valid", IsValid(RowWidget))
 
@@ -159,7 +206,9 @@ void UBBContextControllerSpec::Define()
 				return true;
 			});
 
-			It("Given a cursor leaving update from the view, expect the controller to remove the view from the screen", [this, ControllerClass]()
+			It(
+				"Given a cursor leaving update from the view, expect the controller to remove the view from the screen",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBContextController>(View, ControllerClass);
 
@@ -167,7 +216,7 @@ void UBBContextControllerSpec::Define()
 
 				Controller->Initialize(View, Model, WidgetSpecificationFactory, CommandFactory);
 
-				View->AddToScreen(nullptr, 0);
+				View->AddToScreen(0);
 
 				TEST_TRUE(View->IsInViewport())
 
@@ -181,7 +230,9 @@ void UBBContextControllerSpec::Define()
 				return true;
 			});
 
-			It("Given a clicked row update from the view, expect the controller to remove the view from the screen", [this, ControllerClass]()
+			It(
+				"Given a clicked row update from the view, expect the controller to remove the view from the screen",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBContextController>(View, ControllerClass);
 
@@ -189,11 +240,11 @@ void UBBContextControllerSpec::Define()
 
 				Controller->Initialize(View, Model, WidgetSpecificationFactory, CommandFactory);
 
-				UBBContextRowWidgetStub * RowWidget = Cast<UBBContextRowWidgetStub>(View->GetRowWidget(0));
+				UBBContextRowWidgetStub* RowWidget = Cast<UBBContextRowWidgetStub>(View->GetRowWidget(0));
 
 				UTEST_TRUE("Row Widget is valid", IsValid(RowWidget))
 
-				View->AddToScreen(nullptr, 0);
+				View->AddToScreen(0);
 
 				TEST_TRUE(View->IsInViewport())
 
@@ -206,7 +257,9 @@ void UBBContextControllerSpec::Define()
 				return true;
 			});
 
-			It("Given a view to be finalized, expect the controller to destroy the view", [this, ControllerClass]()
+			It(
+				"Given a view to be finalized, expect the controller to destroy the view",
+				[this, ControllerClass]()
 			{
 				Controller = NewObject<UBBContextController>(View, ControllerClass);
 

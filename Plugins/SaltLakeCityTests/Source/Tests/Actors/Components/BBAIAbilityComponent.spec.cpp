@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -12,7 +12,11 @@
 #include "GameInstances/BBGameInstanceStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBAIAbilityComponentSpec, "SaltLakeCity.Actors.Components.AIAbilityComponent", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBAIAbilityComponentSpec,
+	"SaltLakeCity.Actors.Components.AIAbilityComponent",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -130,9 +134,9 @@ void UBBAIAbilityComponentSpec::Define()
 						for (UDataTable * & AttributesDataTable : AttributesDataTables)
 						{
 							TArray<FBBAttributeSetData> SetsData;
-							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet>(UBBNeedSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(NeedsDataTable)));
-							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet>(UBBSkillSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(SkillsDataTable)));
-							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet>(UBBAttributeSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(AttributesDataTable)));
+							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet>(UBBAttributeSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(AttributesDataTable)));
+							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet>(UBBNeedSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(NeedsDataTable)));
+							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet>(UBBSkillSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(SkillsDataTable)));
 
 							AbilityComponent->Initialize(Controller, SetsData);
 
@@ -192,9 +196,9 @@ void UBBAIAbilityComponentSpec::Define()
 						for (UDataTable * & AttributesDataTable : AttributesDataTables)
 						{
 							TArray<FBBAttributeSetData> SetsData;
-							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet>(UBBNeedSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(NeedsDataTable)));
-							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet>(UBBSkillSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(SkillsDataTable)));
-							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBAttributeSet>(UBBAttributeSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(AttributesDataTable)));
+							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet>(UBBAttributeSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(AttributesDataTable)));
+							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet>(UBBNeedSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(NeedsDataTable)));
+							SetsData.Emplace(FBBAttributeSetData(TSoftClassPtr<UIBBBaseAttributeSet>(UBBSkillSetStub::StaticClass()), TSoftObjectPtr<UDataTable>(SkillsDataTable)));
 
 							AbilityComponent->Initialize(Controller, SetsData);
 

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,35 +21,32 @@ class SALTLAKECITY_API UBBDossierEntryWidget : public UIBBDossierEntryWidget
 	GENERATED_BODY()
 
 	public:
-		UBBDossierEntryWidget(const FObjectInitializer & ObjectInitializer);
+		UBBDossierEntryWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
 
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
 		virtual void SetEntryName(FText NewName) override;
 
-		virtual void SetIcon(UTexture2D * NewIcon) override;
+		virtual void SetIcon(UTexture2D* NewIcon) override;
 
-		virtual void SetValue(float NewValue) override;
+		virtual void SetValue(FText NewValue) override;
 
-		virtual void SetMaxValue(float NewMaxValue) override;
+		virtual void SetProgress(float NewProgress) override;
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * EntryName;
+		UTextBlock* EntryName;
 
 		UPROPERTY(meta = (BindWidget))
-		UBorder * EntryIcon;
+		UBorder* EntryIcon;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * EntryValue;
+		UTextBlock* EntryValue;
 
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * EntryMaxValue;
+		UProgressBar* EntryProgressBar;
 
-		UPROPERTY(meta = (BindWidget))
-		UProgressBar * EntryProgressBar;
-
-		virtual void NativeOnListItemObjectSet(UObject * ListItemObject) override;
-
-		void UpdateProgressBar();
+		virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 };

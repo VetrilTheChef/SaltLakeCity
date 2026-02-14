@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -9,7 +9,11 @@
 #include "Levels/WorldSettings/BBWorldSettingsStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBSpeedCommandSpec, "SaltLakeCity.Commands.Controllers.SpeedCommand", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBSpeedCommandSpec,
+	"SaltLakeCity.Commands.Controllers.SpeedCommand",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;

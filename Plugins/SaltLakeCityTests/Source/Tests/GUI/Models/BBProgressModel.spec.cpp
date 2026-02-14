@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -8,7 +8,11 @@
 #include "GUI/Widgets/BBProgressWidgetStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBProgressModelSpec, "SaltLakeCity.GUI.Models.Progress", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBProgressModelSpec,
+	"SaltLakeCity.GUI.Models.Progress",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -98,7 +102,7 @@ void UBBProgressModelSpec::Define()
 
 				Model->Finalize();
 
-				ProgressComponent->MarkPendingKill();
+				ProgressComponent->MarkAsGarbage();
 				ProgressComponent = nullptr;
 
 				return true;
@@ -128,7 +132,7 @@ void UBBProgressModelSpec::Define()
 					TEST_TRUE(View->GetProgress() == -1.0f)
 				}
 
-				ProgressComponent->MarkPendingKill();
+				ProgressComponent->MarkAsGarbage();
 				ProgressComponent = nullptr;
 
 				return true;

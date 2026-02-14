@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -24,13 +24,15 @@ class SALTLAKECITY_API UBBJobWidget : public UIBBJobWidget
 	GENERATED_BODY()
 
 	public:
-		UBBJobWidget(const FObjectInitializer & ObjectInitializer);
+		UBBJobWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
 		virtual void BeginDestroy() override;
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		virtual void SetDisplayName(FText NewCharacterName) override;
 
@@ -40,24 +42,24 @@ class SALTLAKECITY_API UBBJobWidget : public UIBBJobWidget
 
 		virtual void SetJob(EBBJob Job) override;
 
-		virtual UIBBTitleWidget * & GetTitle() override;
+		virtual UIBBTitleWidget*& GetTitle() override;
 
-		virtual void SetAcceptCommand(UIBBCommand * NewAcceptCommand) override;
+		virtual void SetAcceptCommand(UIBBCommand* NewAcceptCommand) override;
 
-		virtual void SetCancelCommand(UIBBCommand * NewCancelCommand) override;
+		virtual void SetCancelCommand(UIBBCommand* NewCancelCommand) override;
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UTextBlock * NameText;
+		UTextBlock* NameText;
 
 		UPROPERTY(meta = (BindWidget))
-		UComboBoxString * JobComboBox;
+		UComboBoxString* JobComboBox;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBButton * AcceptButton;
+		UIBBButton* AcceptButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBButton * CancelButton;
+		UIBBButton* CancelButton;
 
 		UPROPERTY()
 		TMap<EBBJob, FString> Jobs;

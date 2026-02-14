@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -22,7 +22,7 @@ class SALTLAKECITY_API UBBModelPool : public UIBBModelPool
 
 		virtual void BeginDestroy() override;
 
-		virtual void Initialize(UIBBGameInstance * NewGameInstance) override;
+		virtual void Initialize(const UIBBGameInstance * NewGameInstance) override;
 
 		virtual void Finalize() override;
 
@@ -65,10 +65,6 @@ class SALTLAKECITY_API UBBModelPool : public UIBBModelPool
 		virtual void AddSelectionModel(UIBBSelectionModel * NewModel) override;
 
 		virtual bool GetSelectionModel(UIBBSelectionModel * & Model) const override;
-
-		virtual void AddSkillEntryModel(UIBBSkillEntryModel * NewModel) override;
-
-		virtual bool GetSkillEntryModel(UIBBSkillEntryModel * & NewModel) override;
 
 		virtual void AddTitleModel(UIBBTitleModel * NewModel) override;
 

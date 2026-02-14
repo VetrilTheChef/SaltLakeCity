@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBRadioSet.h"
 #include "Blueprint/WidgetTree.h"
@@ -44,12 +44,12 @@ void UBBRadioSet::ClearElements()
 		{
 			Element.CheckBox->OnCheckStateChanged.RemoveAll(this);
 
-			Element.CheckBox->MarkPendingKill();
+			Element.CheckBox->MarkAsGarbage();
 		}
 
 		if (IsValid(Element.Command))
 		{
-			Element.Command->MarkPendingKill();
+			Element.Command->MarkAsGarbage();
 		}
 
 		Element.CheckBox = nullptr;

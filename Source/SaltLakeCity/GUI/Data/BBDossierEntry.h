@@ -20,7 +20,7 @@ class SALTLAKECITY_API UBBDossierEntry : public UIBBDossierEntry
 	public:
 		UBBDossierEntry();
 
-		virtual void Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBUpdate * NewAttributeValueUpdate, FBBUpdate * NewMaxAttributeValueUpdate) override;
+		virtual void Initialize(FText NewName, TSoftObjectPtr<UTexture2D> NewIcon, FBBGetAttributeDelegate NewValueDelegate, FBBGetAttributeDelegate NewMaxValueDelegate, FBBAttributeUpdate * NewAttributeUpdate) override;
 
 		virtual void Finalize() override;
 
@@ -28,17 +28,22 @@ class SALTLAKECITY_API UBBDossierEntry : public UIBBDossierEntry
 
 		virtual TSoftObjectPtr<UTexture2D> GetIcon() const override;
 
+		virtual float GetValue() const override;
+
+		virtual float GetMaxValue() const override;
+
 	protected:
 		UPROPERTY()
 		TSoftObjectPtr<UTexture2D> Icon;
 
 		FText Name;
 
-		FBBUpdate * AttributeValueUpdate;
+		FBBGetAttributeDelegate ValueDelegate;
+		
+		FBBGetAttributeDelegate MaxValueDelegate;
 
-		FBBUpdate * MaxAttributeValueUpdate;
+		FBBAttributeUpdate * AttributeUpdate;
 
-		void UpdateValue(float NewValue) const;
-
-		void UpdateMaxValue(float NewMaxValue) const;
+		UFUNCTION()
+		void UpdateEntry(float NewValue, float NewMaxValue) const;
 };

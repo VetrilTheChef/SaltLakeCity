@@ -1,9 +1,9 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBDateTimeWidgetStub.h"
 #include "Commands/Interfaces/IBBCommand.h"
 
-UBBDateTimeWidgetStub::UBBDateTimeWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBDateTimeWidgetStub::UBBDateTimeWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	DateText = FText::FromString("");
@@ -28,22 +28,22 @@ void UBBDateTimeWidgetStub::NativeOnInitialized()
 {
 }
 
-void UBBDateTimeWidgetStub::SetPauseCommand(UIBBCommand * Command)
+void UBBDateTimeWidgetStub::SetPauseCommand(UIBBCommand* Command)
 {
 	PauseCommand = Command;
 }
 
-void UBBDateTimeWidgetStub::SetSlowMotionCommand(UIBBCommand * Command)
+void UBBDateTimeWidgetStub::SetSlowMotionCommand(UIBBCommand* Command)
 {
 	SlowMotionCommand = Command;
 }
 
-void UBBDateTimeWidgetStub::SetPlayCommand(UIBBCommand * Command)
+void UBBDateTimeWidgetStub::SetPlayCommand(UIBBCommand* Command)
 {
 	PlayCommand = Command;
 }
 
-void UBBDateTimeWidgetStub::SetFastForwardCommand(UIBBCommand * Command)
+void UBBDateTimeWidgetStub::SetFastForwardCommand(UIBBCommand* Command)
 {
 	FastForwardCommand = Command;
 }
@@ -70,7 +70,7 @@ void UBBDateTimeWidgetStub::SetTime(FText Time)
 
 void UBBDateTimeWidgetStub::ClickPauseButton()
 {
-	if (IsValid(PauseCommand))
+	if (PauseCommand.IsValid())
 	{
 		PauseCommand->Execute();
 	}
@@ -78,7 +78,7 @@ void UBBDateTimeWidgetStub::ClickPauseButton()
 
 void UBBDateTimeWidgetStub::ClickSlowMotionButton()
 {
-	if (IsValid(SlowMotionCommand))
+	if (SlowMotionCommand.IsValid())
 	{
 		SlowMotionCommand->Execute();
 	}
@@ -86,7 +86,7 @@ void UBBDateTimeWidgetStub::ClickSlowMotionButton()
 
 void UBBDateTimeWidgetStub::ClickPlayButton()
 {
-	if (IsValid(PlayCommand))
+	if (PlayCommand.IsValid())
 	{
 		PlayCommand->Execute();
 	}
@@ -94,7 +94,7 @@ void UBBDateTimeWidgetStub::ClickPlayButton()
 
 void UBBDateTimeWidgetStub::ClickFastForwardButton()
 {
-	if (IsValid(FastForwardCommand))
+	if (FastForwardCommand.IsValid())
 	{
 		FastForwardCommand->Execute();
 	}

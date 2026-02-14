@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,35 +21,36 @@ class UBBDossierEntryWidgetStub : public UIBBDossierEntryWidget
 	GENERATED_BODY()
 
 	public:
-		UBBDossierEntryWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBDossierEntryWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual EBBWidget GetType() const override;
+
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
 		FText GetEntryName() const;
 
 		virtual void SetEntryName(FText NewName) override;
 
-		UTexture2D * GetIcon() const;
+		UTexture2D* GetIcon() const;
 
-		virtual void SetIcon(UTexture2D * NewIcon) override;
+		virtual void SetIcon(UTexture2D* NewIcon) override;
 
-		float GetValue() const;
+		FText GetValue() const;
 
-		virtual void SetValue(float NewValue) override;
+		virtual void SetValue(FText NewValue) override;
 
-		float GetMaxValue() const;
+		float GetProgress() const;
 
-		virtual void SetMaxValue(float NewMaxValue) override;
+		virtual void SetProgress(float NewProgress) override;
 
 	protected:
+		TSoftObjectPtr<UTexture2D> Icon;
+
 		FText Name;
 
-		UPROPERTY()
-		UTexture2D * Icon;
+		FText Value;
 
-		float Value;
+		float Progress;
 
-		float MaxValue;
-
-		virtual void NativeOnListItemObjectSet(UObject * ListItemObject) override;
+		virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 };

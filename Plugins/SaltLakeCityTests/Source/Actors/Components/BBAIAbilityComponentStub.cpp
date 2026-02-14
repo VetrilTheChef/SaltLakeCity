@@ -48,10 +48,9 @@ void UBBAIAbilityComponentStub::AddAttributeSet(UIBBBaseAttributeSet * Set)
 {
 	if (IsValid(Set))
 	{
-		TArray<UAttributeSet *> NewSpawnedAttributes = GetSpawnedAttributes_Mutable();
-		NewSpawnedAttributes.AddUnique(Set);
+		AddSpawnedAttributes(Set);
 
-		SetSpawnedAttributes(NewSpawnedAttributes);
+		Set->Initialize(this);
 	}
 }
 
@@ -59,10 +58,9 @@ void UBBAIAbilityComponentStub::RemoveAttributeSet(UIBBBaseAttributeSet * Set)
 {
 	if (IsValid(Set))
 	{
-		TArray<UAttributeSet *> NewSpawnedAttributes = GetSpawnedAttributes_Mutable();
-		NewSpawnedAttributes.Remove(Set);
+		Set->Finalize(this);
 
-		SetSpawnedAttributes(NewSpawnedAttributes);
+		RemoveSpawnedAttributes(Set);
 	}
 }
 

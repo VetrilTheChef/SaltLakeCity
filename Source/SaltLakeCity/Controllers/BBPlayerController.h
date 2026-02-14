@@ -43,9 +43,18 @@ class SALTLAKECITY_API ABBPlayerController : public AIBBPlayerController
 
 		virtual void CancelTarget() override;
 
+		virtual void StartMarqueeSelection() override;
+
+		virtual void EndMarqueeSelection() override;
+
+		virtual void UpdateMarqueeSelection() override;
+
 		virtual void UpdateActiveMode(EBBGameMode NewActiveMode) override;
 
 	protected:
+		UPROPERTY(EditDefaultsOnly, Category = "Marquee", meta = (AllowPrivateAccess = "true"))
+		float MinTimeDown;
+
 		UPROPERTY(EditDefaultsOnly, Category = "Abilities", meta = (AllowPrivateAccess = "true"))
 		TSoftClassPtr<UIBBPlayerAbilityComponent> PlayerAbilityComponentClass;
 
@@ -63,6 +72,8 @@ class SALTLAKECITY_API ABBPlayerController : public AIBBPlayerController
 		ETraceTypeQuery GridTrace;
 
 		ETraceTypeQuery BuildableTrace;
+
+		FVector2D MarqueeStart;
 
 		void CreateAbilityComponent();
 

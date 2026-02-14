@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -25,7 +25,12 @@ class SALTLAKECITY_API UIBBContextController : public UBBGUIController
 	public:
 		UIBBContextController() : Super() { };
 
-		virtual void Initialize(UIBBContextWidget * ContextView, UIBBContextModel * ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory * CommandFactory) PURE_VIRTUAL(UIBBContextController::Initialize, );
+		virtual void Initialize(
+			UIBBContextWidget * ContextView,
+			UIBBContextModel * ContextModel,
+			const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory,
+			const UIBBCommandFactory * CommandFactory)
+		PURE_VIRTUAL(UIBBContextController::Initialize, );
 
 		virtual void Finalize() PURE_VIRTUAL(UIBBContextController::Finalize, );
 };

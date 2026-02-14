@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -19,7 +19,7 @@ class UBBProgressWidgetStub : public UIBBProgressWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBProgressWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBProgressWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual void PostInitProperties() override;
 
@@ -29,6 +29,8 @@ class UBBProgressWidgetStub : public UIBBProgressWidget
 
 		virtual EBBWidget GetType() const override;
 
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
 		float GetProgress();
 
 		virtual void SetProgress(float NewPercent) override;
@@ -36,6 +38,5 @@ class UBBProgressWidgetStub : public UIBBProgressWidget
 	protected:
 		friend class UBBProgressControllerSpec;
 
-		UPROPERTY()
 		float Progress;
 };

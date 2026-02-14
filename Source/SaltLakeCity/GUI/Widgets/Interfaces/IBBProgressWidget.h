@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -18,9 +18,14 @@ class SALTLAKECITY_API UIBBProgressWidget : public UIBBWidget
 	GENERATED_BODY()
 	
 	public:
-		UIBBProgressWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBProgressWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
-		virtual EBBWidget GetType() const override PURE_VIRTUAL(UIBBProgressWidget::GetType, return EBBWidget::None; );
+		virtual EBBWidget GetType() const override
+			PURE_VIRTUAL(UIBBProgressWidget::GetType, return EBBWidget::None; );
 
-		virtual void SetProgress(float NewProgress) PURE_VIRTUAL(UIBBProgressWidget::SetProgress, );
+		virtual void AddToScreen(int32 ZOrder = 0)
+			PURE_VIRTUAL(UIBBProgressWidget::AddToScreen, );
+
+		virtual void SetProgress(float NewProgress)
+			PURE_VIRTUAL(UIBBProgressWidget::SetProgress, );
 };

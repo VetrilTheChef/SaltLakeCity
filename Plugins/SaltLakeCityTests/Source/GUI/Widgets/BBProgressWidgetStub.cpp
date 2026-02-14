@@ -1,9 +1,9 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBProgressWidgetStub.h"
 #include "Components/ProgressBar.h"
 
-UBBProgressWidgetStub::UBBProgressWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBProgressWidgetStub::UBBProgressWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Progress = 0.0f;
@@ -27,6 +27,10 @@ void UBBProgressWidgetStub::NativeOnInitialized()
 EBBWidget UBBProgressWidgetStub::GetType() const
 {
 	return EBBWidget::Progress;
+}
+
+void UBBProgressWidgetStub::AddToScreen(int32 ZOrder)
+{
 }
 
 float UBBProgressWidgetStub::GetProgress()

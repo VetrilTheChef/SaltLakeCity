@@ -19,11 +19,13 @@ class SALTLAKECITY_API UBBSkillSet : public UIBBSkillSet
 
 		virtual void BeginDestroy() override;
 
+		virtual void Initialize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void Finalize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override;
+
 		virtual void PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue) override;
-
-		virtual FGameplayAttribute GetAttribute(EBBSkill Skill) const override;
-
-		virtual FGameplayAttribute GetMaxAttribute(EBBSkill Skill) const override;
 
 		virtual float GetValue(EBBSkill Skill) const override;
 
@@ -33,11 +35,11 @@ class SALTLAKECITY_API UBBSkillSet : public UIBBSkillSet
 
 		virtual void SetMaxValue(EBBSkill Skill, float NewValue) override;
 
-		using FBBUpdate = UIBBBaseAttributeSet::FBBUpdate;
+		virtual FBBGetAttributeDelegate GetValueDelegate(EBBSkill Skill) const override;
 
-		virtual FBBUpdate & OnValueUpdate(EBBSkill Skill) override { return (this->* (Attributes.FindChecked(Skill).Update))(); }
+		virtual FBBGetAttributeDelegate GetMaxValueDelegate(EBBSkill Skill) const override;
 
-		virtual FBBUpdate & OnMaxValueUpdate(EBBSkill Skill) override { return (this->* (Attributes.FindChecked(Skill).MaxUpdate))(); }
+		virtual FBBAttributeUpdate * OnUpdate(EBBSkill Skill) const override;
 
 	protected:
 		UPROPERTY()
@@ -80,11 +82,9 @@ class SALTLAKECITY_API UBBSkillSet : public UIBBSkillSet
 		FGameplayAttributeData MaxResearch;
 		BB_ATTRIBUTE_ACCESSORS(UBBSkillSet, MaxResearch)
 
-		TMap<EBBSkill, FBBAttribute<UBBSkillSet>> Attributes;
+		TMap<EBBSkill, FBBAttribute> Attributes;
 
-		using OnAttributeUpdate = FBBAttribute <UBBSkillSet>::OnAttributeUpdate;
-
-		TMap<FGameplayAttribute, OnAttributeUpdate> AttributeUpdates;
+		TMap<FGameplayAttribute, EBBSkill> AttributeToEnum;
 
 		void InitValues();
 
@@ -92,9 +92,9 @@ class SALTLAKECITY_API UBBSkillSet : public UIBBSkillSet
 
 		void MapAttributes();
 
-		void Subscribe();
+		void Subscribe(UIBBAIAbilityComponent * AbilityComponent);
 
-		void Unsubscribe();
+		void Unsubscribe(UIBBAIAbilityComponent * AbilityComponent);
 
 		void UpdateAttribute(const FOnAttributeChangeData & Data);
 

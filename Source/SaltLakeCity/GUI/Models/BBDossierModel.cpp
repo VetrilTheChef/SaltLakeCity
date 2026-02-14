@@ -111,6 +111,60 @@ FText UBBDossierModel::GetDisplayName() const
 	return IsValid(Character) ? Character->GetDisplayName(EBBDisplayName::Full) : FText::FromString("");
 }
 
+float UBBDossierModel::GetValue(EBBAttribute Attribute) const
+{
+	UIBBDossierEntry * AttributeEntry = AttributeEntries.FindChecked(Attribute);
+
+	verifyf(IsValid(AttributeEntry), TEXT("Attribute Entry is invalid."));
+
+	return AttributeEntry->GetValue();
+}
+
+float UBBDossierModel::GetValue(EBBNeed Need) const
+{
+	UIBBDossierEntry * NeedEntry = NeedEntries.FindChecked(Need);
+
+	verifyf(IsValid(NeedEntry), TEXT("Need Entry is invalid."));
+
+	return NeedEntry->GetValue();
+}
+
+float UBBDossierModel::GetValue(EBBSkill Skill) const
+{
+	UIBBDossierEntry * SkillEntry = SkillEntries.FindChecked(Skill);
+
+	verifyf(IsValid(SkillEntry), TEXT("Skill Entry is invalid."));
+
+	return SkillEntry->GetValue();
+}
+
+float UBBDossierModel::GetMaxValue(EBBAttribute Attribute) const
+{
+	UIBBDossierEntry * AttributeEntry = AttributeEntries.FindChecked(Attribute);
+
+	verifyf(IsValid(AttributeEntry), TEXT("Attribute Entry is invalid."));
+
+	return AttributeEntry->GetMaxValue();
+}
+
+float UBBDossierModel::GetMaxValue(EBBNeed Need) const
+{
+	UIBBDossierEntry * NeedEntry = NeedEntries.FindChecked(Need);
+
+	verifyf(IsValid(NeedEntry), TEXT("Need Entry is invalid."));
+
+	return NeedEntry->GetMaxValue();
+}
+
+float UBBDossierModel::GetMaxValue(EBBSkill Skill) const
+{
+	UIBBDossierEntry * SkillEntry = SkillEntries.FindChecked(Skill);
+
+	verifyf(IsValid(SkillEntry), TEXT("Skill Entry is invalid."));
+
+	return SkillEntry->GetMaxValue();
+}
+
 UIBBDossierEntry * UBBDossierModel::GetDossierEntry(EBBAttribute Attribute) const
 {
 	return AttributeEntries.FindChecked(Attribute);

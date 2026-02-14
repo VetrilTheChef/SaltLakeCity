@@ -1,69 +1,45 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actors/Buildings/BBBuildingStub.h"
-#include "Actors/Characters/BBCharacterStub.h"
 #include "Actors/Components/BBContextComponentStub.h"
 #include "Actors/Components/BBProgressComponentStub.h"
 #include "Actors/Components/BBSelectionComponentStub.h"
+#include "Actors/Components/BBWidgetComponentStub.h"
 #include "Actors/Components/BBWorkComponentStub.h"
-#include "Commands/Factories/BBCommandFactoryStub.h"
-#include "Commands/Controllers/BBPauseCommandStub.h"
-#include "Commands/Controllers/BBSpeedCommandStub.h"
-#include "Commands/GUI/BBCloseWidgetCommandStub.h"
-#include "Commands/GUI/BBOpenWidgetCommandStub.h"
-#include "Commands/Jobs/BBSetJobCommandStub.h"
-#include "Commands/Metacommands/BBCompositeCommandStub.h"
-#include "Controllers/BBPlayerControllerStub.h"
 #include "GameInstances/BBGameInstanceStub.h"
-#include "GameModes/BBGameModeStub.h"
-#include "GameStates/BBGameStateStub.h"
-#include "GameStates/Components/BBGameClockStub.h"
+#include "GameInstances/Subsystems/BBUINotificationSubsystemStub.h"
 #include "GUI/BBHUD.h"
-#include "GUI/Components/BBModelPoolStub.h"
-#include "GUI/Factories/BBWidgetFactoryStub.h"
-#include "GUI/Models/BBGUIModelStub.h"
-#include "GUI/Models/BBContextModelStub.h"
-#include "GUI/Models/BBJobModelStub.h"
-#include "GUI/Models/BBSelectionModelStub.h"
+#include "GUI/BBWidgetManagerStub.h"
 #include "GUI/Widgets/BBWidgetStub.h"
 #include "Specifications/GUI/BBWidgetSpecificationStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(ABBHUDSpec, "SaltLakeCity.GUI.HUD", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	ABBHUDSpec,
+	"SaltLakeCity.GUI.HUD",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
-	UWorld * TestWorld = nullptr;
+	UWorld* TestWorld = nullptr;
 
 	UPROPERTY()
-	UBBGameInstanceStub * GameInstance = nullptr;
+	UBBGameInstanceStub* GameInstance = nullptr;
 
 	UPROPERTY()
-	ABBGameModeStub * GameMode = nullptr;
+	UBBPresentationSubsystemStub* PresentationSubsystem = nullptr;
 
 	UPROPERTY()
-	ABBGameStateStub * GameState = nullptr;
+	UBBWidgetManagerStub* WidgetManager = nullptr;
 
 	UPROPERTY()
-	ABBPlayerControllerStub * PlayerController = nullptr;
-
-	UPROPERTY()
-	UBBCommandFactoryStub * CommandFactory = nullptr;
-
-	UPROPERTY()
-	UBBModelPoolStub * ModelPool = nullptr;
-
-	UPROPERTY()
-	UBBWidgetFactoryStub * WidgetFactory = nullptr;
-
-	UPROPERTY()
-	TArray<UClass *> HUDClasses;
+	TArray<UClass*> HUDClasses;
 
 	// SUT
 	UPROPERTY()
-	ABBHUD * HUD = nullptr;
+	ABBHUD* HUD = nullptr;
 
 	FActorSpawnParameters SpawnParameters;
 
@@ -87,119 +63,70 @@ void ABBHUDSpec::Define()
 
 		UTEST_TRUE("Game Instance is valid", IsValid(GameInstance))
 
-		//GameMode = TestWorld->GetAuthGameMode<ABBGameModeStub>();
-		GameMode = TestWorld->SpawnActor<ABBGameModeStub>(ABBGameModeStub::StaticClass(), SpawnParameters);
+		PresentationSubsystem = NewObject<UBBPresentationSubsystemStub>(
+			GameInstance,
+			UBBPresentationSubsystemStub::StaticClass()
+		);
 
-		UTEST_TRUE("Game Mode is valid", IsValid(GameMode))
+		UTEST_TRUE("Presentation Subsystem is valid", IsValid(PresentationSubsystem))
 
-		//GameState = TestWorld->GetGameState<ABBGameStateStub>();
-		GameState = TestWorld->SpawnActor<ABBGameStateStub>(ABBGameStateStub::StaticClass(), SpawnParameters);
+		WidgetManager = NewObject<UBBWidgetManagerStub>(
+			GameInstance,
+			UBBWidgetManagerStub::StaticClass()
+		);
 
-		UTEST_TRUE("Game State is valid", IsValid(GameState))
-
-		GameState->SetGameClock(NewObject<UBBGameClockStub>(GameState, UBBGameClockStub::StaticClass()));
-
-		//TestWorld->GetFirstPlayerController<ABBPlayerControllerStub>();
-		PlayerController = TestWorld->SpawnActor<ABBPlayerControllerStub>(ABBPlayerControllerStub::StaticClass(), SpawnParameters);
-
-		UTEST_TRUE("Player Controller is valid", IsValid(PlayerController))
-
-		PlayerController->SetPlayer(GameInstance->GetFirstGamePlayer());
-
-		CommandFactory = NewObject<UBBCommandFactoryStub>(GameInstance, UBBCommandFactoryStub::StaticClass());
-
-		UTEST_TRUE("Command Factory is valid", IsValid(CommandFactory))
-
-		CommandFactory->AddPauseCommand(NewObject<UBBPauseCommandStub>(CommandFactory, UBBPauseCommandStub::StaticClass()));
-		CommandFactory->AddSpeedCommand(NewObject<UBBSpeedCommandStub>(CommandFactory, UBBSpeedCommandStub::StaticClass()));
-		CommandFactory->AddSpeedCommand(NewObject<UBBSpeedCommandStub>(CommandFactory, UBBSpeedCommandStub::StaticClass()));
-		CommandFactory->AddSpeedCommand(NewObject<UBBSpeedCommandStub>(CommandFactory, UBBSpeedCommandStub::StaticClass()));
-		CommandFactory->AddCompositeCommand(NewObject<UBBCompositeCommandStub>(CommandFactory, UBBCompositeCommandStub::StaticClass()));
-		CommandFactory->AddSetJobCommand(NewObject<UBBSetJobCommandStub>(CommandFactory, UBBSetJobCommandStub::StaticClass()));
-		CommandFactory->AddCloseWidgetCommand(NewObject<UBBCloseWidgetCommandStub>(CommandFactory, UBBCloseWidgetCommandStub::StaticClass()));
-		CommandFactory->AddCloseWidgetCommand(NewObject<UBBCloseWidgetCommandStub>(CommandFactory, UBBCloseWidgetCommandStub::StaticClass()));
-		CommandFactory->AddOpenWidgetCommand(NewObject<UBBOpenWidgetCommandStub>(CommandFactory, UBBOpenWidgetCommandStub::StaticClass()));
-		CommandFactory->AddOpenWidgetCommand(NewObject<UBBOpenWidgetCommandStub>(CommandFactory, UBBOpenWidgetCommandStub::StaticClass()));
-		CommandFactory->AddOpenWidgetCommand(NewObject<UBBOpenWidgetCommandStub>(CommandFactory, UBBOpenWidgetCommandStub::StaticClass()));
-		CommandFactory->AddOpenWidgetCommand(NewObject<UBBOpenWidgetCommandStub>(CommandFactory, UBBOpenWidgetCommandStub::StaticClass()));
-
-		ModelPool = NewObject<UBBModelPoolStub>(TestWorld, UBBModelPoolStub::StaticClass());
-
-		UTEST_TRUE("Model Pool is valid", IsValid(ModelPool))
-
-		WidgetFactory = NewObject<UBBWidgetFactoryStub>(TestWorld, UBBWidgetFactoryStub::StaticClass());
-
-		UTEST_TRUE("Widget Factory is valid", IsValid(WidgetFactory))
-
-		GameInstance->SetCommandFactory(CommandFactory);
+		UTEST_TRUE("Widget Manager is valid", IsValid(WidgetManager))
 
 		return true;
 	});
 
 	AfterEach([this]()
 	{
-		ModelPool = nullptr;
-		WidgetFactory = nullptr;
-
-		PlayerController = nullptr;
-		//GameState = nullptr;
-		GameMode = nullptr;
-
-		//TestWorld->DestroyActor(PlayerController);
-		TestWorld->DestroyActor(GameState);
-		//TestWorld->DestroyActor(GameMode);
+		WidgetManager = nullptr;
+		PresentationSubsystem = nullptr;
 
 		UBBTestUtil::CloseTestWorld(TestWorld);
 	});
 
-	for (UClass * & HUDClass : HUDClasses)
+	for (UClass*& HUDClass : HUDClasses)
 	{
 		Describe("[" + HUDClass->GetName() + "]", [this, HUDClass]()
 		{
-			It("Given an open widget request for a widget that exists, expect the HUD to open it", [this, HUDClass]()
+			It(
+				"Given an open widget request, expect the HUD to open it",
+				[this, HUDClass]()
 			{
 				HUD = TestWorld->SpawnActor<ABBHUD>(HUDClass, SpawnParameters);
 
 				UTEST_TRUE("HUD is valid", IsValid(HUD))
 
-				HUD->Initialize(GameInstance, GameMode, GameState, PlayerController);
+				HUD->Initialize(PresentationSubsystem, WidgetManager);
 
-				UBBWidgetSpecificationStub * WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(TestWorld, UBBWidgetSpecificationStub::StaticClass());
+				UBBWidgetSpecificationStub* WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(
+					TestWorld,
+					UBBWidgetSpecificationStub::StaticClass()
+				);
 
 				UTEST_TRUE("Widget Specification is valid", IsValid(WidgetSpecification))
-
-				TArray<UBBWidgetStub *> Widgets;
-				Widgets.Empty();
-				UBBWidgetStub * Widget = nullptr;
-
+					
 				for (int Index = 0; Index < 5; Index++)
 				{
-					Widget = NewObject<UBBWidgetStub>(TestWorld, UBBWidgetStub::StaticClass());
+					UBBWidgetStub* Widget = NewObject<UBBWidgetStub>(
+						WidgetManager,
+						UBBWidgetStub::StaticClass()
+					);
 
 					UTEST_TRUE("Widget is valid", IsValid(Widget))
 
-					Widget->NativeOnInitialized();
-					Widgets.Emplace(Widget);
-				}
+					WidgetManager->SetWidget(Widget);
 
-				UBBGUIModelStub * Model = NewObject<UBBGUIModelStub>(ModelPool, UBBGUIModelStub::StaticClass());
-
-				UTEST_TRUE("Model is valid", IsValid(Model))
-
-				ModelPool->SetModel(Model);
-
-				HUD->SetModelPool(ModelPool);
-				HUD->SetWidgetFactory(WidgetFactory);
-
-				for (int Index = 0; Index < 5; Index++)
-				{
-					Model->SetWidget(Widgets[Index]);
-
-					TEST_FALSE(Widgets[Index]->IsInViewport())
+					TEST_FALSE(Widget->IsInViewport())
 
 					HUD->OpenWidget(WidgetSpecification, false);
 
-					TEST_TRUE(Widgets[Index]->IsInViewport())
+					TEST_TRUE(Widget->IsInViewport())
+
+					Widget->SetIsInViewport(false);
 				}
 
 				HUD->Finalize();
@@ -209,36 +136,41 @@ void ABBHUDSpec::Define()
 				return true;
 			});
 
-			It("Given an open widget request for a widget that does not exist, expect the HUD to create it and open it", [this, HUDClass]()
+			It(
+				"Given a close widget request, expect the HUD to close it",
+				[this, HUDClass]()
 			{
 				HUD = TestWorld->SpawnActor<ABBHUD>(HUDClass, SpawnParameters);
 
 				UTEST_TRUE("HUD is valid", IsValid(HUD))
 
-				HUD->Initialize(GameInstance, GameMode, GameState, PlayerController);
+				HUD->Initialize(PresentationSubsystem, WidgetManager);
 
-				UBBWidgetSpecificationStub * WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(TestWorld, UBBWidgetSpecificationStub::StaticClass());
+				UBBWidgetSpecificationStub* WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(
+					TestWorld,
+					UBBWidgetSpecificationStub::StaticClass()
+				);
 
 				UTEST_TRUE("Widget Specification is valid", IsValid(WidgetSpecification))
 
-				ModelPool->SetModel(nullptr);
-
-				HUD->SetModelPool(ModelPool);
-				HUD->SetWidgetFactory(WidgetFactory);
-
-				for (int Requests = 0; Requests < 5; Requests++)
+				for (int Index = 0; Index < 5; Index++)
 				{
-					UBBWidgetStub * NewWidget = NewObject<UBBWidgetStub>(WidgetFactory, UBBWidgetStub::StaticClass());
+					UBBWidgetStub* Widget = NewObject<UBBWidgetStub>(
+						WidgetManager,
+						UBBWidgetStub::StaticClass()
+					);
 
-					WidgetSpecification->SetWidget(NewWidget);
+					UTEST_TRUE("Widget is valid", IsValid(Widget))
 
-					TEST_FALSE(NewWidget->IsInViewport())
+					Widget->SetIsInViewport(true);
 
-					HUD->OpenWidget(WidgetSpecification, false);
+					WidgetManager->SetWidget(Widget);
 
-					TEST_TRUE(NewWidget->IsInViewport())
+					TEST_TRUE(Widget->IsInViewport())
 
-					NewWidget->SetIsInViewport(false);
+					HUD->CloseWidget(WidgetSpecification);
+
+					TEST_TRUE(Widget->IsInViewport() == false)
 				}
 
 				HUD->Finalize();
@@ -248,15 +180,105 @@ void ABBHUDSpec::Define()
 				return true;
 			});
 
-			It("Given a new contextualizable, expect the HUD to broadcast its context component", [this, HUDClass]()
+			It(
+				"Given an attach widget request, expect the HUD to attach it",
+				[this, HUDClass]()
 			{
 				HUD = TestWorld->SpawnActor<ABBHUD>(HUDClass, SpawnParameters);
 
 				UTEST_TRUE("HUD is valid", IsValid(HUD))
 
-				HUD->Initialize(GameInstance, GameMode, GameState, PlayerController);
+				HUD->Initialize(PresentationSubsystem, WidgetManager);
 
-				UBBContextModelStub * ContextModel = NewObject<UBBContextModelStub>(HUD, UBBContextModelStub::StaticClass());
+				UBBWidgetSpecificationStub* WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(
+					TestWorld,
+					UBBWidgetSpecificationStub::StaticClass()
+				);
+
+				UTEST_TRUE("Widget Specification is valid", IsValid(WidgetSpecification))
+
+				UBBWidgetComponentStub* WidgetComponent = NewObject<UBBWidgetComponentStub>(
+					TestWorld,
+					UBBWidgetComponentStub::StaticClass()
+				);
+
+				UTEST_TRUE("Widget Component is valid", IsValid(WidgetComponent))
+
+				for (int Index = 0; Index < 5; Index++)
+				{
+					UBBWidgetStub* Widget = NewObject<UBBWidgetStub>(
+						TestWorld,
+						UBBWidgetStub::StaticClass()
+					);
+
+					TEST_TRUE(WidgetComponent->GetWidget() == nullptr)
+
+					HUD->AttachWidget(WidgetSpecification, WidgetComponent);
+
+					TEST_TRUE(WidgetComponent->GetWidget() == Widget)
+				}
+
+				HUD->Finalize();
+
+				TestWorld->DestroyActor(HUD);
+
+				return true;
+			});
+
+			It(
+				"Given a detach widget request, expect the HUD to detach it",
+				[this, HUDClass]()
+			{
+				HUD = TestWorld->SpawnActor<ABBHUD>(HUDClass, SpawnParameters);
+
+				UTEST_TRUE("HUD is valid", IsValid(HUD))
+
+				HUD->Initialize(PresentationSubsystem, WidgetManager);
+
+				UBBWidgetComponentStub* WidgetComponent = NewObject<UBBWidgetComponentStub>(
+					TestWorld,
+					UBBWidgetComponentStub::StaticClass()
+				);
+
+				UTEST_TRUE("Widget Component is valid", IsValid(WidgetComponent))
+
+				for (int Index = 0; Index < 5; Index++)
+				{
+					UBBWidgetStub* Widget = NewObject<UBBWidgetStub>(
+						TestWorld,
+						UBBWidgetStub::StaticClass()
+					);
+
+					WidgetComponent->SetWidget(Widget);
+
+					UTEST_TRUE("Widget is attached", WidgetComponent->GetWidget() == Widget)
+
+					HUD->DetachWidget(WidgetComponent);
+
+					TEST_TRUE(WidgetComponent->GetWidget() == nullptr)
+				}
+
+				HUD->Finalize();
+
+				TestWorld->DestroyActor(HUD);
+
+				return true;
+			});
+
+			It(
+				"Given a new contextualizable, expect the HUD to broadcast its context component",
+				[this, HUDClass]()
+			{
+				HUD = TestWorld->SpawnActor<ABBHUD>(HUDClass, SpawnParameters);
+
+				UTEST_TRUE("HUD is valid", IsValid(HUD))
+
+				HUD->Initialize(PresentationSubsystem, WidgetManager);
+
+				UBBContextModelStub* ContextModel = NewObject<UBBContextModelStub>(
+					HUD,
+					UBBContextModelStub::StaticClass()
+				);
 
 				UTEST_TRUE("Context Model is valid", IsValid(ContextModel))
 
@@ -266,11 +288,17 @@ void ABBHUDSpec::Define()
 
 				for (int Index = 0; Index < 5; Index++)
 				{
-					ABBCharacterStub * Character = TestWorld->SpawnActor<ABBCharacterStub>(ABBCharacterStub::StaticClass(), SpawnParameters);
+					ABBCharacterStub* Character = TestWorld->SpawnActor<ABBCharacterStub>(
+						ABBCharacterStub::StaticClass(),
+						SpawnParameters
+					);
 
 					UTEST_TRUE("Character is valid", IsValid(Character))
 
-					UIBBContextComponent * ContextComponent = NewObject<UIBBContextComponent>(Character, UBBContextComponentStub::StaticClass());
+					UIBBContextComponent* ContextComponent = NewObject<UIBBContextComponent>(
+						Character,
+						UBBContextComponentStub::StaticClass()
+					);
 
 					UTEST_TRUE("Context Component is valid", IsValid(ContextComponent))
 
@@ -295,15 +323,20 @@ void ABBHUDSpec::Define()
 				return true;
 			});
 
-			It("Given a new selectable, expect the HUD to broadcast its selection component", [this, HUDClass]()
+			It(
+				"Given a new selectable, expect the HUD to broadcast its selection component",
+				[this, HUDClass]()
 			{
 				HUD = TestWorld->SpawnActor<ABBHUD>(HUDClass, SpawnParameters);
 
 				UTEST_TRUE("HUD is valid", IsValid(HUD))
 
-				HUD->Initialize(GameInstance, GameMode, GameState, PlayerController);
+				HUD->Initialize(PresentationSubsystem, WidgetManager);
 
-				UBBSelectionModelStub * SelectionModel = NewObject<UBBSelectionModelStub>(HUD, UBBSelectionModelStub::StaticClass());
+				UBBSelectionModelStub * SelectionModel = NewObject<UBBSelectionModelStub>(
+					HUD,
+					UBBSelectionModelStub::StaticClass()
+				);
 
 				UTEST_TRUE("Selection Model is valid", IsValid(SelectionModel))
 
@@ -313,11 +346,17 @@ void ABBHUDSpec::Define()
 
 				for (int Index = 0; Index < 5; Index++)
 				{
-					ABBCharacterStub * Character = TestWorld->SpawnActor<ABBCharacterStub>(ABBCharacterStub::StaticClass(), SpawnParameters);
+					ABBCharacterStub * Character = TestWorld->SpawnActor<ABBCharacterStub>(
+						ABBCharacterStub::StaticClass(),
+						SpawnParameters
+					);
 
 					UTEST_TRUE("Character is valid", IsValid(Character))
 
-					UIBBSelectionComponent * SelectionComponent = NewObject<UIBBSelectionComponent>(Character, UBBSelectionComponentStub::StaticClass());
+					UIBBSelectionComponent * SelectionComponent = NewObject<UIBBSelectionComponent>(
+						Character,
+						UBBSelectionComponentStub::StaticClass()
+					);
 
 					UTEST_TRUE("Selection Component is valid", IsValid(SelectionComponent))
 

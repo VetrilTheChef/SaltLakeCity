@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -24,7 +24,7 @@ class SALTLAKECITY_API UBBBuildWidget : public UIBBBuildWidget
 	GENERATED_BODY()
 
 	public:
-		UBBBuildWidget(const FObjectInitializer & ObjectInitializer);
+		UBBBuildWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeDestruct() override;
 
@@ -32,39 +32,41 @@ class SALTLAKECITY_API UBBBuildWidget : public UIBBBuildWidget
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void AddEntry(EBBBuildCategory Category, UIBBBuildEntry * & NewEntry) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
+		virtual void AddEntry(EBBBuildCategory Category, UIBBBuildEntry*& NewEntry) override;
 
 		virtual void ClearEntries(EBBBuildCategory Category) override;
 
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab0;
+		UIBBRadioBox* Tab0;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab1;
+		UIBBRadioBox* Tab1;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab2;
+		UIBBRadioBox* Tab2;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * Tab3;
+		UIBBRadioBox* Tab3;
 
 		TSortedMap<EBBBuildCategory, UIBBRadioBox *, FDefaultAllocator, TLess<EBBBuildCategory>> Tabs;
 
 		UPROPERTY(meta = (BindWidget))
-		UWidgetSwitcher * CategorySwitcher;
+		UWidgetSwitcher* CategorySwitcher;
 
 		UPROPERTY(meta = (BindWidget))
-		UTileView * Tile0;
+		UTileView* Tile0;
 
 		UPROPERTY(meta = (BindWidget))
-		UTileView * Tile1;
+		UTileView* Tile1;
 
 		UPROPERTY(meta = (BindWidget))
-		UTileView * Tile2;
+		UTileView* Tile2;
 
 		UPROPERTY(meta = (BindWidget))
-		UTileView * Tile3;
+		UTileView* Tile3;
 
 		TSortedMap<EBBBuildCategory, UTileView *> Tiles;
 

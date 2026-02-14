@@ -1,7 +1,7 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBTitleModel.h"
-#include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/BBUIStatics.h"
 #include "GUI/Interfaces/IBBWidgetTarget.h"
 #include "GUI/Widgets/Interfaces/IBBTitleWidget.h"
 #include "Specifications/GUI/Interfaces/IBBTargetedWidgetSpecification.h"
@@ -12,7 +12,6 @@ UBBTitleModel::UBBTitleModel() :
 {
 	View = nullptr;
 	ParentModel = nullptr;
-	HUD = nullptr;
 }
 
 TScriptInterface<IBBWidgetTarget> UBBTitleModel::GetWidgetTarget() const
@@ -20,76 +19,63 @@ TScriptInterface<IBBWidgetTarget> UBBTitleModel::GetWidgetTarget() const
 	return TScriptInterface<IBBWidgetTarget>(ParentModel->GetWidget());
 }
 
-UIBBWidget * UBBTitleModel::GetWidget() const
+UIBBWidget* UBBTitleModel::GetWidget() const
 {
-	return ParentModel->GetWidget();
+	return GetParentModelChecked()->GetWidget();
 }
 
-UIBBWidgetSpecification * UBBTitleModel::GetWidgetSpecification(const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory)
+UIBBWidgetSpecification* UBBTitleModel::GetWidgetSpecification(
+	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory
+)
 {
 	verifyf(IsValid(WidgetSpecificationFactory), TEXT("Widget Specification Factory is invalid."));
 
 	UIBBTargetedWidgetSpecification * TitleWidgetSpecification = nullptr;
 
-	WidgetSpecificationFactory->NewTitleWidgetSpecification(TitleWidgetSpecification, this, ParentModel);
+	WidgetSpecificationFactory->NewTitleWidgetSpecification(TitleWidgetSpecification, this, GetParentModelChecked());
 
 	verifyf(IsValid(TitleWidgetSpecification), TEXT("Title Widget Specification is invalid."));
 
 	TitleWidgetSpecification->SetWidgetTarget(GetWidgetTarget());
 
-	OnTargetUpdate().AddUObject(TitleWidgetSpecification, & UIBBTargetedWidgetSpecification::SetWidgetTarget);
+	OnTargetUpdate().AddUObject(TitleWidgetSpecification, &UIBBTargetedWidgetSpecification::SetWidgetTarget);
 
 	return TitleWidgetSpecification;
 }
 
-void UBBTitleModel::Initialize(UIBBTitleWidget * NewView, UIBBGUIModel * NewParentModel, AIBBHUD * NewHUD)
+void UBBTitleModel::Initialize(UIBBTitleWidget* NewView, UIBBGUIModel* NewParentModel)
 {
 	InitializeView(NewView);
 	InitializeParentModel(NewParentModel);
-	InitializeHUD(NewHUD);
 }
 
 void UBBTitleModel::Finalize()
 {
-	FinalizeHUD();
 	FinalizeParentModel();
 	FinalizeView();
 }
 
 
 
-void UBBTitleModel::InitializeView(UIBBTitleWidget * NewView)
+void UBBTitleModel::InitializeView(UIBBTitleWidget* NewView)
 {
 	FinalizeView();
 
-	verifyf(IsValid(NewView), TEXT("New Title View is invalid."));
-
-	View = NewView;
+	SetTitleViewChecked(NewView);
 }
 
-void UBBTitleModel::InitializeParentModel(UIBBGUIModel * NewParentModel)
+void UBBTitleModel::InitializeParentModel(UIBBGUIModel* NewParentModel)
 {
 	FinalizeParentModel();
 
-	verifyf(IsValid(NewParentModel), TEXT("New Parent Model is invalid."));
+	SetParentModelChecked(NewParentModel);
 
-	ParentModel = NewParentModel;
-
-	OnTargetUpdate().Broadcast(TScriptInterface<IBBWidgetTarget>(ParentModel->GetWidget()));
-}
-
-void UBBTitleModel::InitializeHUD(AIBBHUD * NewHUD)
-{
-	FinalizeHUD();
-
-	verifyf(IsValid(NewHUD), TEXT("New HUD is invalid."));
-
-	HUD = NewHUD;
+	OnTargetUpdate().Broadcast(TScriptInterface<IBBWidgetTarget>(GetParentWidget()));
 }
 
 void UBBTitleModel::FinalizeView()
 {
-	if (IsValid(View))
+	if (View.IsValid())
 	{
 	}
 
@@ -98,7 +84,7 @@ void UBBTitleModel::FinalizeView()
 
 void UBBTitleModel::FinalizeParentModel()
 {
-	if (IsValid(ParentModel))
+	if (ParentModel.IsValid())
 	{
 	}
 
@@ -107,34 +93,57 @@ void UBBTitleModel::FinalizeParentModel()
 	OnTargetUpdate().Broadcast(TScriptInterface<IBBWidgetTarget>(nullptr));
 }
 
-void UBBTitleModel::FinalizeHUD()
+UIBBTitleWidget* UBBTitleModel::GetTitleViewChecked() const
 {
-	if (IsValid(HUD))
-	{
-	}
+	verifyf(View.IsValid(), TEXT("View is invalid."));
 
-	HUD = nullptr;
+	return View.Get();
+}
+
+void UBBTitleModel::SetTitleViewChecked(UIBBTitleWidget* NewView)
+{
+	verifyf(IsValid(NewView), TEXT("New View is invalid."));
+
+	View = NewView;
+}
+
+UIBBGUIModel* UBBTitleModel::GetParentModelChecked() const
+{
+	verifyf(ParentModel.IsValid(), TEXT("Parent Model is invalid."));
+
+	return ParentModel.Get();
+}
+
+void UBBTitleModel::SetParentModelChecked(UIBBGUIModel* NewParentModel)
+{
+	verifyf(IsValid(NewParentModel), TEXT("New Parent Model is invalid."));
+
+	ParentModel = NewParentModel;
 }
 
 void UBBTitleModel::SetPosition(FVector2D NewPosition)
 {
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
-	verifyf(IsValid(ParentModel), TEXT("Parent Model is invalid."));
-	verifyf(IsValid(ParentModel->GetWidget()), TEXT("Parent Widget is invalid."));
+	UIBBWidget* ParentWidget= GetParentWidget();
 
-	HUD->ConvertToPIEViewportSpace(NewPosition);
+	verifyf(IsValid(ParentWidget), TEXT("Parent Widget is invalid."));
 
-	ParentModel->GetWidget()->SetPositionInViewport(NewPosition);
+	UBBUIStatics::ConvertToPIEViewportSpace(GetWorld(), NewPosition);
+
+	ParentWidget->SetPositionInViewport(NewPosition);
 }
 
 UIBBWidget * UBBTitleModel::GetParentWidget() const
 {
-	return ParentModel->GetWidget();
+	verifyf(ParentModel.IsValid(), TEXT("Parent Model is invalid."));
+
+	return ParentModel.Get()->GetWidget();
 }
 
-UIBBWidgetSpecification * UBBTitleModel::GetParentWidgetSpecification(const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory)
+UIBBWidgetSpecification * UBBTitleModel::GetParentWidgetSpecification(
+	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory
+)
 {
-	verifyf(IsValid(ParentModel), TEXT("Parent Model is invalid."));
+	verifyf(ParentModel.IsValid(), TEXT("Parent Model is invalid."));
 
 	return ParentModel->GetWidgetSpecification(WidgetSpecificationFactory);
 }

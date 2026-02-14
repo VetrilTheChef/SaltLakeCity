@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBProgressComponent.h"
 #include "Abilities/Tasks/Interfaces/IBBAbilityTask.h"
@@ -6,7 +6,7 @@
 #include "Commands/GUI/Interfaces/IBBAttachWidgetCommand.h"
 #include "Commands/GUI/Interfaces/IBBDetachWidgetCommand.h"
 #include "GameInstances/Interfaces/IBBGameInstance.h"
-#include "GUI/Interfaces/IBBHUD.h"
+#include "GUI/Interfaces/IBBWidgetManager.h"
 #include "Specifications/GUI/Factories/Interfaces/IBBWidgetSpecificationFactory.h"
 
 UBBProgressComponent::UBBProgressComponent() :
@@ -41,15 +41,15 @@ void UBBProgressComponent::Initialize(TScriptInterface<IBBProgressable> && NewPr
 
 	verifyf(IsValid(GameInstance), TEXT("Game Instance is invalid."));
 
-	AIBBHUD * HUD = GameInstance->GetHUD();
+	UIBBWidgetManager * WidgetManager = GameInstance->GetWidgetManager();
 
-	verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+	verifyf(IsValid(WidgetManager), TEXT("Widget Manager is invalid."));
 
 	const UIBBCommandFactory * CommandFactory = GameInstance->GetCommandFactory();
 
 	verifyf(IsValid(CommandFactory), TEXT("Command Factory is invalid."));
 
-	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory = HUD->GetWidgetSpecificationFactory();
+	const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory = WidgetManager->GetWidgetSpecificationFactory();
 
 	verifyf(IsValid(WidgetSpecificationFactory), TEXT("Widget Specification Factory is invalid."));
 
@@ -147,7 +147,7 @@ void UBBProgressComponent::FinalizeAttachWidgetCommand()
 {
 	if (IsValid(AttachCommand))
 	{
-		AttachCommand->MarkPendingKill();
+		AttachCommand->MarkAsGarbage();
 	}
 
 	AttachCommand = nullptr;
@@ -157,7 +157,7 @@ void UBBProgressComponent::FinalizeDetachWidgetCommand()
 {
 	if (IsValid(DetachCommand))
 	{
-		DetachCommand->MarkPendingKill();
+		DetachCommand->MarkAsGarbage();
 	}
 
 	DetachCommand = nullptr;

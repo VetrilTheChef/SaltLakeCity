@@ -1,10 +1,11 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBJobWidgetStub.h"
+#include "Commands/Interfaces/IBBCommand.h"
 #include "GUI/Includes/BBWidgetEnum.h"
 #include "GUI/Widgets/BBTitleWidgetStub.h"
 
-UBBJobWidgetStub::UBBJobWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBJobWidgetStub::UBBJobWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	DisplayName = FText::FromString("");
@@ -28,7 +29,7 @@ void UBBJobWidgetStub::BeginDestroy()
 {
 	if (IsValid(Title))
 	{
-		Title->MarkPendingKill();
+		Title->MarkAsGarbage();
 	}
 
 	Title = nullptr;
@@ -39,6 +40,10 @@ void UBBJobWidgetStub::BeginDestroy()
 EBBWidget UBBJobWidgetStub::GetType() const
 {
 	return EBBWidget::Job;
+}
+
+void UBBJobWidgetStub::AddToScreen(int32 ZOrder)
+{
 }
 
 FText UBBJobWidgetStub::GetDisplayName()
@@ -97,7 +102,7 @@ void UBBJobWidgetStub::SetJob(EBBJob Job)
 
 FText UBBJobWidgetStub::GetSelectedJobName()
 {
-	for (FBBJob & Job : Jobs)
+	for (FBBJob& Job : Jobs)
 	{
 		if (Job.Job == SelectedJob)
 			return Job.Name;
@@ -106,27 +111,27 @@ FText UBBJobWidgetStub::GetSelectedJobName()
 	return FText::FromString("");
 }
 
-UIBBTitleWidget * & UBBJobWidgetStub::GetTitle()
+UIBBTitleWidget*& UBBJobWidgetStub::GetTitle()
 {
 	return Title;
 }
 
-UIBBCommand * UBBJobWidgetStub::GetAcceptCommand()
+UIBBCommand* UBBJobWidgetStub::GetAcceptCommand()
 {
-	return AcceptCommand;
+	return AcceptCommand.Get();
 }
 
-void UBBJobWidgetStub::SetAcceptCommand(UIBBCommand * NewAcceptCommand)
+void UBBJobWidgetStub::SetAcceptCommand(UIBBCommand* NewAcceptCommand)
 {
 	AcceptCommand = NewAcceptCommand;
 }
 
-UIBBCommand * UBBJobWidgetStub::GetCancelCommand()
+UIBBCommand* UBBJobWidgetStub::GetCancelCommand()
 {
-	return CancelCommand;
+	return CancelCommand.Get();
 }
 
-void UBBJobWidgetStub::SetCancelCommand(UIBBCommand * NewCancelCommand)
+void UBBJobWidgetStub::SetCancelCommand(UIBBCommand* NewCancelCommand)
 {
 	CancelCommand = NewCancelCommand;
 }

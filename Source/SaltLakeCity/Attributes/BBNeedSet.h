@@ -19,11 +19,13 @@ class SALTLAKECITY_API UBBNeedSet : public UIBBNeedSet
 
 		virtual void BeginDestroy() override;
 
+		virtual void Initialize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void Finalize(UIBBAIAbilityComponent * AbilityComponent) override;
+
+		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override;
+
 		virtual void PreAttributeChange(const FGameplayAttribute & Attribute, float & NewValue) override;
-
-		virtual FGameplayAttribute GetAttribute(EBBNeed Need) const override;
-
-		virtual FGameplayAttribute GetMaxAttribute(EBBNeed Need) const override;
 
 		virtual float GetValue(EBBNeed Need) const override;
 
@@ -33,9 +35,11 @@ class SALTLAKECITY_API UBBNeedSet : public UIBBNeedSet
 
 		virtual void SetMaxValue(EBBNeed Need, float NewValue) override;
 
-		virtual FBBUpdate & OnValueUpdate(EBBNeed Need) override { return (this->* (Attributes.FindChecked(Need).Update))(); }
+		virtual FBBGetAttributeDelegate GetValueDelegate(EBBNeed Need) const override;
 
-		virtual FBBUpdate & OnMaxValueUpdate(EBBNeed Need) override { return (this->* (Attributes.FindChecked(Need).MaxUpdate))(); }
+		virtual FBBGetAttributeDelegate GetMaxValueDelegate(EBBNeed Need) const override;
+
+		virtual FBBAttributeUpdate * OnUpdate(EBBNeed Need) const override;
 
 	protected:
 		UPROPERTY()
@@ -62,11 +66,9 @@ class SALTLAKECITY_API UBBNeedSet : public UIBBNeedSet
 		FGameplayAttributeData MaxThirst;
 		BB_ATTRIBUTE_ACCESSORS(UBBNeedSet, MaxThirst)
 
-		TMap<EBBNeed, FBBAttribute<UBBNeedSet>> Attributes;
+		TMap<EBBNeed, FBBAttribute> Attributes;
 
-		using OnAttributeUpdate = FBBAttribute <UBBNeedSet>::OnAttributeUpdate;
-
-		TMap<FGameplayAttribute, OnAttributeUpdate> AttributeUpdates;
+		TMap<FGameplayAttribute, EBBNeed> AttributeToEnum;
 
 		void InitValues();
 
@@ -74,9 +76,9 @@ class SALTLAKECITY_API UBBNeedSet : public UIBBNeedSet
 
 		void MapAttributes();
 
-		void Subscribe();
+		void Subscribe(UIBBAIAbilityComponent * AbilityComponent);
 
-		void Unsubscribe();
+		void Unsubscribe(UIBBAIAbilityComponent * AbilityComponent);
 
 		void UpdateAttribute(const FOnAttributeChangeData & Data);
 

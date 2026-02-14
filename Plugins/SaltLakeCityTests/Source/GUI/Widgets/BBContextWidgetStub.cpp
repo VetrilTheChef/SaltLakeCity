@@ -1,9 +1,9 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBContextWidgetStub.h"
 #include "GUI/Widgets/Interfaces/IBBContextRowWidget.h"
 
-UBBContextWidgetStub::UBBContextWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBContextWidgetStub::UBBContextWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	RowWidgetClass = TSoftClassPtr<UIBBContextRowWidget>();
@@ -17,7 +17,7 @@ EBBWidget UBBContextWidgetStub::GetType() const
 	return EBBWidget::Context;
 }
 
-void UBBContextWidgetStub::AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder)
+void UBBContextWidgetStub::AddToScreen(int32 ZOrder)
 {
 	InViewport = true;
 }
@@ -27,7 +27,7 @@ void UBBContextWidgetStub::RemoveFromParent()
 	InViewport = false;
 }
 
-void UBBContextWidgetStub::AddRow(UIBBContextRowWidget * & NewRowWidget)
+void UBBContextWidgetStub::AddRow(UIBBContextRowWidget*& NewRowWidget)
 {
 	RowWidgets.Emplace(NewRowWidget);
 }
@@ -47,7 +47,7 @@ UIBBContextRowWidget * UBBContextWidgetStub::GetRowWidget(int Index)
 	return RowWidgets.IsValidIndex(Index) ? RowWidgets[Index] : nullptr;
 }
 
-void UBBContextWidgetStub::UpdateVisibility(UObject * NewTarget)
+void UBBContextWidgetStub::UpdateVisibility(UObject* NewTarget)
 {
 }
 
@@ -71,7 +71,7 @@ void UBBContextWidgetStub::SetIsInViewport(bool IsInViewport)
 	InViewport = IsInViewport;
 }
 
-void UBBContextWidgetStub::BroadcastOnMouseLeave(FPointerEvent & MouseEvent)
+void UBBContextWidgetStub::BroadcastOnMouseLeave(FPointerEvent& MouseEvent)
 {
 	OnMouseLeave().Broadcast(MouseEvent);
 }

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBDossierWidgetStub.h"
 
@@ -33,7 +33,11 @@ EBBWidget UBBDossierWidgetStub::GetType() const
 	return EBBWidget::Dossier;
 }
 
-void UBBDossierWidgetStub::CreateCharacterPreview(const AIBBCharacter * TemplateCharacter)
+void UBBDossierWidgetStub::AddToScreen(int32 ZOrder)
+{
+}
+
+void UBBDossierWidgetStub::CreateCharacterPreview(const AIBBCharacter* TemplateCharacter)
 {
 }
 
@@ -51,52 +55,37 @@ void UBBDossierWidgetStub::SetDisplayName(FText NewDisplayName)
 	DisplayName = NewDisplayName;
 }
 
-int UBBDossierWidgetStub::GetNumAttributeEntries()
+TArray<UIBBDossierEntry*> UBBDossierWidgetStub::GetAttributeEntries() const
 {
-	return AttributeEntries.Num();
+	return AttributeEntries;
 }
 
-UIBBDossierEntry * UBBDossierWidgetStub::GetAttributeEntry(int Index)
-{
-	return AttributeEntries[Index];
-}
-
-void UBBDossierWidgetStub::AddAttributeEntry(UIBBDossierEntry * NewEntry)
+void UBBDossierWidgetStub::AddAttributeEntry(UIBBDossierEntry* NewEntry)
 {
 	AttributeEntries.Emplace(NewEntry);
 }
 
-int UBBDossierWidgetStub::GetNumNeedEntries()
+TArray<UIBBDossierEntry*> UBBDossierWidgetStub::GetNeedEntries() const
 {
-	return NeedEntries.Num();
+	return NeedEntries;
 }
 
-UIBBDossierEntry * UBBDossierWidgetStub::GetNeedEntry(int Index)
-{
-	return NeedEntries[Index];
-}
-
-void UBBDossierWidgetStub::AddNeedEntry(UIBBDossierEntry * NewEntry)
+void UBBDossierWidgetStub::AddNeedEntry(UIBBDossierEntry* NewEntry)
 {
 	NeedEntries.Emplace(NewEntry);
 }
 
-int UBBDossierWidgetStub::GetNumSkillEntries()
+TArray<UIBBDossierEntry*> UBBDossierWidgetStub::GetSkillEntries() const
 {
-	return SkillEntries.Num();
+	return SkillEntries;
 }
 
-UIBBDossierEntry * UBBDossierWidgetStub::GetSkillEntry(int Index)
-{
-	return SkillEntries[Index];
-}
-
-void UBBDossierWidgetStub::AddSkillEntry(UIBBDossierEntry * NewEntry)
+void UBBDossierWidgetStub::AddSkillEntry(UIBBDossierEntry* NewEntry)
 {
 	SkillEntries.Emplace(NewEntry);
 }
 
-UIBBTitleWidget * & UBBDossierWidgetStub::GetTitle()
+UIBBTitleWidget*& UBBDossierWidgetStub::GetTitle()
 {
 	return Title;
 }

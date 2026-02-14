@@ -4,6 +4,7 @@ public class SaltLakeCityTests : ModuleRules
 {
     public SaltLakeCityTests(ReadOnlyTargetRules Target) : base(Target)
     {
+        CppStandard = CppStandardVersion.Default;
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
         PrivatePCHHeaderFile = "SaltLakeCityTestsPCH.h";
         MinFilesUsingPrecompiledHeaderOverride = 1;

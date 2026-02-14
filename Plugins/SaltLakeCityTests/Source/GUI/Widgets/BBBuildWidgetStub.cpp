@@ -1,4 +1,4 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #include "BBBuildWidgetStub.h"
 
@@ -21,6 +21,10 @@ void UBBBuildWidgetStub::NativeOnInitialized()
 EBBWidget UBBBuildWidgetStub::GetType() const
 {
 	return EBBWidget::Build;
+}
+
+void UBBBuildWidgetStub::AddToScreen(int32 ZOrder)
+{
 }
 
 void UBBBuildWidgetStub::AddEntry(EBBBuildCategory Category, UIBBBuildEntry * & NewEntry)

@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,11 @@
 #include "GUI/Data/BBDossierEntryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBSkillAttributeSetSpec, "SaltLakeCity.Attributes.NeedSet", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBSkillAttributeSetSpec,
+	"SaltLakeCity.Attributes.NeedSet",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -244,10 +248,22 @@ void UBBSkillAttributeSetSpec::Define()
 				UTEST_TRUE("Sleep Entry is valid", IsValid(Entries.FindChecked(EBBNeed::Sleep)))
 				UTEST_TRUE("Thirst Entry is valid", IsValid(Entries.FindChecked(EBBNeed::Thirst)))
 
-				Entries.FindChecked(EBBNeed::Hunger)->Initialize(FText::FromString("Hunger Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBNeed::Hunger), & Set->OnMaxValueUpdate(EBBNeed::Hunger));
-				Entries.FindChecked(EBBNeed::Sleep)->Initialize(FText::FromString("Sleep Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBNeed::Sleep), & Set->OnMaxValueUpdate(EBBNeed::Sleep));
-				Entries.FindChecked(EBBNeed::Thirst)->Initialize(FText::FromString("Thirst Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBNeed::Thirst), & Set->OnMaxValueUpdate(EBBNeed::Thirst));
-				
+				Entries.FindChecked(EBBNeed::Hunger)->Initialize(FText::FromString("Hunger Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBNeed::Hunger),
+					Set->GetMaxValueDelegate(EBBNeed::Hunger),
+					Set->OnUpdate(EBBNeed::Hunger));
+				Entries.FindChecked(EBBNeed::Sleep)->Initialize(FText::FromString("Sleep Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBNeed::Sleep),
+					Set->GetMaxValueDelegate(EBBNeed::Sleep),
+					Set->OnUpdate(EBBNeed::Sleep));
+				Entries.FindChecked(EBBNeed::Thirst)->Initialize(FText::FromString("Thirst Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBNeed::Thirst),
+					Set->GetMaxValueDelegate(EBBNeed::Thirst),
+					Set->OnUpdate(EBBNeed::Thirst));
+
 				TArray<float> UpdateValues;
 				UpdateValues.Emplace(-250.61f);
 				UpdateValues.Emplace(0.0f);
@@ -287,10 +303,22 @@ void UBBSkillAttributeSetSpec::Define()
 				UTEST_TRUE("Hunger Entry is valid", IsValid(Entries.FindChecked(EBBNeed::Hunger)))
 				UTEST_TRUE("Sleep Entry is valid", IsValid(Entries.FindChecked(EBBNeed::Sleep)))
 				UTEST_TRUE("Thirst Entry is valid", IsValid(Entries.FindChecked(EBBNeed::Thirst)))
-
-				Entries.FindChecked(EBBNeed::Hunger)->Initialize(FText::FromString("Hunger Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBNeed::Hunger), & Set->OnMaxValueUpdate(EBBNeed::Hunger));
-				Entries.FindChecked(EBBNeed::Sleep)->Initialize(FText::FromString("Sleep Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBNeed::Sleep), & Set->OnMaxValueUpdate(EBBNeed::Sleep));
-				Entries.FindChecked(EBBNeed::Thirst)->Initialize(FText::FromString("Thirst Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBNeed::Thirst), & Set->OnMaxValueUpdate(EBBNeed::Thirst));
+					
+				Entries.FindChecked(EBBNeed::Hunger)->Initialize(FText::FromString("Hunger Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBNeed::Hunger),
+					Set->GetMaxValueDelegate(EBBNeed::Hunger),
+					Set->OnUpdate(EBBNeed::Hunger));
+				Entries.FindChecked(EBBNeed::Sleep)->Initialize(FText::FromString("Sleep Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBNeed::Sleep),
+					Set->GetMaxValueDelegate(EBBNeed::Sleep),
+					Set->OnUpdate(EBBNeed::Sleep));
+				Entries.FindChecked(EBBNeed::Thirst)->Initialize(FText::FromString("Thirst Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBNeed::Thirst),
+					Set->GetMaxValueDelegate(EBBNeed::Thirst),
+					Set->OnUpdate(EBBNeed::Thirst));
 				
 				TArray<float> UpdateValues;
 				UpdateValues.Emplace(43.71f);

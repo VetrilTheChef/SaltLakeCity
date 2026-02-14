@@ -1,11 +1,11 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBDateTimeWidget.h"
 #include "Components/TextBlock.h"
 #include "GameInstances/BBGameInstance.h"
 #include "GUI/Components/BBButton.h"
 
-UBBDateTimeWidget::UBBDateTimeWidget(const FObjectInitializer & ObjectInitializer) :
+UBBDateTimeWidget::UBBDateTimeWidget(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 }
@@ -15,28 +15,33 @@ EBBWidget UBBDateTimeWidget::GetType() const
 	return EBBWidget::DateTime;
 }
 
-void UBBDateTimeWidget::SetPauseCommand(UIBBCommand * Command)
+void UBBDateTimeWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
+void UBBDateTimeWidget::SetPauseCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(PauseButton), TEXT("Pause Button is invalid."));
 
 	PauseButton->SetCommand(Command);
 }
 
-void UBBDateTimeWidget::SetSlowMotionCommand(UIBBCommand * Command)
+void UBBDateTimeWidget::SetSlowMotionCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(SlowMotionButton), TEXT("Slow Motion Button is invalid."));
 
 	SlowMotionButton->SetCommand(Command);
 }
 
-void UBBDateTimeWidget::SetPlayCommand(UIBBCommand * Command)
+void UBBDateTimeWidget::SetPlayCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(PlayButton), TEXT("Play Button is invalid."));
 
 	PlayButton->SetCommand(Command);
 }
 
-void UBBDateTimeWidget::SetFastForwardCommand(UIBBCommand * Command)
+void UBBDateTimeWidget::SetFastForwardCommand(UIBBCommand* Command)
 {
 	verifyf(IsValid(FastForwardButton), TEXT("Fast Forward Button is invalid."));
 

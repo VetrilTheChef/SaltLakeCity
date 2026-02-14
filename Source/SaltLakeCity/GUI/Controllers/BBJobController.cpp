@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBJobController.h"
 #include "Actors/Components/Interfaces/IBBAIAbilityComponent.h"
@@ -84,7 +84,7 @@ void UBBJobController::FinalizeView()
 
 		View->OnJobUpdate().RemoveAll(this);
 
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;
@@ -103,7 +103,7 @@ void UBBJobController::DestroyTitle(UIBBJobWidget & JobView)
 
 	if (IsValid(TitleWidget))
 	{
-		TitleWidget->MarkPendingKill();
+		TitleWidget->MarkAsGarbage();
 	}
 }
 
@@ -142,7 +142,7 @@ void UBBJobController::DestroyCommands(UIBBJobWidget & JobView)
 
 	if (IsValid(SetJobCommand))
 	{
-		SetJobCommand->MarkPendingKill();
+		SetJobCommand->MarkAsGarbage();
 	}
 
 	SetJobCommand = nullptr;

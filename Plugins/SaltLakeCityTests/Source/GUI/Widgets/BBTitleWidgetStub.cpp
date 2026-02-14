@@ -1,13 +1,14 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBTitleWidgetStub.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Engine/Texture2D.h"
+#include "Commands/Interfaces/IBBCommand.h"
 #include "GUI/Components/Interfaces/IBBButton.h"
 
-UBBTitleWidgetStub::UBBTitleWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBTitleWidgetStub::UBBTitleWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Icon = nullptr;
@@ -27,7 +28,11 @@ EBBWidget UBBTitleWidgetStub::GetType() const
 	return EBBWidget::Title;
 }
 
-void UBBTitleWidgetStub::SetCloseCommand(UIBBCommand * NewCommand)
+void UBBTitleWidgetStub::AddToScreen(int32 ZOrder)
+{
+}
+
+void UBBTitleWidgetStub::SetCloseCommand(UIBBCommand* NewCommand)
 {
 	CloseCommand = NewCommand;
 }

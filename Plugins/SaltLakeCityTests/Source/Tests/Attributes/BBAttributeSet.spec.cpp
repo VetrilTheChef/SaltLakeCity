@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,7 +10,11 @@
 #include "GUI/Data/BBDossierEntryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBAttributeSetSpec, "SaltLakeCity.Attributes.AttributeSet", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBAttributeSetSpec,
+	"SaltLakeCity.Attributes.AttributeSet",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
 	UWorld * TestWorld = nullptr;
@@ -129,6 +133,8 @@ void UBBAttributeSetSpec::Define()
 
 				UTEST_TRUE("Set is valid", IsValid(Set))
 
+				Set->Initialize(AbilityComponent);
+
 				TArray<float> SkillValues;
 				SkillValues.Emplace(-52.06f);
 				SkillValues.Emplace(734.1f);
@@ -147,6 +153,8 @@ void UBBAttributeSetSpec::Define()
 
 				#undef EBBATTRIBUTE_OPERATION
 
+				Set->Finalize(AbilityComponent);
+
 				return true;
 			});
 
@@ -155,6 +163,8 @@ void UBBAttributeSetSpec::Define()
 				Set = NewObject<UBBAttributeSet>(Character, SetClass);
 
 				UTEST_TRUE("Set is valid", IsValid(Set))
+
+				Set->Initialize(AbilityComponent);
 
 				TArray<float> SkillValues;
 				SkillValues.Emplace(100.0f);
@@ -174,6 +184,8 @@ void UBBAttributeSetSpec::Define()
 
 				#undef EBBATTRIBUTE_OPERATION
 
+				Set->Finalize(AbilityComponent);
+
 				return true;
 			});
 
@@ -182,6 +194,8 @@ void UBBAttributeSetSpec::Define()
 				Set = NewObject<UBBAttributeSet>(Character, SetClass);
 
 				UTEST_TRUE("Set is valid", IsValid(Set))
+
+				Set->Initialize(AbilityComponent);
 
 				float HealthValue = 457.81f;
 				float HealthMaxValue = -688.24f;
@@ -205,6 +219,8 @@ void UBBAttributeSetSpec::Define()
 				TEST_TRUE(Set->GetMaxValue(EBBAttribute::Health) == HealthMaxValue)
 				TEST_TRUE(Set->GetMaxValue(EBBAttribute::Stamina) == StaminaMaxValue)
 
+				Set->Finalize(AbilityComponent);
+
 				return true;
 			});
 
@@ -214,6 +230,8 @@ void UBBAttributeSetSpec::Define()
 
 				UTEST_TRUE("Set is valid", IsValid(Set))
 
+				Set->Initialize(AbilityComponent);
+
 				TMap<EBBAttribute, UBBDossierEntryStub *> Entries;
 				Entries.Emplace(EBBAttribute::Health, NewObject<UBBDossierEntryStub>(Set, UBBDossierEntryStub::StaticClass()));
 				Entries.Emplace(EBBAttribute::Stamina, NewObject<UBBDossierEntryStub>(Set, UBBDossierEntryStub::StaticClass()));
@@ -221,8 +239,16 @@ void UBBAttributeSetSpec::Define()
 				UTEST_TRUE("Health Entry is valid", IsValid(Entries.FindChecked(EBBAttribute::Health)))
 				UTEST_TRUE("Stamina Entry is valid", IsValid(Entries.FindChecked(EBBAttribute::Stamina)))
 
-				Entries.FindChecked(EBBAttribute::Health)->Initialize(FText::FromString("Health Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBAttribute::Health), & Set->OnMaxValueUpdate(EBBAttribute::Health));
-				Entries.FindChecked(EBBAttribute::Stamina)->Initialize(FText::FromString("Stamina Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBAttribute::Stamina), & Set->OnMaxValueUpdate(EBBAttribute::Stamina));
+				Entries.FindChecked(EBBAttribute::Health)->Initialize(FText::FromString("Health Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBAttribute::Health),
+					Set->GetMaxValueDelegate(EBBAttribute::Health),
+					Set->OnUpdate(EBBAttribute::Health));
+				Entries.FindChecked(EBBAttribute::Stamina)->Initialize(FText::FromString("Stamina Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBAttribute::Stamina),
+					Set->GetMaxValueDelegate(EBBAttribute::Stamina),
+					Set->OnUpdate(EBBAttribute::Stamina));
 
 				TArray<float> UpdateValues;
 				UpdateValues.Emplace(-100.54f);
@@ -244,6 +270,8 @@ void UBBAttributeSetSpec::Define()
 
 				#undef EBBATTRIBUTE_OPERATION
 
+				Set->Finalize(AbilityComponent);
+
 				return true;
 			});
 
@@ -252,6 +280,8 @@ void UBBAttributeSetSpec::Define()
 				Set = NewObject<UBBAttributeSet>(Character, SetClass);
 
 				UTEST_TRUE("Set is valid", IsValid(Set))
+
+				Set->Initialize(AbilityComponent);
 				
 				TMap<EBBAttribute, UBBDossierEntryStub *> Entries;
 				Entries.Emplace(EBBAttribute::Health, NewObject<UBBDossierEntryStub>(Set, UBBDossierEntryStub::StaticClass()));
@@ -259,9 +289,17 @@ void UBBAttributeSetSpec::Define()
 
 				UTEST_TRUE("Health Entry is valid", IsValid(Entries.FindChecked(EBBAttribute::Health)))
 				UTEST_TRUE("Stamina Entry is valid", IsValid(Entries.FindChecked(EBBAttribute::Stamina)))
-
-				Entries.FindChecked(EBBAttribute::Health)->Initialize(FText::FromString("Health Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBAttribute::Health), & Set->OnMaxValueUpdate(EBBAttribute::Health));
-				Entries.FindChecked(EBBAttribute::Stamina)->Initialize(FText::FromString("Stamina Entry"), TSoftObjectPtr<UTexture2D>(nullptr), & Set->OnValueUpdate(EBBAttribute::Stamina), & Set->OnMaxValueUpdate(EBBAttribute::Stamina));
+					
+				Entries.FindChecked(EBBAttribute::Health)->Initialize(FText::FromString("Health Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBAttribute::Health),
+					Set->GetMaxValueDelegate(EBBAttribute::Health),
+					Set->OnUpdate(EBBAttribute::Health));
+				Entries.FindChecked(EBBAttribute::Stamina)->Initialize(FText::FromString("Stamina Entry"),
+					TSoftObjectPtr<UTexture2D>(nullptr),
+					Set->GetValueDelegate(EBBAttribute::Stamina),
+					Set->GetMaxValueDelegate(EBBAttribute::Stamina),
+					Set->OnUpdate(EBBAttribute::Stamina));
 
 				TArray<float> UpdateValues;
 				UpdateValues.Emplace(-15.07f);
@@ -282,6 +320,8 @@ void UBBAttributeSetSpec::Define()
 					FOREACH_ENUM_EBBATTRIBUTE(EBBATTRIBUTE_OPERATION)
 
 				#undef EBBATTRIBUTE_OPERATION
+
+				Set->Finalize(AbilityComponent);
 
 				return true;
 			});

@@ -1,10 +1,10 @@
-// SaltLakeCityTests 4.26
+// SaltLakeCityTests 5.7
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetData.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetData.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/Blueprint.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Misc/AutomationTest.h"

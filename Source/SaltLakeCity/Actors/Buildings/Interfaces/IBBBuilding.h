@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagAssetInterface.h"
 #include "Actors/Interfaces/IBBBuildable.h"
 #include "Actors/Interfaces/IBBContextualizable.h"
 #include "Actors/Interfaces/IBBProgressable.h"
 #include "Actors/Interfaces/IBBSelectable.h"
 #include "Engine/StaticMeshActor.h"
 #include "GUI/Interfaces/IBBWidgetTarget.h"
-#include "GameplayTags/Classes/GameplayTagAssetInterface.h"
 #include "IBBBuilding.generated.h"
 
 /**

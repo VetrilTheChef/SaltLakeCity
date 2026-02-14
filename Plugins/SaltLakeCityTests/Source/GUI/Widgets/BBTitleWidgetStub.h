@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -22,28 +22,26 @@ class UBBTitleWidgetStub : public UIBBTitleWidget
 	GENERATED_BODY()
 
 	public:
-		UBBTitleWidgetStub(const FObjectInitializer & ObjectInitializer);
+		UBBTitleWidgetStub(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void SetCloseCommand(UIBBCommand * NewCommand) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
+
+		virtual void SetCloseCommand(UIBBCommand* NewCommand) override;
 
 		void Drag(FVector2D NewPosition);
 
 		FVector2D GetPosition() const;
 
 	protected:
-		UPROPERTY()
-		UTexture2D * Icon;
+		TSoftObjectPtr<UTexture2D> Icon;
 
-		UPROPERTY()
+		TSoftObjectPtr<UIBBCommand> CloseCommand;
+
 		FText Text;
 
-		UPROPERTY()
-		UIBBCommand * CloseCommand;
-
-		UPROPERTY()
 		FVector2D Position;
 };

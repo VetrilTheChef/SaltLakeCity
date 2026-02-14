@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #include "BBJobManager.h"
 #include "Abilities/Data/Interfaces/IBBAbilityData.h"
@@ -128,7 +128,7 @@ int UBBJobManager::GetConsumersNum()
 void UBBJobManager::CompleteTask(UIBBAbilityTask * AbilityTask)
 {
 	verifyf(IsValid(AbilityTask), TEXT("Completed Task is invalid."));
-	verifyf(AbilityTask->GetProgress() >= 1.0f, TEXT("Completed Task's progress is less than 100%."));
+	verifyf(AbilityTask->GetProgress() >= 1.0f, TEXT("Completed Task's progress is less than 100%%."));
 
 	FBBManagedTask ManagedTask;
 	TArray<FBBManagedConsumer> ManagedConsumers(ManagedTask.Consumers);
@@ -184,7 +184,7 @@ void UBBJobManager::DestroyTaskQueue()
 {
 	if (IsValid(TaskQueue))
 	{
-		TaskQueue->MarkPendingKill();
+		TaskQueue->MarkAsGarbage();
 	}
 
 	TaskQueue = nullptr;
@@ -196,7 +196,7 @@ void UBBJobManager::DestroyConsumerQueue()
 	{
 		ConsumerQueue->Finalize();
 
-		ConsumerQueue->MarkPendingKill();
+		ConsumerQueue->MarkAsGarbage();
 	}
 
 	ConsumerQueue = nullptr;

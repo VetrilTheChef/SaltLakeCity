@@ -9,6 +9,9 @@ UBBDossierEntryControllerStub::UBBDossierEntryControllerStub() :
 {
 	Model = nullptr;
 	View = nullptr;
+	ValueText = FText::FromString("");
+	Value = -1.0f;
+	MaxValue = -1.0f;
 }
 
 void UBBDossierEntryControllerStub::Initialize(UIBBDossierEntryWidget * DossierEntryView, UIBBDossierEntryModel * DossierEntryModel)
@@ -23,18 +26,35 @@ void UBBDossierEntryControllerStub::Finalize()
 	FinalizeView();
 }
 
+float UBBDossierEntryControllerStub::GetValue() const
+{
+	return Value;
+}
+
+float UBBDossierEntryControllerStub::GetMaxValue() const
+{
+	return MaxValue;
+}
+
+
 
 void UBBDossierEntryControllerStub::InitializeModel(UIBBDossierEntryModel * DossierEntryModel)
 {
 	FinalizeModel();
 
 	Model = DossierEntryModel;
+
+	if (IsValid(Model))
+	{
+		Model->OnUpdate().AddUObject(this, & UBBDossierEntryControllerStub::Update);
+	}
 }
 
 void UBBDossierEntryControllerStub::FinalizeModel()
 {
 	if (IsValid(Model))
 	{
+		Model->OnUpdate().RemoveAll(this);
 	}
 
 	Model = nullptr;
@@ -52,8 +72,7 @@ void UBBDossierEntryControllerStub::InitializeView(UIBBDossierEntryWidget * Doss
 		{
 			View->SetEntryName(DossierEntryModel->GetEntryName());
 			View->SetIcon(DossierEntryModel->GetIcon().LoadSynchronous());
-			View->SetValue(DossierEntryModel->GetValue());
-			View->SetMaxValue(DossierEntryModel->GetMaxValue());
+			View->SetValue(FText::AsNumber(FMath::FloorToInt(DossierEntryModel->GetValue())));
 		}
 	}
 }
@@ -65,4 +84,11 @@ void UBBDossierEntryControllerStub::FinalizeView()
 	}
 
 	View = nullptr;
+}
+
+void UBBDossierEntryControllerStub::Update(float NewValue, float NewMaxValue)
+{
+	Value = NewValue;
+
+	MaxValue = NewMaxValue;
 }

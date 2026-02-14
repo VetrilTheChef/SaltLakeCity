@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -21,19 +21,29 @@ class SALTLAKECITY_API UIBBBuildWidget : public UIBBWidget
 	GENERATED_BODY()
 
 	public:
-		UIBBBuildWidget(const FObjectInitializer & ObjectInitializer) : Super(ObjectInitializer) { };
+		UIBBBuildWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { };
 
-		virtual void NativeDestruct() override { Super::NativeDestruct(); };
+		virtual void NativeDestruct() override
+			{ Super::NativeDestruct(); };
 
-		virtual void NativeOnInitialized() override { Super::NativeOnInitialized(); };
+		virtual void NativeOnInitialized() override
+			{ Super::NativeOnInitialized(); };
 
-		virtual EBBWidget GetType() const PURE_VIRTUAL(UIBBBuildWidget::GetType, return EBBWidget::None; );
+		virtual EBBWidget GetType() const
+			PURE_VIRTUAL(UIBBBuildWidget::GetType, return EBBWidget::None; );
 
-		virtual void Bind() PURE_VIRTUAL(UIBBBuildWidget::Bind, );
+		virtual void AddToScreen(int32 ZOrder = 0)
+			PURE_VIRTUAL(UIBBuildWidget::AddToScreen, );
 
-		virtual void Unbind() PURE_VIRTUAL(UIBBBuildWidget::Unbind, );
+		virtual void Bind()
+			PURE_VIRTUAL(UIBBBuildWidget::Bind, );
 
-		virtual void AddEntry(EBBBuildCategory Category, UIBBBuildEntry * & NewEntry) PURE_VIRTUAL(UIBBBuildWidget::AddEntry, );
+		virtual void Unbind()
+			PURE_VIRTUAL(UIBBBuildWidget::Unbind, );
 
-		virtual void ClearEntries(EBBBuildCategory Category) PURE_VIRTUAL(UIBBBuildWidget::ClearEntries, );
+		virtual void AddEntry(EBBBuildCategory Category, UIBBBuildEntry*& NewEntry)
+			PURE_VIRTUAL(UIBBBuildWidget::AddEntry, );
+
+		virtual void ClearEntries(EBBBuildCategory Category)
+			PURE_VIRTUAL(UIBBBuildWidget::ClearEntries, );
 };

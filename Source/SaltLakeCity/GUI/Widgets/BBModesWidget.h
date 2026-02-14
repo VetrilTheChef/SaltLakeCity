@@ -1,4 +1,4 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -20,7 +20,7 @@ class SALTLAKECITY_API UBBModesWidget : public UIBBModesWidget
 	GENERATED_BODY()
 	
 	public:
-		UBBModesWidget(const FObjectInitializer & ObjectInitializer);
+		UBBModesWidget(const FObjectInitializer& ObjectInitializer);
 
 		virtual void NativeOnInitialized() override;
 
@@ -28,20 +28,22 @@ class SALTLAKECITY_API UBBModesWidget : public UIBBModesWidget
 
 		virtual EBBWidget GetType() const override;
 
-		virtual void SetPlayModeCommand(UIBBCommand * Command) override;
+		virtual void AddToScreen(int32 ZOrder = 0) override;
 
-		virtual void SetBuildModeCommand(UIBBCommand * Command) override;
+		virtual void SetPlayModeCommand(UIBBCommand* Command) override;
+
+		virtual void SetBuildModeCommand(UIBBCommand* Command) override;
 
 		virtual void SetActiveMode(EBBGameMode GameMode) override;
 	
 	protected:
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * PlayButton;
+		UIBBRadioBox* PlayButton;
 
 		UPROPERTY(meta = (BindWidget))
-		UIBBRadioBox * BuildButton;
+		UIBBRadioBox* BuildButton;
 
-		TSortedMap<EBBGameMode, UIBBRadioBox *, FDefaultAllocator, TLess<EBBGameMode>> Modes;
+		TSortedMap<EBBGameMode, UIBBRadioBox*, FDefaultAllocator, TLess<EBBGameMode>> Modes;
 
 		void InitializeModes();
 

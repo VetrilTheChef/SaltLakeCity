@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #include "BBContextController.h"
 #include "Commands/Factories/Interfaces/IBBCommandFactory.h"
@@ -15,10 +15,15 @@ UBBContextController::UBBContextController() :
 	View = nullptr;
 }
 
-void UBBContextController::Initialize(UIBBContextWidget * ContextView, UIBBContextModel * ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory * CommandFactory)
+void UBBContextController::Initialize(
+	UIBBContextWidget* ContextView,
+	UIBBContextModel* ContextModel,
+	const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory,
+	const UIBBCommandFactory* CommandFactory
+)
 {
 	InitializeModel(ContextModel);
-	InitializeView(ContextView, * ContextModel, WidgetSpecificationFactory, CommandFactory);
+	InitializeView(ContextView, *ContextModel, WidgetSpecificationFactory, CommandFactory);
 }
 
 void UBBContextController::Finalize()
@@ -29,7 +34,7 @@ void UBBContextController::Finalize()
 
 
 
-void UBBContextController::InitializeModel(UIBBContextModel * ContextModel)
+void UBBContextController::InitializeModel(UIBBContextModel* ContextModel)
 {
 	FinalizeModel();
 
@@ -37,7 +42,7 @@ void UBBContextController::InitializeModel(UIBBContextModel * ContextModel)
 
 	Model = ContextModel;
 
-	Model->OnContextUpdate().AddUObject(this, & UBBContextController::UpdateContext);
+	Model->OnContextUpdate().AddUObject(this, &UBBContextController::UpdateContext);
 }
 
 void UBBContextController::FinalizeModel()
@@ -50,7 +55,12 @@ void UBBContextController::FinalizeModel()
 	Model = nullptr;
 }
 
-void UBBContextController::InitializeView(UIBBContextWidget * ContextView, UIBBContextModel & ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory * CommandFactory)
+void UBBContextController::InitializeView(
+	UIBBContextWidget* ContextView,
+	UIBBContextModel& ContextModel,
+	const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory,
+	const UIBBCommandFactory* CommandFactory
+)
 {
 	FinalizeView();
 
@@ -58,11 +68,11 @@ void UBBContextController::InitializeView(UIBBContextWidget * ContextView, UIBBC
 
 	View = ContextView;
 
-	View->OnMouseLeave().AddUObject(this, & UBBContextController::LeaveMouse);
+	View->OnMouseLeave().AddUObject(this, &UBBContextController::LeaveMouse);
 
 	verifyf(IsValid(CommandFactory), TEXT("Command Factory is invalid."));
 
-	CreateRows(* View, ContextModel, WidgetSpecificationFactory, * CommandFactory);
+	CreateRows(*View, ContextModel, WidgetSpecificationFactory, *CommandFactory);
 }
 
 void UBBContextController::FinalizeView()
@@ -71,15 +81,20 @@ void UBBContextController::FinalizeView()
 	{
 		View->OnMouseLeave().RemoveAll(this);
 
-		DestroyRows(* View);
+		DestroyRows(*View);
 
-		View->MarkPendingKill();
+		View->MarkAsGarbage();
 	}
 
 	View = nullptr;
 }
 
-void UBBContextController::CreateRows(UIBBContextWidget & ContextView, UIBBContextModel & ContextModel, const UIBBWidgetSpecificationFactory * WidgetSpecificationFactory, const UIBBCommandFactory & CommandFactory)
+void UBBContextController::CreateRows(
+	UIBBContextWidget& ContextView,
+	UIBBContextModel& ContextModel,
+	const UIBBWidgetSpecificationFactory* WidgetSpecificationFactory,
+	const UIBBCommandFactory& CommandFactory
+)
 {
 	int Rows = ContextModel.GetNumRows();
 
@@ -87,13 +102,21 @@ void UBBContextController::CreateRows(UIBBContextWidget & ContextView, UIBBConte
 	{
 		FBBContextRowData RowData = ContextModel.GetRowData(RowIndex);
 		
-		UIBBContextRowWidget * RowWidget = CreateWidget<UIBBContextRowWidget>(& ContextView, ContextView.GetRowWidgetClass().LoadSynchronous());
+		UIBBContextRowWidget* RowWidget = CreateWidget<UIBBContextRowWidget>(
+			&ContextView,
+			ContextView.GetRowWidgetClass().LoadSynchronous()
+		);
 
 		verifyf(IsValid(RowWidget), TEXT("Row Widget is invalid."));
 
-		UIBBOpenWidgetCommand * RowCommand = nullptr;
+		UIBBOpenWidgetCommand* RowCommand = nullptr;
 
-		CommandFactory.NewOpenWidgetCommand(RowCommand, RowWidget, ContextModel.GetRowWidgetSpecification(WidgetSpecificationFactory, RowIndex), true);
+		CommandFactory.NewOpenWidgetCommand(
+			RowCommand,
+			RowWidget,
+			ContextModel.GetRowWidgetSpecification(WidgetSpecificationFactory, RowIndex),
+			true
+		);
 
 		verifyf(IsValid(RowCommand), TEXT("Row Command is invalid."));
 
@@ -102,7 +125,7 @@ void UBBContextController::CreateRows(UIBBContextWidget & ContextView, UIBBConte
 		RowWidget->SetRowTooltip(RowData.Tooltip);
 		RowWidget->SetCommand(RowCommand);
 
-		RowWidget->OnClicked().AddUObject(this, & UBBContextController::ClickRow);
+		RowWidget->OnClicked().AddUObject(this, &UBBContextController::ClickRow);
 
 		RowWidgets.Emplace(RowWidget, RowData.ContextType);
 
@@ -110,17 +133,17 @@ void UBBContextController::CreateRows(UIBBContextWidget & ContextView, UIBBConte
 	}
 }
 
-void UBBContextController::DestroyRows(UIBBContextWidget & ContextView)
+void UBBContextController::DestroyRows(UIBBContextWidget& ContextView)
 {
 	ContextView.ClearRows();
 
-	for (TPair<UIBBContextRowWidget *, EBBContext> & RowWidget : RowWidgets)
+	for (TPair<UIBBContextRowWidget*, EBBContext>& RowWidget : RowWidgets)
 	{
 		if (IsValid(RowWidget.Key))
 		{
 			RowWidget.Key->OnClicked().RemoveAll(this);
 
-			RowWidget.Key->MarkPendingKill();
+			RowWidget.Key->MarkAsGarbage();
 		}
 	}
 
@@ -131,11 +154,12 @@ void UBBContextController::UpdateContext()
 {
 	verifyf(IsValid(Model), TEXT("Context Model is invalid."));
 
-	for (TPair<UIBBContextRowWidget *, EBBContext> & RowWidget : RowWidgets)
+	for (TPair<UIBBContextRowWidget*, EBBContext>& RowWidget : RowWidgets)
 	{
 		verifyf(IsValid(RowWidget.Key), TEXT("Row Widget is invalid."));
 
-		RowWidget.Key->SetVisibility(Model->GetRowVisibility(RowWidget.Value) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		RowWidget.Key->SetVisibility(Model->GetRowVisibility(RowWidget.Value) ?
+			ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 }
 

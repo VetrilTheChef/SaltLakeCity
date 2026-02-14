@@ -1,4 +1,4 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBWidget.h"
 
@@ -25,6 +25,11 @@ void UBBWidget::BeginDestroy()
 EBBWidget UBBWidget::GetType() const
 {
 	return EBBWidget::None;
+}
+
+void UBBWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
 }
 
 

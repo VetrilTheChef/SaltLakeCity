@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -15,7 +15,7 @@ class UBBModelPoolStub : public UIBBModelPool
 	public:
 		UBBModelPoolStub();
 
-		virtual void Initialize(UIBBGameInstance * NewGameInstance) override;
+		virtual void Initialize(const UIBBGameInstance * NewGameInstance) override;
 
 		virtual void AddBuildModel(UIBBBuildModel * NewModel) override;
 

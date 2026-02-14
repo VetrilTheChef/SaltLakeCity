@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -23,9 +23,14 @@ class SALTLAKECITY_API IBBWidgetTargetComponent
 	GENERATED_BODY()
 
 	public:
-		virtual const TScriptInterface<IBBWidgetTarget> GetWidgetTarget() const PURE_VIRTUAL(IBBWidgetTargetComponent::GetWidgetTarget, return TScriptInterface<IBBWidgetTarget>(); );
+		virtual const TScriptInterface<IBBWidgetTarget> GetWidgetTarget() const
+			PURE_VIRTUAL(IBBWidgetTargetComponent::GetWidgetTarget, return TScriptInterface<IBBWidgetTarget>(); );
 
-		DECLARE_EVENT_OneParam(IBBWidgetTargetComponent, FBBWidgetTargetUpdate, const TScriptInterface<IBBWidgetTarget>);
+		DECLARE_EVENT_OneParam(
+			IBBWidgetTargetComponent,
+			FBBWidgetTargetUpdate,
+			const TScriptInterface<IBBWidgetTarget>
+		);
 
-		virtual FBBWidgetTargetUpdate & OnWidgetTargetUpdate() = 0;
+		virtual FBBWidgetTargetUpdate& OnWidgetTargetUpdate() = 0;
 };

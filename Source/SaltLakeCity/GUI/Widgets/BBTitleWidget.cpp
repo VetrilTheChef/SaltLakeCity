@@ -26,6 +26,11 @@ EBBWidget UBBTitleWidget::GetType() const
 	return EBBWidget::None;
 }
 
+void UBBTitleWidget::AddToScreen(int32 ZOrder)
+{
+	AddToViewport(ZOrder);
+}
+
 void UBBTitleWidget::SetCloseCommand(UIBBCommand * NewCommand)
 {
 	verifyf(IsValid(CloseButton), TEXT("Close Button is invalid."));

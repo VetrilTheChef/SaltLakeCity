@@ -1,4 +1,4 @@
-// SaltLakeCity 4.27
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -42,12 +42,10 @@ class UIBBProgressModel;
 class UIBBProgressWidget;
 class UIBBSelectionModel;
 class UIBBSelectionWidget;
-class UIBBSkillEntry;
-class UIBBSkillEntryModel;
-class UIBBSkillEntryWidget;
 class UIBBTitleModel;
 class UIBBTitleWidget;
 class UIBBWidget;
+class UIBBWidgetManager;
 
 UCLASS(Abstract, Blueprintable, BlueprintType, DefaultToInstanced)
 
@@ -58,33 +56,73 @@ class SALTLAKECITY_API UBBModelFactory : public UObject
 	public:
 		UBBModelFactory();
 
-		void Initialize(const AIBBGameState * GameState, AIBBGameMode * GameMode, AIBBHUD * NewHUD);
+		void Initialize(
+			const AIBBGameState* NewGameState,
+			AIBBGameMode* NewGameMode,
+			AIBBHUD* NewHUD,
+			UIBBWidgetManager* NewWidgetManager);
 
 		void Finalize();
 
-		bool NewBuildModel(UIBBBuildModel * & Model, UIBBBuildWidget * View) const;
+		bool NewBuildModel(
+			UIBBBuildModel*& Model,
+			UIBBBuildWidget* View
+		) const;
 
-		bool NewBuildEntryModel(UIBBBuildEntryModel * & Model, UIBBBuildEntryWidget * View, const UIBBBuildEntry * Entry) const;
+		bool NewBuildEntryModel(
+			UIBBBuildEntryModel*& Model,
+			UIBBBuildEntryWidget* View,
+			const UIBBBuildEntry* Entry
+		) const;
 
-		bool NewContextModel(UIBBContextModel * & Model, UIBBContextWidget * View) const;
+		bool NewContextModel(
+			UIBBContextModel*& Model,
+			UIBBContextWidget* View
+		) const;
 
-		bool NewDateTimeModel(UIBBDateTimeModel * & Model, UIBBDateTimeWidget * View) const;
+		bool NewDateTimeModel(
+			UIBBDateTimeModel*& Model,
+			UIBBDateTimeWidget* View
+		) const;
 		
-		bool NewDossierModel(UIBBDossierModel * & Model, UIBBDossierWidget * View, AIBBCharacter * Character) const;
+		bool NewDossierModel(
+			UIBBDossierModel*& Model,
+			UIBBDossierWidget* View,
+			AIBBCharacter* Character
+		) const;
 
-		bool NewDossierEntryModel(UIBBDossierEntryModel * & Model, UIBBDossierEntryWidget * View, UIBBDossierEntry * Entry) const;
+		bool NewDossierEntryModel(
+			UIBBDossierEntryModel*& Model,
+			UIBBDossierEntryWidget* View,
+			UIBBDossierEntry* Entry
+		) const;
 
-		bool NewJobModel(UIBBJobModel * & Model, UIBBJobWidget * View) const;
+		bool NewJobModel(
+			UIBBJobModel*& Model,
+			UIBBJobWidget* View
+		) const;
 		
-		bool NewModesModel(UIBBModesModel * & Model, UIBBModesWidget * View) const;
+		bool NewModesModel(
+			UIBBModesModel*& Model,
+			UIBBModesWidget* View
+		) const;
 
-		bool NewProgressModel(UIBBProgressModel * & Model, UIBBProgressWidget * View, UIBBProgressComponent * Component) const;
+		bool NewProgressModel(
+			UIBBProgressModel*& Model,
+			UIBBProgressWidget* View,
+			UIBBProgressComponent* Component
+		) const;
 
-		bool NewSelectionModel(UIBBSelectionModel * & Model, UIBBSelectionWidget * View) const;
+		bool NewSelectionModel(
+			UIBBSelectionModel*& Model,
+			UIBBSelectionWidget* View
+		) const;
 
-		bool NewSkillEntryModel(UIBBSkillEntryModel * & Model, UIBBSkillEntryWidget * View, const UIBBSkillEntry * Entry) const;
-
-		bool NewTitleModel(UIBBTitleModel * & Model, UIBBTitleWidget * View, UIBBGUIModel * ParentModel) const;
+		bool NewTitleModel(
+			UIBBTitleModel*& Model,
+			UIBBTitleWidget* View,
+			UIBBGUIModel* ParentModel
+		) const;
 	
 	protected:
 		UPROPERTY(EditDefaultsOnly, Category = "Classes")
@@ -118,17 +156,30 @@ class SALTLAKECITY_API UBBModelFactory : public UObject
 		TSoftClassPtr<UIBBSelectionModel> SelectionModelClass;
 
 		UPROPERTY(EditDefaultsOnly, Category = "Classes")
-		TSoftClassPtr<UIBBSkillEntryModel> SkillEntryModelClass;
-
-		UPROPERTY(EditDefaultsOnly, Category = "Classes")
 		TSoftClassPtr<UIBBTitleModel> TitleModelClass;
 
-		UPROPERTY()
-		AIBBGameMode * GameMode;
+		const AIBBGameState* GetGameStateChecked() const;
 
-		UPROPERTY()
-		const AIBBGameState * GameState;
-		
-		UPROPERTY()
-		AIBBHUD * HUD;
+		void SetGameStateChecked(const AIBBGameState* NewGameState);
+
+		AIBBGameMode* GetGameModeChecked() const;
+
+		void SetGameModeChecked(AIBBGameMode* NewGameMode);
+
+		AIBBHUD* GetHUDChecked() const;
+
+		void SetHUDChecked(AIBBHUD* NewHUD);
+
+		UIBBWidgetManager* GetWidgetManagerChecked() const;
+
+		void SetWidgetManagerChecked(UIBBWidgetManager* NewWidgetManager);
+
+	private:
+		TSoftObjectPtr<const AIBBGameState> GameState;
+
+		TSoftObjectPtr<AIBBGameMode> GameMode;
+
+		TSoftObjectPtr<AIBBHUD> HUD;
+
+		TSoftObjectPtr<UIBBWidgetManager> WidgetManager;
 };

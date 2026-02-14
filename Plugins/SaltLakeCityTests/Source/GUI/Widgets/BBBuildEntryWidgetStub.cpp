@@ -1,9 +1,9 @@
-// SaltLakeCity 4.24
+// SaltLakeCity 5.7
 
 #include "BBBuildEntryWidgetStub.h"
 #include "Commands/Interfaces/IBBCommand.h"
 
-UBBBuildEntryWidgetStub::UBBBuildEntryWidgetStub(const FObjectInitializer & ObjectInitializer) :
+UBBBuildEntryWidgetStub::UBBBuildEntryWidgetStub(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	Name = FText::FromString("");
@@ -16,6 +16,10 @@ UBBBuildEntryWidgetStub::UBBBuildEntryWidgetStub(const FObjectInitializer & Obje
 EBBWidget UBBBuildEntryWidgetStub::GetType() const
 {
 	return EBBWidget::BuildEntry;
+}
+
+void UBBBuildEntryWidgetStub::AddToScreen(int32 ZOrder)
+{
 }
 
 FText UBBBuildEntryWidgetStub::GetEntryName()
@@ -33,7 +37,7 @@ UTexture2D * UBBBuildEntryWidgetStub::GetIcon()
 	return Icon;
 }
 
-void UBBBuildEntryWidgetStub::SetIcon(UTexture2D * NewIcon)
+void UBBBuildEntryWidgetStub::SetIcon(UTexture2D* NewIcon)
 {
 	Icon = NewIcon;
 }
@@ -63,7 +67,7 @@ UIBBCommand * UBBBuildEntryWidgetStub::GetCommand()
 	return Command;
 }
 
-void UBBBuildEntryWidgetStub::SetCommand(UIBBCommand * NewCommand)
+void UBBBuildEntryWidgetStub::SetCommand(UIBBCommand* NewCommand)
 {
 	Command = NewCommand;
 }

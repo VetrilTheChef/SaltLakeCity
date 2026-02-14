@@ -1,4 +1,4 @@
-// SaltLakeCity 4.25
+// SaltLakeCity 5.7
 
 #include "BBGameModeBuild.h"
 #include "Controllers/Interfaces/IBBPlayerController.h"
@@ -68,7 +68,7 @@ void UBBGameModeBuild::DestroyInputComponent()
 	{
 		InputComponent->ClearActionBindings();
 		InputComponent->UnregisterComponent();
-		InputComponent->MarkPendingKill();
+		InputComponent->MarkAsGarbage();
 	}
 
 	InputComponent = nullptr;
@@ -85,7 +85,7 @@ void UBBGameModeBuild::DestroyWidgetSpecification()
 {
 	if (IsValid(BuildWidgetSpecification))
 	{
-		BuildWidgetSpecification->MarkPendingKill();
+		BuildWidgetSpecification->MarkAsGarbage();
 	}
 
 	BuildWidgetSpecification = nullptr;

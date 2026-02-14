@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 4.27
 
 #include "BBPlayerController.h"
 #include "Abilities/GameplayAbilityTypes.h"
@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "GameInstances/BBGameInstance.h"
 #include "GameStates/BBGameState.h"
+#include "GUI/Interfaces/IBBHUD.h"
 
 ABBPlayerController::ABBPlayerController() :
 	Super()
@@ -23,7 +24,9 @@ ABBPlayerController::ABBPlayerController() :
 	PlayerAbilityComponent = nullptr;
 	ControllerPawn = nullptr;
 
+	MinTimeDown = 0.25f;
 	MovementEnabled = false;
+	MarqueeStart = FVector2D(0.0f, 0.0f);
 
 	UInputComponent * BuildModeInputComponent = CreateDefaultSubobject<UInputComponent>(TEXT("BuildModeInputComponent"));
 
@@ -76,9 +79,12 @@ void ABBPlayerController::SetupInputComponent()
 	InputComponent->BindAction("PgDn", IE_Pressed, this, &ABBPlayerController::MoveDown);
 
 	UInputComponent * BuildModeInputComponent = ModeInputComponents.FindChecked(EBBGameMode::Build);
-		
-	BuildModeInputComponent->BindAction("LMB", IE_Pressed, this, &ABBPlayerController::ConfirmTarget);
-	BuildModeInputComponent->BindAction("RMB", IE_Pressed, this, &ABBPlayerController::CancelTarget);
+	
+	BuildModeInputComponent->BindAction("LMB", IE_Pressed, this, &ABBPlayerController::StartMarqueeSelection);
+	BuildModeInputComponent->BindAction("LMB", IE_Released, this, &ABBPlayerController::EndMarqueeSelection);
+	BuildModeInputComponent->BindAction("LMB", IE_Released, this, &ABBPlayerController::ConfirmTarget);
+	BuildModeInputComponent->BindAction("RMB", IE_Released, this, &ABBPlayerController::CancelTarget);
+	BuildModeInputComponent->BindAction("LMB", IE_Repeat, this, &ABBPlayerController::UpdateMarqueeSelection);
 }
 
 UAbilitySystemComponent * ABBPlayerController::GetAbilitySystemComponent() const
@@ -137,6 +143,40 @@ void ABBPlayerController::CancelTarget()
 	verifyf(IsValid(PlayerAbilityComponent), TEXT("Player Ability Component is invalid."));
 
 	PlayerAbilityComponent->TargetCancel();
+}
+
+void ABBPlayerController::StartMarqueeSelection()
+{
+	float MouseX, MouseY;
+
+	GetMousePosition(MouseX, MouseY);
+
+	MarqueeStart.X = MouseX;
+	MarqueeStart.Y = MouseY;
+}
+
+void ABBPlayerController::EndMarqueeSelection()
+{
+}
+
+void ABBPlayerController::UpdateMarqueeSelection()
+{
+	float TimeDown = GetInputKeyTimeDown(FKey("LMB"));
+
+	if (TimeDown >= MinTimeDown)
+	{
+		float MouseX, MouseY;
+
+		GetMousePosition(MouseX, MouseY);
+
+		FVector2D MarqueeEnd = FVector2D(MouseX, MouseY);
+
+		AIBBHUD * HUD = GetHUD<AIBBHUD>();
+
+		verifyf(IsValid(HUD), TEXT("HUD is invalid."));
+
+		HUD->DrawMarquee(MarqueeStart, MarqueeEnd);
+	}
 }
 
 void ABBPlayerController::UpdateActiveMode(EBBGameMode NewActiveMode)

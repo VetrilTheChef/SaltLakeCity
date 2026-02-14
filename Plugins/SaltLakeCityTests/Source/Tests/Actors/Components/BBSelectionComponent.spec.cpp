@@ -1,4 +1,4 @@
-// SaltLakeCity 4.26
+// SaltLakeCity 5.7
 
 #pragma once
 
@@ -10,53 +10,57 @@
 #include "Commands/GUI/BBAttachWidgetCommandStub.h"
 #include "Commands/GUI/BBDetachWidgetCommandStub.h"
 #include "GameInstances/BBGameInstanceStub.h"
-#include "GUI/BBHUDStub.h"
+#include "GUI/BBWidgetManagerStub.h"
 #include "GUI/Widgets/BBSelectionWidgetStub.h"
 #include "Specifications/GUI/BBWidgetSpecificationStub.h"
 #include "Specifications/GUI/Factories/BBWidgetSpecificationFactoryStub.h"
 #include "Tests/BBTestUtil.h"
 
-BEGIN_DEFINE_SPEC(UBBSelectionComponentSpec, "SaltLakeCity.Actors.Components.SelectionComponent", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(
+	UBBSelectionComponentSpec,
+	"SaltLakeCity.Actors.Components.SelectionComponent",
+	EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext
+)
 
 	UPROPERTY()
-	UWorld * TestWorld = nullptr;
+	UWorld* TestWorld = nullptr;
 
 	UPROPERTY()
-	UBBGameInstanceStub * GameInstance = nullptr;
+	UBBGameInstanceStub* GameInstance = nullptr;
 
 	UPROPERTY()
-	ABBHUDStub * HUD = nullptr;
+	UBBWidgetManagerStub* WidgetManager = nullptr;
 
 	UPROPERTY()
-	ABBCharacterStub * Character;
+	ABBCharacterStub* Character;
 
 	UPROPERTY()
-	UBBCommandFactoryStub * CommandFactory = nullptr;
+	UBBCommandFactoryStub* CommandFactory = nullptr;
 
 	UPROPERTY()
-	UBBSelectCommandStub * SelectCommand = nullptr;
+	UBBSelectCommandStub* SelectCommand = nullptr;
 
 	UPROPERTY()
-	UBBAttachWidgetCommandStub * AttachCommand = nullptr;
+	UBBAttachWidgetCommandStub* AttachCommand = nullptr;
 
 	UPROPERTY()
-	UBBDetachWidgetCommandStub * DetachCommand = nullptr;
+	UBBDetachWidgetCommandStub* DetachCommand = nullptr;
 
 	UPROPERTY()
-	UBBWidgetSpecificationFactoryStub * WidgetSpecificationFactory = nullptr;
+	UBBWidgetSpecificationFactoryStub* WidgetSpecificationFactory = nullptr;
 
 	UPROPERTY()
-	UBBWidgetSpecificationStub * WidgetSpecification = nullptr;
+	UBBWidgetSpecificationStub* WidgetSpecification = nullptr;
 
 	UPROPERTY()
-	UBBSelectionWidgetStub * SelectionWidget = nullptr;
+	UBBSelectionWidgetStub* SelectionWidget = nullptr;
 
 	UPROPERTY()
-	TArray<UClass *> ComponentClasses;
+	TArray<UClass*> ComponentClasses;
 
 	// SUT
 	UPROPERTY()
-	UBBSelectionComponent * SelectionComponent = nullptr;
+	UBBSelectionComponent* SelectionComponent = nullptr;
 
 	FActorSpawnParameters SpawnParameters;
 
@@ -80,39 +84,60 @@ void UBBSelectionComponentSpec::Define()
 
 		UTEST_TRUE("Game Instance is valid", IsValid(GameInstance))
 
-		HUD = TestWorld->SpawnActor<ABBHUDStub>(ABBHUDStub::StaticClass(), SpawnParameters);
+		WidgetManager = NewObject<UBBWidgetManagerStub>(
+			GameInstance,
+			UBBWidgetManagerStub::StaticClass()
+		);
 
-		UTEST_TRUE("HUD is valid", IsValid(HUD))
+		UTEST_TRUE("Widget Manager is valid", IsValid(WidgetManager))
 
-		GameInstance->SetHUD(HUD);
+		GameInstance->SetWidgetManager(WidgetManager);
 
-		Character = TestWorld->SpawnActor<ABBCharacterStub>(ABBCharacterStub::StaticClass(), SpawnParameters);
+		Character = TestWorld->SpawnActor<ABBCharacterStub>(
+			ABBCharacterStub::StaticClass(),
+			SpawnParameters
+		);
 
 		UTEST_TRUE("Character is valid", IsValid(Character))
 
-		SelectionWidget = CreateWidget<UBBSelectionWidgetStub>(TestWorld, UBBSelectionWidgetStub::StaticClass());
+		SelectionWidget = CreateWidget<UBBSelectionWidgetStub>(
+			TestWorld,
+			UBBSelectionWidgetStub::StaticClass()
+		);
 
 		UTEST_TRUE("Selection Widget is valid", IsValid(SelectionWidget))
 
 		SelectionWidget->NativeOnInitialized();
 
-		CommandFactory = NewObject<UBBCommandFactoryStub>(GameInstance, UBBCommandFactoryStub::StaticClass());
+		CommandFactory = NewObject<UBBCommandFactoryStub>(
+			GameInstance,
+			UBBCommandFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Command Factory is valid", IsValid(CommandFactory))
 
-		SelectCommand = NewObject<UBBSelectCommandStub>(CommandFactory, UBBSelectCommandStub::StaticClass());
+		SelectCommand = NewObject<UBBSelectCommandStub>(
+			CommandFactory,
+			UBBSelectCommandStub::StaticClass()
+		);
 
 		UTEST_TRUE("Select Command is valid", IsValid(SelectCommand))
 
 		CommandFactory->AddSelectCommand(SelectCommand);
 
-		AttachCommand = NewObject<UBBAttachWidgetCommandStub>(CommandFactory, UBBAttachWidgetCommandStub::StaticClass());
+		AttachCommand = NewObject<UBBAttachWidgetCommandStub>(
+			CommandFactory,
+			UBBAttachWidgetCommandStub::StaticClass()
+		);
 
 		UTEST_TRUE("Attach Command is valid", IsValid(AttachCommand))
 
 		AttachCommand->SetWidget(SelectionWidget);
 
-		DetachCommand = NewObject<UBBDetachWidgetCommandStub>(CommandFactory, UBBDetachWidgetCommandStub::StaticClass());
+		DetachCommand = NewObject<UBBDetachWidgetCommandStub>(
+			CommandFactory,
+			UBBDetachWidgetCommandStub::StaticClass()
+		);
 
 		UTEST_TRUE("Detach Command is valid", IsValid(DetachCommand))
 
@@ -120,18 +145,24 @@ void UBBSelectionComponentSpec::Define()
 		CommandFactory->AddAttachWidgetCommand(AttachCommand);
 		CommandFactory->AddDetachWidgetCommand(DetachCommand);
 
-		WidgetSpecificationFactory = NewObject<UBBWidgetSpecificationFactoryStub>(HUD, UBBWidgetSpecificationFactoryStub::StaticClass());
+		WidgetSpecificationFactory = NewObject<UBBWidgetSpecificationFactoryStub>(
+			WidgetManager,
+			UBBWidgetSpecificationFactoryStub::StaticClass()
+		);
 
 		UTEST_TRUE("Widget Specification Factory is valid", IsValid(WidgetSpecificationFactory))
 
-		WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(WidgetSpecificationFactory, UBBWidgetSpecificationStub::StaticClass());
+		WidgetSpecification = NewObject<UBBWidgetSpecificationStub>(
+			WidgetSpecificationFactory,
+			UBBWidgetSpecificationStub::StaticClass()
+		);
 
 		UTEST_TRUE("Widget Specification is valid", IsValid(WidgetSpecification))
 
 		WidgetSpecificationFactory->AddWidgetSpecification(WidgetSpecification);
 
 		GameInstance->SetCommandFactory(CommandFactory);
-		HUD->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
+		WidgetManager->SetWidgetSpecificationFactory(WidgetSpecificationFactory);
 
 		return true;
 	});
@@ -152,7 +183,7 @@ void UBBSelectionComponentSpec::Define()
 		SelectCommand = nullptr;
 		CommandFactory = nullptr;
 
-		TestWorld->DestroyActor(HUD);
+		WidgetManager = nullptr;
 
 		GameInstance = nullptr;
 
@@ -163,7 +194,9 @@ void UBBSelectionComponentSpec::Define()
 	{
 		Describe("[" + ComponentClass->GetName() + "]", [this, ComponentClass]()
 		{
-			It("Given initialization, expect the selection component to attach a new selection widget", [this, ComponentClass]()
+			It(
+				"Given initialization, expect the selection component to attach a new selection widget",
+				[this, ComponentClass]()
 			{
 				SelectionComponent = NewObject<UBBSelectionComponent>(Character, ComponentClass);
 
@@ -187,7 +220,9 @@ void UBBSelectionComponentSpec::Define()
 				return true;
 			});
 
-			It("Given finalization, expect the selection component to detach its selection widget", [this, ComponentClass]()
+			It(
+				"Given finalization, expect the selection component to detach its selection widget",
+				[this, ComponentClass]()
 			{
 				SelectionComponent = NewObject<UBBSelectionComponent>(Character, ComponentClass);
 
@@ -211,7 +246,9 @@ void UBBSelectionComponentSpec::Define()
 				return true;
 			});
 
-			It("Given a new selectable, expect the selection component to set its command's selectable", [this, ComponentClass]()
+			It(
+				"Given a new selectable, expect the selection component to set its command's selectable",
+				[this, ComponentClass]()
 			{
 				SelectionComponent = NewObject<UBBSelectionComponent>(Character, ComponentClass);
 
@@ -226,7 +263,10 @@ void UBBSelectionComponentSpec::Define()
 
 				for (int i = 0; i < 5; i++)
 				{
-					ABBCharacterStub * Selectable = TestWorld->SpawnActor<ABBCharacterStub>(ABBCharacterStub::StaticClass(), SpawnParameters);
+					ABBCharacterStub * Selectable = TestWorld->SpawnActor<ABBCharacterStub>(
+						ABBCharacterStub::StaticClass(),
+						SpawnParameters
+					);
 
 					UTEST_TRUE("Selectable is valid", IsValid(Selectable))
 
@@ -250,7 +290,9 @@ void UBBSelectionComponentSpec::Define()
 				return true;
 			});
 
-			It("Given a left click on a subscribed selectable, expect the selection component to execute its command", [this, ComponentClass]()
+			It(
+				"Given a left click on a subscribed selectable, expect the selection component to execute its command",
+				[this, ComponentClass]()
 			{
 				SelectionComponent = NewObject<UBBSelectionComponent>(Character, ComponentClass);
 
@@ -273,7 +315,10 @@ void UBBSelectionComponentSpec::Define()
 				return true;
 			});
 
-			It("Given a left click on an unsubscribed selectable, expect the selection component not to execute its command", [this, ComponentClass]()
+			It(
+				"Given a left click on an unsubscribed selectable, expect the selection component not to execute its \
+				command",
+				[this, ComponentClass]()
 			{
 				SelectionComponent = NewObject<UBBSelectionComponent>(Character, ComponentClass);
 
